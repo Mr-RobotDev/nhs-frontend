@@ -21,7 +21,6 @@ import axiosInstance from "@/lib/axiosInstance";
 import { RootState } from "@/app/store/store";
 import SidebarMenu from "@/app/ui/SidebarMenu";
 import { activeSidebar } from "@/utils/helper_functions";
-import { NhsLogo } from "@/svgs/svgs";
 
 interface SidenavProps {
   color: string;
@@ -135,7 +134,13 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
               />
             </div>
             <div className=" w-20">
-              {NhsLogo}
+            <Image
+                src="/Nhs-logo.svg"
+                alt="Website logo"
+                width={100}
+                height={100}
+                className=" w-full h-full"
+              />
             </div>
           </div>
         </div>

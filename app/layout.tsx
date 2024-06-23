@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="/Nhs-logo.svg" type="image/png" />
       </head>
       <Provider store={store}>
         <body className={`${roboto.className}`}>

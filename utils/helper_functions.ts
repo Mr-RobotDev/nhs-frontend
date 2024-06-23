@@ -1,5 +1,6 @@
 import { AlertDataType, ReportsType } from "@/type";
 import dayjs from 'dayjs';
+import { triggerWhenOptions } from "./form";
 
 export const activeSidebar = (path: string): string => {
   const routes = [
@@ -134,7 +135,13 @@ export const iconsBasedOnType = (key: string) => {
     pressure: '/icons/highest-pressure.png',
     freezer: '/icons/freezer.png',
     fridge: '/icons/fridge.png',
+    motion: '/icons/motion-sensor.png'
   }
 
   return icons[key] || '';
+}
+
+export const getDeviceLabelFromState = (value: string) => {
+  const option = triggerWhenOptions.find(option => option.value === value);
+  return option ? option.label : 'UnKnown State';
 }

@@ -60,18 +60,7 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
 
     setFormData(prevState => {
       if (prevState) {
-        if (name === 'lower' || name === 'upper') {
-          return {
-            ...prevState,
-            trigger: {
-              ...prevState.trigger,
-              range: {
-                ...prevState.trigger.range,
-                [name]: Number(value)
-              },
-            }
-          };
-        } else if (name === 'duration'){
+        if (name === 'duration'){
           return {
             ...prevState,
             trigger: {
@@ -126,26 +115,9 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
       ...prevState,
       trigger: {
         ...prevState.trigger,
-        field: value
+        state: value
       }
     }));
-  }
-
-  const handleRangeTypeChange = (value: string) => {
-    setFormData(prevState => ({
-      ...prevState,
-      trigger: {
-        ...prevState.trigger,
-        range: {
-          ...prevState.trigger.range,
-          type: value
-        }
-      }
-    }));
-  }
-
-  const handleOk = () => {
-    console.log('ok');
   }
 
   const handleUpdateAlert = async () => {
@@ -324,39 +296,7 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
             <div>
               <p className="!mb-1 text-sm">When</p>
               <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0">
-                <CustomMenu handleTypeChange={handleTriggerWhenChange} isAdmin={isAdmin} initialValue={formData.trigger.field} options={triggerWhenOptions} />
-              </div>
-            </div>
-            <div>
-              <p className="!mb-1 text-sm">Is</p>
-              <div className="flex flex-row items-center border rounded-md shadow-md  mb-3 md:mb-0">
-                <CustomMenu handleTypeChange={handleRangeTypeChange} isAdmin={isAdmin} initialValue={formData.trigger.range.type} options={triggerRangeTypeOptions} />
-              </div>
-            </div>
-            <div>
-              <p className="!mb-1 text-sm">Lower ({typeAndUnits[formData.trigger.field]})</p>
-              <div className="flex flex-row items-center  mb-3 md:mb-0">
-                <PrimaryInput
-                  name="lower"
-                  disabled={formData.trigger.range.type === 'upper' || !isAdmin}
-                  value={formData.trigger.range.lower?.toString()}
-                  onChange={handleChange}
-                  className='!h-[49px]'
-                  type='number'
-                />
-              </div>
-            </div>
-            <div>
-              <p className="!mb-1 text-sm">Upper ({typeAndUnits[formData.trigger.field]})</p>
-              <div className="flex flex-row items-center  mb-3 md:mb-0">
-                <PrimaryInput
-                  disabled={formData.trigger.range.type === 'lower' || !isAdmin}
-                  name="upper"
-                  value={formData.trigger.range.upper?.toString()}
-                  onChange={handleChange}
-                  className='!h-[49px]'
-                  type='number'
-                />
+                <CustomMenu handleTypeChange={handleTriggerWhenChange} isAdmin={isAdmin} initialValue={formData.trigger.state} options={triggerWhenOptions} />
               </div>
             </div>
             <div>
@@ -403,7 +343,6 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
       </Spin>
       <Modal
         open={isVisible}
-        onOk={handleOk}
         onCancel={() => setIsVisible(false)}
         width={700}
         footer={[]}
@@ -414,7 +353,7 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
             allowSingleDevice={true}
             selectedRowKeys={selectedRowKeys}
             setSelectedRowKeys={setSelectedRowKeys}
-            deviceType={formData.trigger.field}
+            deviceType={'motion'}
           />
         </div>
         {selectedRowKeys.length === 1 &&

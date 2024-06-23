@@ -69,22 +69,20 @@ const MainFloorView = () => {
           ) : (
             <>
               <DevicesStats roomStats={roomStats} />
-              <Row className="rowgap-vbox" gutter={[24, 0]}>
-
-                <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                <div>
                   <Card className="!p-0">
                     <h2 className=" text-xl font-semibold">Devices Status</h2>
                     <DeviceStatsPieChart />
                   </Card>
-                </Col>
-
-                <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+                </div>
+                <div>
                   <Card className="!p-0">
                     <h2 className=" text-xl font-semibold">Rooms Status</h2>
                     {roomStats && <RoomStatsPieChart roomStats={roomStats} />}
                   </Card>
-                </Col>
-              </Row>
+                </div>
+              </div>
             </>
           )}
         </div>

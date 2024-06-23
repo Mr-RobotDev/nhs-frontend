@@ -23,6 +23,7 @@ import {
 import DeviceTypeDetail from "./DeviceTypeDetail";
 import PressueChart from "./PressueChart";
 import { iconsBasedOnType } from "@/utils/helper_functions";
+import GanttChart from "./Chart/GhanttChart";
 
 dayjs.extend(isBetween);
 
@@ -470,49 +471,39 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
             </div>
           </Card>
         </div>
-
-        {
-          deviceData?.type === 'pressure' ?
-            <DeviceTypeDetail title="Highest Pressure" value={deviceData?.pressure as number} image="/icons/highest-pressure.png" />
-            :
-            <>
-              <DeviceTypeDetail title="Highest Temperature" value={deviceData?.temperature as number} image="/icons/highest-temperature.png" />
-              <DeviceTypeDetail title="Highest Humidity" value={deviceData?.relativeHumidity as number} image="/icons/highest-humidity.png" />
+        <div>
+          <Card bordered={false} className="criclebox h-full">
+            <div className=" text-2xl flex flex-row justify-between">
               <div>
-                <Card bordered={false} className="criclebox h-full">
-                  <div className=" text-2xl flex flex-row justify-between">
-                    <div>
-                      <span className=" text-lg">
-                        {deviceData?.isOffline ? "Connectivity" : "Signal Strength"}
-                      </span>
-                      <div className="">
-                        <span className="!text-3xl !font-bold">
-                          {deviceData?.signalStrength && (
-                            <CountUp
-                              end={deviceData?.signalStrength as number}
-                              duration={2}
-                            />
-                          )}
-                          {!deviceData?.signalStrength && (
-                            <p className="!text-2xl !font-bold !mb-0 ">Offline</p>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                    <div className=" w-12 h-12 flex items-center justify-center ml-auto">
-                      <Image
-                        src={deviceData?.signalStrength ? '/icons/signal-strength.png' : '/icons/offline.png'}
-                        className=" w-full h-full"
-                        alt="icon"
-                        width={100}
-                        height={100}
+                <span className=" text-lg">
+                  {deviceData?.isOffline ? "Connectivity" : "Signal Strength"}
+                </span>
+                <div className="">
+                  <span className="!text-3xl !font-bold">
+                    {deviceData?.signalStrength && (
+                      <CountUp
+                        end={deviceData?.signalStrength as number}
+                        duration={2}
                       />
-                    </div>
-                  </div>
-                </Card>
+                    )}
+                    {!deviceData?.signalStrength && (
+                      <p className="!text-2xl !font-bold !mb-0 ">Offline</p>
+                    )}
+                  </span>
+                </div>
               </div>
-            </>
-        }
+              <div className=" w-12 h-12 flex items-center justify-center ml-auto">
+                <Image
+                  src={deviceData?.signalStrength ? '/icons/signal-strength.png' : '/icons/offline.png'}
+                  className=" w-full h-full"
+                  alt="icon"
+                  width={100}
+                  height={100}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>
 
       </div>
       <div className=" mx-auto">
@@ -587,6 +578,7 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
               />
             </div>
             <div className=" w-full">
+              <GanttChart />
               {graphloading ? (
                 <div className="flex justify-center items-center h-full">
                   <Spin size="large" />
@@ -597,26 +589,7 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
                 </div>
               ) : (
                 <>
-                  {deviceData?.type !== 'pressure' ?
-                    <div>
-                      <div className=" h-[275px]">
-                        {temperatureData.length !== 0 && (
-                          <TemperatureChart data={temperatureData} />
-                        )}
-                      </div>
-                      <div className=" h-[275px]">
-                        {humidityData.length !== 0 && (
-                          <HumidityChart data={humidityData} />
-                        )}
-                      </div>
-                    </div>
-                    :
-                    <div className=" h-[275px]">
-                      {pressureData.length !== 0 && (
-                        <PressureChart data={pressureData} />
-                      )}
-                    </div>
-                  }
+                  <GanttChart />
                 </>
               )}
             </div>

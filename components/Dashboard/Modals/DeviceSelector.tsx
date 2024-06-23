@@ -44,7 +44,7 @@ const DevicesSelector = ({
       dataIndex: "type",
       render: (_, { type }) => (
         <div className="flex flex-row items-center gap-7">
-          <div className="w-5 h-5">
+          <div className="w-10 h-10">
             <Image
               src={iconsBasedOnType(type)}
               alt="icon"
@@ -60,6 +60,15 @@ const DevicesSelector = ({
       render: (_, { name }) => (
         <div className="flex flex-row items-center">
           <p className="!text-black">{name}</p>
+        </div>
+      ),
+    },
+    {
+      title: 'State',
+      dataIndex: 'state',
+      render: (_, { state }) => (
+        <div className=" w-20 md:w-full whitespace-normal">
+          {<p className=" !text-black">{state === 'MOTION_DETECTED' ? 'Motion Detected' : 'No Motion Detected'}</p>}
         </div>
       ),
     },
@@ -99,7 +108,7 @@ const DevicesSelector = ({
     },
   ];
 
-  if(allowSingleDevice){
+  if (allowSingleDevice) {
     columns.unshift({
       title: "Add",
       dataIndex: "add",
@@ -116,9 +125,6 @@ const DevicesSelector = ({
       try {
         setLoading(true);
         const params: any = { page: 1, limit: 50 };
-        if (deviceType) {
-          params.type = deviceType === 'pressure' ? 'pressure' : 'humidity,cold';
-        }
         const response = await axiosInstance.get("/devices", { params });
         if (response.status === 200) {
           setDevices(response.data.results);

@@ -19,7 +19,7 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
   return (
     <div>
       <div className="layout-content">
-        <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6 mx-auto">
+        <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mx-auto">
           <DeviceTypeDetail title="Total Rooms" value={roomStats.totalRooms as number} image="/icons/devices.png" />
           <DeviceTypeDetail title="Red" value={roomStats.red as number} image="/icons/highest-temperature.png" />
           <DeviceTypeDetail title="Yellow" value={roomStats.yellow as number} image="/icons/highest-humidity.png" />

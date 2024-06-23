@@ -155,8 +155,7 @@ export interface AlertDataType {
 }
 
 interface Trigger {
-  field: string;
-  range: Range;
+  state: string;
   duration: number;
 }
 
