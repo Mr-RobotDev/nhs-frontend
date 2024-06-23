@@ -1,0 +1,85 @@
+.selectDefault {
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+  height: 39px;
+}
+.selectionMenu {
+  width: 100%;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 12px;
+  background-color: var(--secondary-background);
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 1;
+}
+.selectionMenu:hover {
+  background-color: var(--hover-background-primary);
+}
+.disabledSelectionMenu {
+  cursor: not-allowed !important;
+  background-color: var(--hover-background-primary) !important;
+}
+.selectionMenuContent {
+  width: 100%;
+  display: flex;
+}
+.selectionMenuContent span.pre {
+  display: inline-flex;
+  max-width: 130px;
+}
+.selectionMenuContent span.pre span {
+  color: var(--alt-secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.selectionMenuContent span.post {
+  display: inline-flex;
+  max-width: 200px;
+}
+.selectionMenuContent span.post span {
+  color: var(--secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.selectionMenuContent span.only {
+  display: inline-flex;
+  max-width: 200px;
+}
+.selectionMenuContent span.only span {
+  color: var(--secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.doubleDropDownIcon path{
+  stroke: gray
+}
+
+@media (max-width: 992px) {
+  .selectionMenuContent span.pre {
+    display: none;
+  }
+  .selectionMenuContent span.divider {
+    display: none;
+  }
+  .selectionMenuContent span.post {
+    max-width: 230px;
+  }
+}
+
+@media (max-width: 576px) {
+  .selectionMenuContent span.post {
+    max-width: 100px;
+  }
+}

@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+  font-family: 'Roboto', sans-serif;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.react-grid-item .react-resizable-handle.react-resizable-handle-se {
+  width: 15px !important;
+  height: 15px !important;
+  background-image: none !important;
+}
+.react-grid-item .react-resizable-handle.react-resizable-handle-se::after {
+  width: 0 !important;
+  height: 0 !important;
+  border-style: solid;
+  border-width: 0 10px 10px 0;
+  border-color: transparent #dbc9ff45 transparent transparent;
+  border-radius: 3px;
+  transform: rotate(90deg);
+  display: none;
+}
+.react-grid-item:hover .react-resizable-handle.react-resizable-handle-se::after {
+  display: block;
+}
+.react-grid-item .react-resizable-handle.react-resizable-handle-s {
+  width: 100%;
+  transform: none !important;
+  left: 0 !important;
+  margin-left: 0 !important;
+  height: 10px !important;
+  background-image: none !important;
+}
+.react-grid-item .react-resizable-handle.react-resizable-handle-e {
+  width: 10px !important;
+  height: 100%;
+  transform: none !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+  background-image: none !important;
+}
+.react-grid-item .react-resizable-handle.react-resizable-handle-n {
+  width: 100%;
+  transform: none !important;
+  left: 0 !important;
+  margin-left: 0 !important;
+  height: 10px !important;
+  background-image: none !important;
+}
+.react-grid-item .react-resizable-handle.react-resizable-handle-w {
+  width: 10px !important;
+  height: 100%;
+  transform: none !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+  background-image: none !important;
+}
+.react-grid-item .react-resizable-handle.react-resizable-handle-ne,
+.react-grid-item .react-resizable-handle.react-resizable-handle-nw,
+.react-grid-item .react-resizable-handle.react-resizable-handle-sw {
+  width: 12px !important;
+  height: 12px !important;
+  background-image: none !important;
+}
+.react-grid-item .react-resizable-handle.react-resizable-handle-sw::after,
+.react-grid-item .react-resizable-handle.react-resizable-handle-ne::after,
+.react-grid-item .react-resizable-handle.react-resizable-handle-nw::after,
+.react-grid-item .react-resizable-handle.react-resizable-handle-s::after,
+.react-grid-item .react-resizable-handle.react-resizable-handle-e::after,
+.react-grid-item .react-resizable-handle.react-resizable-handle-n::after,
+.react-grid-item .react-resizable-handle.react-resizable-handle-w::after {
+  border: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.empty-boxes {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 200px;
+  height: 150px;
+  margin-bottom: 12px;
+  transition: 0.5s all ease-in-out;
+}
+
+.content-box {
+  border-radius: 8px;
+  box-sizing: border-box;
+  flex-grow: 1;
+  background-color: var(--secondary-background);
+  padding: 8px;
+  border: 1px solid #dadce8;
+  box-shadow: 0px 0px 1px rgba(10,20,40,0.05), 0px 2px 6px -4px rgba(20,60,100,0.15), 0px 8px 20px -12px rgba(45,95,150,0.3);
+}
+
+.react-grid-item .react-resizable{
+  width: 100%;
+  transform: none !important;
+  left: 0 !important;
+  margin-left: 0 !important;
+}
+
+.option .card.selected {
+  background-color: #15394c;
+}
+.dark .option .card.selected {
+  background-color: var(--primary-color);
+}
+.option .card {
+  background-color: var(--secondary-background);
+  border-radius: 3px;
+  margin: 2px;
+  box-shadow:
+    0 0px 1px #14283c,
+    0 2px 5px -2px rgba(20, 60, 100, 0.3),
+    0 4px 10px -2px rgba(70, 100, 130, 0.1);
+}
+.dark .option .card {
+  background-color: #fff;
+}
+.option .card.layout-2-2 {
+  grid-row-start: 1;
+  grid-row-end: 3;
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+.option .card.layout-2-1 {
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+.option .card.layout-1-2 {
+  grid-row-start: 1;
+  grid-row-end: 3;
+}
+.option .card.layout-3-1 {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+.option .card.layout-4-1 {
+  grid-column-start: 1;
+  grid-column-end: 5;
+}

@@ -1,0 +1,38 @@
+.primaryInput {
+  width: 100%;
+  /* border: 1px solid var(--fourth-color); */
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 14px;
+  background-color: transparent;
+  color: var(--secondary-color);
+}
+
+.primaryPasswordInput {
+  width: 100%;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 14px;
+  background-color: transparent;
+}
+.primaryPasswordInput input[type='password'] {
+  color: var(--secondary-color);
+  background-color: transparent !important;
+}
+
+.primarySearchInput {
+  width: 100%;
+  border: 1px solid var(--fourth-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 14px;
+  background-color: transparent;
+}
+.primarySearchInput input {
+  color: var(--secondary-color);
+  background-color: transparent !important;
+}
