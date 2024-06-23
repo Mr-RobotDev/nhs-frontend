@@ -19,7 +19,6 @@ const DeviceTypeDetail = ({ title, value, image }: DeviceTypeDetailProps) => {
             <div className="text-2xl font-bold">
               <span className="!text-3xl !font-bold">
                 <CountUp
-                  decimals={2}
                   end={value}
                   duration={2}
                 />

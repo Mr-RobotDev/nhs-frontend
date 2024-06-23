@@ -29,7 +29,7 @@ export default function MainLoginView() {
       const response = await axiosInstance.post("/auth/login", values);
       if (response.status === 200) {
         dispatch(login(response.data));
-        router.push(next || "/dashboard/floor");
+        router.push(next || "/dashboard/devices");
       } else {
         toast.error("Error logging in to the system");
       }

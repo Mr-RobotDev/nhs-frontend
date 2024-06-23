@@ -4,7 +4,7 @@ import { IncomingMessage } from "http";
 import cookie from "cookie";
 
 const axiosInstance = axios.create({
-  baseURL: "https://api.sedaems.originsmartcontrols.com/v1",
+  baseURL: "https://api.nhs.originsmartcontrols.com/v1",
 });
 
 axiosInstance.interceptors.request.use(

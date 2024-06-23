@@ -24,6 +24,7 @@ export interface DevicesType {
     field: string,
     range: alertRange
   }
+  state?: string;
 }
 
 
@@ -169,4 +170,11 @@ interface Device {
   name: string;
   lastUpdated: string;
   id: string;
+}
+
+export interface RoomStatsType {
+  totalRooms: number;
+  red: number;
+  yellow: number;
+  green: number;
 }

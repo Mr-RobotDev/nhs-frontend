@@ -4,16 +4,14 @@ import withDashboardLayout from "@/hoc/withDashboardLayout";
 import DevicesStats from "./DevicesStats";
 import axiosInstance from "@/lib/axiosInstance";
 import toast from "react-hot-toast";
-import { Button, Card, Col, Row, Spin } from "antd";
-import LeafLetMap from "./LeafLetMap/LeafLetMap";
+import { Card, Col, Row, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setDevicesStats } from "@/app/store/slice/StatisticsSlice";
 import { RootState } from "@/app/store/store";
 import DeviceStatsPieChart from "./DeviceStatsPieChart";
 import FullScreenButton from "@/components/ui/FullScreenButton/FullScreenButton";
-import Link from "next/link";
-import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
-import { setFullScreen } from "@/app/store/slice/dashboardSlice";
+import { RoomStatsType } from "@/type";
+import RoomStatsPieChart from "./RoomStatsPieChart";
 
 const MainFloorView = () => {
   const dispatch = useDispatch();
@@ -21,28 +19,36 @@ const MainFloorView = () => {
     (state: RootState) => state.statisticsReducer
   );
   const [error, setError] = useState(false);
-
-  const removeExistingFullScreen = () => {
-    dispatch(setFullScreen(false));
-  }
+  const [roomStats, setRoomStats] = useState<RoomStatsType>({ totalRooms: 0, red: 0, yellow: 0, green: 0 })
 
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/devices/stats");
-        if (response.status === 200) {
-          dispatch(setDevicesStats(response.data));
+        const [deviceResponse, roomResponse] = await Promise.all([
+          axiosInstance.get("/devices/stats"),
+          axiosInstance.get("/rooms/stats"),
+        ]);
+
+        if (deviceResponse.status === 200 && roomResponse.status === 200) {
+          dispatch(setDevicesStats(deviceResponse.data));
+          setRoomStats(prevStats => ({
+            ...prevStats,
+            ...roomResponse.data,
+          }));
         } else {
           setError(true);
-          toast.error("Error fetching devices stats");
+          toast.error("Error fetching device or room stats");
         }
       } catch (error) {
-        console.log("error->", error);
+        console.error("Error fetching stats:", error);
         setError(true);
-        toast.error("Error fetching devices stats");
+        toast.error("Error fetching device or room stats");
       }
-    })();
+    };
+
+    fetchData();
   }, [dispatch]);
+
 
   return (
     <>
@@ -62,45 +68,20 @@ const MainFloorView = () => {
             </div>
           ) : (
             <>
-              <DevicesStats />
+              <DevicesStats roomStats={roomStats} />
               <Row className="rowgap-vbox" gutter={[24, 0]}>
-                <Col
-                  xs={24}
-                  sm={24}
-                  md={24}
-                  lg={16}
-                  xl={16}
-                  className="mb-24 md:mb-0"
-                >
-                  <Card>
-                    <div className=" flex justify-end mb-3">
-                      <Link
-                        href={`/dashboard/floor-plan`}
-                        target="_blank"
-                      >
-                        <Button
-                          className=" flex flex-row items-center justify-center gap-3"
-                          style={{ width: "170px" }}
-                          onClick={removeExistingFullScreen}
-                        >
-                          Show on Full Screen
-                          <div>
-                            <ArrowUpRightIcon
-                              width={16}
-                              className="transform transition-transform duration-150 group-hover:translate-x-1"
-                            />
-                          </div>
-                        </Button>
-                      </Link>
-                    </div>
-                    <LeafLetMap />
-                  </Card>
-                </Col>
 
-                <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+                <Col xs={24} sm={24} md={24} lg={12} xl={12}>
                   <Card className="!p-0">
                     <h2 className=" text-xl font-semibold">Devices Status</h2>
                     <DeviceStatsPieChart />
+                  </Card>
+                </Col>
+
+                <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+                  <Card className="!p-0">
+                    <h2 className=" text-xl font-semibold">Rooms Status</h2>
+                    {roomStats && <RoomStatsPieChart roomStats={roomStats} />}
                   </Card>
                 </Col>
               </Row>

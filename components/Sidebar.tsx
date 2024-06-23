@@ -46,8 +46,15 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
 
   const menuItems = [
     {
+      key: "10",
+      title: "Devices",
+      url: "/dashboard/devices",
+      menuKey: "devices",
+      icon: DevicePhoneMobileIcon,
+    },
+    {
       key: "6",
-      title: "Dashboard",
+      title: "Dashboards",
       url: "/dashboard",
       menuKey: "dashboard",
       icon: AdjustmentsHorizontalIcon,
@@ -65,13 +72,6 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
       url: "/dashboard/alerts",
       menuKey: "alerts",
       icon: BellAlertIcon,
-    },
-    {
-      key: "10",
-      title: "Devices",
-      url: "/dashboard/devices",
-      menuKey: "devices",
-      icon: DevicePhoneMobileIcon,
     },
     {
       key: "11",
@@ -101,7 +101,7 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
   ];
 
   const renderMenuItems = (items: any[]) =>
-    items.map((item) => {
+    items.map((item, index) => {
       if (item.adminOnly && !isAdmin) return null;
       return (
         <SidebarMenu

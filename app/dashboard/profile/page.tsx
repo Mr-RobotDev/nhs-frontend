@@ -6,7 +6,7 @@ export async function generateMetadata(props: any) {
   const cookieStore = cookies()
   const token = cookieStore.get('token')
 
-  const response = await fetch(`https://api.sedaems.originsmartcontrols.com/v1/users/me`, {
+  const response = await fetch(`https://api.nhs.originsmartcontrols.com/v1/users/me`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

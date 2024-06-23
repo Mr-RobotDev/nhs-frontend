@@ -22,12 +22,13 @@ const DevicesTable = () => {
     {
       title: "TYPE",
       dataIndex: "type",
-      render: (_, { type }) => (
-        <div className=" flex flex-row items-center gap-7">
-          <div className=" w-5 h-5">
+      render: (_,) => (
+        <div className=" flex flex-row items-center">
+          <div className=" w-10 h-10">
             <Image
-              src={iconsBasedOnType(type)}
+              src={'/icons/motion-sensor.png'}
               alt="icon"
+              className=" w-full h-full"
               width={100}
               height={100}
             />
@@ -46,11 +47,9 @@ const DevicesTable = () => {
     {
       title: 'STATE',
       dataIndex: 'state',
-      render: (_, { type, temperature, relativeHumidity, pressure }) => (
+      render: (_, { state }) => (
         <div className=" w-20 md:w-full whitespace-normal">
-          {
-            type === 'pressure' ? <p className="!text-black">{pressure?.toFixed(2)} Pa</p> : <p className="!text-black"> {relativeHumidity.toFixed(2)} %RH AT {temperature?.toFixed(2)} °C</p>
-          }
+          {<p className=" !text-black">{state === 'MOTION_DETECTED' ? 'Motion Detected' : 'No Motion Detected'}</p>}
         </div>
       ),
     },
