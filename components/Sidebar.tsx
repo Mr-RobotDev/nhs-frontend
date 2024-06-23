@@ -21,6 +21,7 @@ import axiosInstance from "@/lib/axiosInstance";
 import { RootState } from "@/app/store/store";
 import SidebarMenu from "@/app/ui/SidebarMenu";
 import { activeSidebar } from "@/utils/helper_functions";
+import { NhsLogo } from "@/svgs/svgs";
 
 interface SidenavProps {
   color: string;
@@ -64,13 +65,6 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
       url: "/dashboard/alerts",
       menuKey: "alerts",
       icon: BellAlertIcon,
-    },
-    {
-      key: "9",
-      title: "Data Sources",
-      url: "/dashboard/data-sources",
-      menuKey: "data-sources",
-      icon: CircleStackIcon,
     },
     {
       key: "10",
@@ -140,14 +134,8 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
                 className=" w-full h-full"
               />
             </div>
-            <div>
-              <Image
-                src="/logo.svg"
-                alt="Website logo"
-                width={100}
-                height={100}
-                className=" w-full h-full"
-              />
+            <div className=" w-20">
+              {NhsLogo}
             </div>
           </div>
         </div>
@@ -167,14 +155,14 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
             {renderMenuItems(accountItems)}
             <div key="6" className="!w-auto !rounded-none">
               <div
-                className="flex !px-4 flex-row gap-3 mb-2 items-center cursor-pointer hover:bg-blue-50 py-2"
+                className="flex !px-5 flex-row gap-3 mb-2 items-center cursor-pointer hover:bg-blue-50 py-2"
                 onClick={LogoutButtonHandler}
               >
                 <ArrowLeftStartOnRectangleIcon
-                  width={25}
+                  width={26}
                   className="!text-black"
                 />
-                <span className="label text-black">Log Out</span>
+                <span className="label text-black text-lg">Log Out</span>
               </div>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { login } from "@/app/store/slice/authSlice";
 import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
+import { NhsLogo } from "@/svgs/svgs";
 
 const { Title } = Typography;
 
@@ -54,13 +55,7 @@ export default function MainLoginView() {
               />
             </div>
             <div>
-              <Image
-                src="/logo.svg"
-                className="w-full h-full"
-                alt="Logo"
-                width={100}
-                height={100}
-              />
+              {NhsLogo}
             </div>
           </div>
           <div>
