@@ -58,9 +58,9 @@ export interface DashboardCardType {
 }
 
 interface Device {
-  oem: string;
-  name: string;
   id: string;
+  state: string;
+  name: string;
 }
 
 export interface EventType {

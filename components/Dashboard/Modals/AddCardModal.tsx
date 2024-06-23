@@ -89,12 +89,8 @@ const AddCardModal = ({
     setIsModalOpen(false);
   };
 
-  const handleChooseSensorType = () => {
-    setStep(1);
-  };
-
   const handleCreateCard = () => {
-    setStep(2);
+    setStep(1);
   };
 
   const handleGoBack = () => {
@@ -110,7 +106,6 @@ const AddCardModal = ({
           cols: cardOption.cols,
           rows: cardOption.rows,
           devices: selectedRowKeys,
-          field: selectedSensors.join(","),
         })
       );
       if (error) {
@@ -139,14 +134,6 @@ const AddCardModal = ({
           />
         )}
         {step === 1 && (
-          <SensorSelector
-            selectedRowKeys={selectedRowKeys}
-            selectedSensors={selectedSensors}
-            setSelectedSensors={setSelectedSensors}
-          />
-        )}
-
-        {step === 2 && (
           <CardDetails
             cardOption={cardOption}
             setCardOption={setCardOption}
@@ -155,6 +142,7 @@ const AddCardModal = ({
             setCardName={setCardName}
           />
         )}
+
       </div>
       <Divider className=" h-[1px] bg-gray-100 !m-0" />
       <div className=" my-5 flex justify-between">
@@ -172,17 +160,12 @@ const AddCardModal = ({
         )}
 
         {selectedRowKeys.length > 0 && step === 0 && (
-          <Button onClick={handleChooseSensorType} type="default">
-            Choose the Sensor Type
-          </Button>
-        )}
-        {selectedSensors.length > 0 && step === 1 && (
           <Button onClick={handleCreateCard} type="default">
             Set Card Options
           </Button>
         )}
 
-        {step === 2 && cardName !== "" && (
+        {step === 1 && cardName !== "" && (
           <Button onClick={handleAddCardToDashboard} type="default">
             Add to Dashboard
           </Button>

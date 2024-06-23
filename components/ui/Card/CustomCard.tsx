@@ -11,14 +11,25 @@ import Image from "next/image";
 import { PrimaryInput } from "../Input/Input";
 import { updateCard } from "@/app/store/slice/dashboardSlice";
 import SingleDeviceDashCard from "@/components/Dashboard/dashboardViews/SingleDeviceDashCard";
+import { getDeviceLabelFromState } from "@/utils/helper_functions";
 
 interface CardProps {
   cardObj: DashboardCardType;
 }
 
+const countStates = (devices: any) => {
+  return devices.reduce((acc: any, device: any) => {
+    if (device.state === 'MOTION_DETECTED') {
+      acc.motionDetected++;
+    } else if (device.state === 'NO_MOTION_DETECTED') {
+      acc.noMotionDetected++;
+    }
+    return acc;
+  }, { motionDetected: 0, noMotionDetected: 0 });
+};
+
 const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
-  const [eventsMap, setEventsMap] = useState<EventsMap>({});
-  const [deviceData, setDeviceData] = useState<DevicesType>();
+
   const [loading, setLoading] = useState<boolean>(true);
   const [isRenaming, setIsRenaming] = useState(false);
   const [editingName, setEditingName] = useState(cardObj.name);
@@ -27,17 +38,12 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     (state: RootState) => state.dashboardReducer
   );
   const { isAdmin } = useSelector((state: RootState) => state.authReducer);
-
   const dispatch: AppDispatch = useDispatch();
+  const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
 
   useEffect(() => {
     setCard(cardObj);
   }, [cardObj]);
-
-
-  useEffect(() => {
-
-  })
 
 
   useEffect(() => {
@@ -55,12 +61,9 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               params: {
                 from: timeFrame.startDate,
                 to: timeFrame.endDate,
-                eventTypes: card.field,
               },
             });
-            if (card.devices.length === 1) {
-              fetchDevice(device.id)
-            }
+
             if (!isCancelled) {
               eventsMapTemp[id] = { data: response.data, name: name };
             }
@@ -71,7 +74,6 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
         await Promise.all(fetchPromises);
         if (!isCancelled) {
-          setEventsMap(eventsMapTemp);
           setLoading(false);
         }
       }
@@ -84,18 +86,18 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     };
   }, [card, timeFrame.startDate, timeFrame.endDate]);
 
-  const fetchDevice = async (id: string) => {
-    try {
-      const response = await axiosInstance.get(`/devices/${id}`);
-      if (response.status === 200) {
-        setDeviceData(response.data);
-      } else {
-        console.log("error->", response);
-      }
-    } catch (error: any) {
-      console.log("error->", error);
-    }
-  }
+  // const fetchDevice = async (id: string) => {
+  //   try {
+  //     const response = await axiosInstance.get(`/devices/${id}`);
+  //     if (response.status === 200) {
+  //       setDeviceData(response.data);
+  //     } else {
+  //       console.log("error->", response);
+  //     }
+  //   } catch (error: any) {
+  //     console.log("error->", error);
+  //   }
+  // }
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -146,7 +148,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
             <div className=" flex flex-row items-center gap-2">
               <div className=" w-11 h-11 border border-blue-100 rounded-md p-1">
                 <Image
-                  src={card.field === "temperature" ? "/icons/cold-or-freeze.png" : (card.field === 'pressure' ? '/icons/highest-pressure.png' : "/icons/humidity.png")}
+                  src={'/icons/motion-sensor.png'}
                   alt="Sensors"
                   className="w-full h-full object-cover rounded-sm"
                   unoptimized
@@ -205,18 +207,27 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
             )}
           </div>
           <div className="flex-grow">
-            {Object.keys(eventsMap).length > 0 &&
-              cardObj.field.split(",").length === 1 && (
-                <TemperatureChart data={eventsMap} eventTypes={cardObj.field} />
-              )}
-            {Object.keys(eventsMap).length > 0 &&
-              cardObj.field.split(",").length > 1 && (
-                <SingleDeviceDashCard
-                  data={eventsMap}
-                  eventTypes={cardObj.field}
-                  alert={deviceData?.alert}
-                />
-              )}
+            {
+              card.devices.length > 1 ?
+                <div className=" grid grid-cols-2 h-full">
+                  <div className=" w-full h-full flex justify-center items-center">
+                    <div className=" flex flex-col items-center">
+                      <p className=" mb-0 text-4xl font-semibold">{motionDetected}</p>
+                      <p className=" mt-1">Occupied</p>
+                    </div>
+                  </div>
+                  <div className=" w-full h-full flex justify-center items-center border-l border-l-gray-300">
+                    <div className=" flex flex-col items-center">
+                      <p className=" mb-0 text-4xl font-semibold">{noMotionDetected}</p>
+                      <p className=" mt-1">Not Occupied</p>
+                    </div>
+                  </div>
+                </div> : (
+                  <div className=" w-full h-full flex justify-center items-center">
+                    <p className=" text-3xl font-semibold">{getDeviceLabelFromState(card.devices[0].state)}</p>
+                  </div>
+                )
+            }
           </div>
         </div>
       )}

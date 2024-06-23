@@ -30,7 +30,6 @@ interface createCardType {
   x?: number;
   y?: number;
   devices: Key[]
-  field: string;
 }
 
 
@@ -116,7 +115,7 @@ export const deleteCard = createAsyncThunk('dashboard/deleteCard', async ({ dash
 
 
 
-export const createCard = createAsyncThunk('/dashboard/card/create', async ({ dashboard, cardName, cols = 2, rows = 2, x = 0, y = 0, devices = [], field }: createCardType) => {
+export const createCard = createAsyncThunk('/dashboard/card/create', async ({ dashboard, cardName, cols = 2, rows = 2, x = 0, y = 0, devices = [] }: createCardType) => {
   const response = await axiosInstance.post(`/dashboards/${dashboard}/cards`, {
     name: cardName,
     x,
@@ -124,7 +123,6 @@ export const createCard = createAsyncThunk('/dashboard/card/create', async ({ da
     rows,
     cols,
     devices,
-    field
   })
   console.log('response->', response)
   if (response.status === 200) {

@@ -30,6 +30,9 @@ const DashboardMenu = ({
   const { currentDashboard } = useSelector(
     (state: RootState) => state.dashboardReducer
   );
+
+
+  
   const { isAdmin } = useSelector((state: RootState) => state.authReducer);
   const [visible, setVisible] = useState(false);
   const [dashboards, setDashboards] = useState(dashboardsList || []);
