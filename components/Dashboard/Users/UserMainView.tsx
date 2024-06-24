@@ -272,7 +272,6 @@ const UserMainView = () => {
                 <Input onChange={(e) => setUser({ ...user, firstName: e.target.value })} value={user.firstName} />
               </Form.Item>
 
-
               <Form.Item
                 label="Last Name"
                 name="lastName"

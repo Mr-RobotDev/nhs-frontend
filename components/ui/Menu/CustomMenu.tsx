@@ -1,7 +1,9 @@
 'use client'
 import React, { useCallback, useState, useRef, useEffect } from 'react'
 import { SelectSecondary } from '../Select/Select';
-import { Popover } from 'antd';
+import { Divider, Popover } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 
 interface customMenuProps {
   handleTypeChange: (value: string) => void;
@@ -11,9 +13,11 @@ interface customMenuProps {
     label: string;
     value: string;
   }>
+  createNewRoom?: boolean;
+  handleCreateNewRoomModalShow?: () => void;
 }
 
-const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options }: customMenuProps) => {
+const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options, createNewRoom, handleCreateNewRoomModalShow }: customMenuProps) => {
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState(initialValue || '');
   const [width, setWidth] = useState<number | undefined>(undefined);
@@ -33,12 +37,19 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options }: custom
     }
   }, [handleTypeChange, isAdmin]);
 
+  const handleCreateNewRoom = () => {
+    if(handleCreateNewRoomModalShow){
+      handleCreateNewRoomModalShow()
+      setVisible(false);
+    }
+  }
+
   const selectDisplay = (
-    <div ref={selectDisplayRef} className={`inline-block shadow-sm rounded-lg !bg-white p-1 px-2 w-full ${!isAdmin ? "opacity-50" : ""}`}>
+    <div ref={selectDisplayRef} className={`inline-block cursor-pointer shadow-sm rounded-lg !bg-white p-1 px-2 w-full ${!isAdmin ? "opacity-50" : ""}`}>
       <div className="flex flex-row">
         <SelectSecondary
           only={options.find(opt => opt.value === initialValue)?.label}
-          disabled={!isAdmin} 
+          disabled={!isAdmin}
         />
       </div>
     </div>
@@ -61,6 +72,20 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options }: custom
             <span className="text-sm font-medium !text-black">{option?.label}</span>
           </div>
         ))}
+        {createNewRoom && <div className=' pt-2' onClick={handleCreateNewRoom}>
+          <hr />
+          {isAdmin && (
+            <div
+              className="flex gap-2 p-2 hover:bg-hover-primary transition-all ease-in-out duration-300 rounded-md cursor-pointer w-full hover:bg-gray-200 items-center"
+            >
+              <span
+                className={`w-[6px] h-[6px]  "hidden"}`}
+              ></span>
+              <FontAwesomeIcon icon={faCirclePlus} />
+              <span>Create New Room</span>
+            </div>
+          )}
+        </div>}
       </div>
     </div>
   );

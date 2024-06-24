@@ -194,3 +194,16 @@ export interface SingleNameIdObject {
   name: string;
   id: string;
 }
+
+export interface RoomFormType {
+  code: string;
+  name: string;
+  function: string;
+  netUseableArea: number;
+  department: string;
+  division: string;
+  cluster: string;
+  clusterDescription: string;
+  operationHours: string;
+  hoursPerDay: number;
+}
