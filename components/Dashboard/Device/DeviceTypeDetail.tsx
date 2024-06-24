@@ -5,17 +5,21 @@ import CountUp from "react-countup";
 
 interface DeviceTypeDetailProps {
   title: string;
+  subtitle?: string;
   value: number;
   image: string;
 }
 
-const DeviceTypeDetail = ({ title, value, image }: DeviceTypeDetailProps) => {
+const DeviceTypeDetail = ({ title, value, image, subtitle }: DeviceTypeDetailProps) => {
   return (
     <>
       <Card bordered={false} className="criclebox h-full">
         <div className=" text-2xl flex flex-row justify-between">
           <div>
-            <span className=" text-lg !mb-0">{title}</span>
+            <div className='flex flex-row gap-2 items-end'>
+              <p className=" text-2xl font-semibold !mb-0">{title}</p>
+              {subtitle && <p className=' mb-1 text-sm'>{subtitle}</p>}
+            </div>
             <div className="text-2xl font-bold">
               <span className="!text-3xl !font-bold">
                 <CountUp
