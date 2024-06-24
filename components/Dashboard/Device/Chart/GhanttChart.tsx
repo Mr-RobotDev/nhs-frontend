@@ -4,23 +4,23 @@ import Chart from 'react-apexcharts';
 const GanttChart: React.FC = () => {
   const series = [
     {
-      name: 'Task 1',
+      name: 'No Motion',
       data: [
         {
-          x: 'Task 1',
+          x: 'No Motion',
           y: [new Date('2023-07-21').getTime(), new Date('2023-07-25').getTime()],
         },
         {
-          x: 'Task 1',
+          x: 'No Motion',
           y: [new Date('2023-08-01').getTime(), new Date('2023-08-05').getTime()],
         },
       ],
     },
     {
-      name: 'Task 2',
+      name: 'Motion',
       data: [
         {
-          x: 'Task 2',
+          x: 'Motion',
           y: [new Date('2023-07-26').getTime(), new Date('2023-07-30').getTime()],
         },
       ],
