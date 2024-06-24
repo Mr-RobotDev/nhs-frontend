@@ -126,7 +126,7 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
           <div className=" flex flex-row items-center justify-center gap-5">
             <div className=" w-24">
               <Image
-                src="/OriginLogo.png"
+                src="/OriginLogo.svg"
                 alt="Website logo"
                 width={100}
                 height={100}
