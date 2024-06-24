@@ -23,7 +23,7 @@ const SelectSecondary: React.FC<SelectSecondaryProps> = ({
   return (
     <div
       className={` ${disabled ? classes.disabledSelectionMenu : ""
-        } flex flex-row w-full gap-2 justify-between`}
+        } flex flex-row w-full gap-7 justify-between  h-[40px] items-center cursor-pointer px-3`}
       onClick={onClick}
     >
       <div className=" flex-1 overflow-hidden">

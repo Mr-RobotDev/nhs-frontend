@@ -146,7 +146,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   const renderCustomMenu = (label: string, value: keyof DeviceFormType, options: any, isAdmin: boolean) => (
     <div className="h-[100px]">
       <p className="!mb-1 font-semibold">{label}</p>
-      <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0 h-[48px]">
+      <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
         <CustomMenu
           handleTypeChange={(val: string) => setFormData({ ...formData, [value]: val })}
           isAdmin={isAdmin}
@@ -209,7 +209,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
 
                 <div className=''>
                   <p className="!mb-1 font-semibold">Type</p>
-                  <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0 h-[48px]">
+                  <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                     <CustomMenu
                       handleTypeChange={(value: string) => setFormData({ ...formData, type: value })}
                       isAdmin={true}

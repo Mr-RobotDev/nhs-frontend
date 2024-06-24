@@ -126,7 +126,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
     <>
       <div>
         <div className=" flex flex-col gap-3 md:flex-row md:gap-0 justify-between items-center">
-          <div className=" flex flex-row gap-3 order-2 md:order-1">
+          <div className=" flex flex-row gap-3 order-2 md:order-1 ">
             <DashboardMenu
               dashboardsList={dashboards}
               routingFunctionality={true}
