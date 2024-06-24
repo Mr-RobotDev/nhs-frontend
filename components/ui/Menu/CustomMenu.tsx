@@ -1,12 +1,11 @@
 'use client'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
 import { SelectSecondary } from '../Select/Select';
 import { Popover } from 'antd';
 
-
 interface customMenuProps {
   handleTypeChange: (value: string) => void;
-  initialValue?:  string
+  initialValue?: string
   isAdmin: boolean;
   options: Array<{
     label: string;
@@ -14,10 +13,17 @@ interface customMenuProps {
   }>
 }
 
-
 const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options }: customMenuProps) => {
   const [visible, setVisible] = useState(false);
   const [type, setType] = useState(initialValue || '');
+  const [width, setWidth] = useState<number | undefined>(undefined);
+  const selectDisplayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selectDisplayRef.current) {
+      setWidth(selectDisplayRef.current.offsetWidth);
+    }
+  }, [selectDisplayRef.current?.offsetWidth]);
 
   const handleScheduleTimeClick = useCallback((value: string) => {
     if (isAdmin) {
@@ -28,7 +34,7 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options }: custom
   }, [handleTypeChange, isAdmin]);
 
   const selectDisplay = (
-    <div className={`inline-block shadow-sm rounded-lg !bg-white p-1 px-2 w-full ${!isAdmin ? "opacity-50" : ""}`}>
+    <div ref={selectDisplayRef} className={`inline-block shadow-sm rounded-lg !bg-white p-1 px-2 w-full ${!isAdmin ? "opacity-50" : ""}`}>
       <div className="flex flex-row">
         <SelectSecondary
           only={options.find(opt => opt.value === initialValue)?.label}
@@ -39,7 +45,7 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options }: custom
   );
 
   const popoverContent = (
-    <div className="w-[170px]">
+    <div className="w-full">
       <div className="flex flex-col">
         {options.map(option => (
           <div
@@ -67,6 +73,7 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options }: custom
       placement="bottomLeft"
       open={visible}
       onOpenChange={setVisible}
+      overlayStyle={{ width: width }}
     >
       {selectDisplay}
     </Popover>

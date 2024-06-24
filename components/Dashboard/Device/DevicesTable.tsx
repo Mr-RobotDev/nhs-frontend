@@ -12,9 +12,12 @@ import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import useIsMobile from "@/app/hooks/useMobile";
 import './DeviceTable.css'
 import { iconsBasedOnType } from "@/utils/helper_functions";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 const DevicesTable = () => {
   const [devices, setDevices] = useState<DevicesType[]>([]);
+  const [loading, setLoading] = useState(false);
   const { TimeAgo } = useTimeAgo();
   const isMobile = useIsMobile();
 
@@ -58,7 +61,7 @@ const DevicesTable = () => {
       key: 'sensorId',
       render: (_, { oem }) => (
         <div className=" w-36 md:w-full whitespace-normal flex flex-row items-center">
-          {oem ? <p className=" !text-black">{oem}</p>: <p>-</p>}
+          {oem ? <p className=" !text-black">{oem}</p> : <p>-</p>}
         </div>
       ),
     },
@@ -102,7 +105,7 @@ const DevicesTable = () => {
       dataIndex: "aactions",
       render: (_, { id }) => {
         return (
-          <div className=" flex flex-row gap-2">
+          <div className=" flex flex-row items-center gap-2">
             <Link
               target="_blank"
               href={`/dashboard/devices/${id}/activity-logs`}
@@ -116,11 +119,34 @@ const DevicesTable = () => {
                 />
               </div>
             </Link>
+            <div className=" border-l border-l-gray-400 px-3">
+              <span onClick={(e) => handleDeleteDevice(e, id)}>
+                <TrashIcon className=" text-red-500" width={20} />
+              </span>
+            </div>
           </div>
         );
       },
     },
   ];
+
+  const handleDeleteDevice = async (e: any, deviceId: string) => {
+    e.stopPropagation()
+    setLoading(true)
+    try{
+      const response = await axiosInstance.delete(`/devices/${deviceId}`)
+      if(response.status === 200){
+        const updatedDevices = devices.filter((device) => device.id!== deviceId);
+        setDevices(updatedDevices);
+        toast.success('Device Removed')
+      }
+    }catch(error: any){
+      console.log(error)
+    }finally{
+      setLoading(false)
+    }
+    console.log(deviceId)
+  }
 
   if (isMobile) {
     columns = columns.filter(column => column.key !== 'lastUpdated' && column.key !== 'sensorId');
@@ -129,6 +155,7 @@ const DevicesTable = () => {
   const router = useRouter();
   useEffect(() => {
     (async () => {
+      setLoading(true)
       try {
         const response = await axiosInstance.get("/devices?page=1&limit=50");
         if (response.status === 200) {
@@ -136,6 +163,8 @@ const DevicesTable = () => {
         }
       } catch (error) {
         console.log(error);
+      } finally{
+        setLoading(false)
       }
     })();
   }, []);
@@ -154,7 +183,7 @@ const DevicesTable = () => {
         columns={columns}
         dataSource={devices}
         scroll={{ x: 500 }}
-        loading={devices.length === 0}
+        loading={loading}
         className="cursor-pointer"
         onRow={onRowClick}
       />

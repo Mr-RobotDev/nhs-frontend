@@ -1,4 +1,4 @@
-import { AlertDataType, ReportsType } from "@/type";
+import { AlertDataType, ReportsType, SingleNameIdObject } from "@/type";
 import dayjs from 'dayjs';
 import { triggerWhenOptions } from "./form";
 
@@ -145,3 +145,10 @@ export const getDeviceLabelFromState = (value: string) => {
   const option = triggerWhenOptions.find(option => option.value === value);
   return option ? option.label : 'UnKnown State';
 }
+
+export const tranformObjectForSelectComponent = (objects: SingleNameIdObject[]) => {
+  return objects.map(org => ({
+    label: org.name,
+    value: org.id
+  }));
+};

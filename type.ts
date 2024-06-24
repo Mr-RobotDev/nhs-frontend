@@ -177,3 +177,20 @@ export interface RoomStatsType {
   yellow: number;
   green: number;
 }
+
+export interface DeviceFormType {
+  oem: string;
+  name: string;
+  description: string;
+  type: string;
+  organization: string;
+  site: string;
+  building: string;
+  floor: string;
+  room: string;
+}
+
+export interface SingleNameIdObject {
+  name: string;
+  id: string;
+}
