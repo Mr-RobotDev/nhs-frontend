@@ -46,3 +46,17 @@ export const daysOfWeek = [
   "saturday",
   "sunday",
 ];
+
+export const emptyRoomObject = {
+  id: "",
+  code: "",
+  name: "",
+  function: "",
+  netUseableArea: 0,
+  department: "",
+  division: "",
+  cluster: "",
+  clusterDescription: "",
+  operationHours: "",
+  hoursPerDay: 0
+}

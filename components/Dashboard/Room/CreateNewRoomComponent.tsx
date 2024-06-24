@@ -2,7 +2,7 @@ import React from 'react'
 import RoomForm from './RoomForm'
 import { RoomFormType } from '@/type'
 
-const CreateNewRoomComponent = () => {
+const CreateNewRoomComponent = ({ floorId, setOpen }: { floorId: string, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
 
   const room: RoomFormType = {
     code: "",
@@ -18,7 +18,7 @@ const CreateNewRoomComponent = () => {
   }
 
   return (
-    <RoomForm room={room} />
+    <RoomForm room={room} floorId={floorId} setOpen={setOpen} />
   )
 }
 

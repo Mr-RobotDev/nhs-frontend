@@ -196,6 +196,7 @@ export interface SingleNameIdObject {
 }
 
 export interface RoomFormType {
+  id?: string;
   code: string;
   name: string;
   function: string;

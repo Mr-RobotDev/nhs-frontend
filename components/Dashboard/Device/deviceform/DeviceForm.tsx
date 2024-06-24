@@ -9,6 +9,10 @@ import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import CreateNewRoomComponent from '../../Room/CreateNewRoomComponent';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/app/store/store';
+import { setNewRoom } from '@/app/store/slice/roomSlice';
+import { emptyRoomObject } from '@/utils/form';
 
 interface DeviceFormProps {
   device: DeviceFormType;
@@ -18,7 +22,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState('Content of the modal');
-
+  const { room: roomFromGlobalState } = useSelector((state: RootState) => state.roomReducer)
   const [formData, setFormData] = useState<DeviceFormType>(device);
   const [error, setError] = useState(false);
   const [data, setData] = useState({
@@ -30,6 +34,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
 
   const fetchData = useCallback(
     async (url: string, key: keyof typeof data) => {
@@ -80,8 +85,9 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   };
 
   useEffect(() => {
+    console.log(formData.floor)
     fetchData('/organizations', 'organizations');
-  }, [fetchData]);
+  }, [fetchData, formData.floor]);
 
   useEffect(() => {
     if (formData.organization) {
@@ -106,6 +112,30 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
       fetchData(`/floors/${formData.floor}/rooms`, 'rooms');
     }
   }, [formData.floor, fetchData]);
+
+
+  useEffect(() => {
+    if (roomFromGlobalState.id !== '') {
+      const newOption = {
+        id: roomFromGlobalState.id,
+        name: roomFromGlobalState.name
+      };
+
+      setData((prevData: any) => ({
+        ...prevData,
+        rooms: [...prevData.rooms, newOption]
+      }));
+
+      setFormData((prevState: any) => ({
+        ...prevState,
+        room: roomFromGlobalState.id
+      }));
+    }
+
+    return () => {
+      dispatch(setNewRoom(emptyRoomObject))
+    }
+  }, [roomFromGlobalState, dispatch]);
 
   const organizationsOptions = tranformObjectForSelectComponent(data.organizations);
   const sitesOptions = tranformObjectForSelectComponent(data.sites);
@@ -211,15 +241,15 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
         </Card>
       </LoadingWrapper>
       <Modal
-        title="Create New Room"
         open={open}
         onOk={handleOk}
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
         okText='Create New Room'
         width={1000}
+        footer={null}
       >
-        <CreateNewRoomComponent />
+        <CreateNewRoomComponent floorId={formData.floor} setOpen={setOpen} />
       </Modal>
     </>
   );
