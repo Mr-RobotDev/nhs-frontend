@@ -19,7 +19,8 @@ const emptyDeviceObject = {
   },
   signalStrength: 0,
   lastUpdated: '',
-  isOffline: false
+  isOffline: false,
+  state: ''
 }
 
 const initialState: SingleDeviceType = {

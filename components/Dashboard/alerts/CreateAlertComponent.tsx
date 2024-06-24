@@ -13,12 +13,7 @@ const CreateAlertComponent = () => {
     device: '',
     recipients: [user.email],
     trigger: {
-      field: 'temperature',
-      range: {
-        lower: 0,
-        upper: 0,
-        type: 'lower'
-      },
+      state: 'MOTION_DETECTED',
       duration: 0
     },
     scheduleType: 'weekdays',
@@ -40,7 +35,8 @@ const CreateAlertComponent = () => {
     },
     signalStrength: 0,
     lastUpdated: '',
-    isOffline: false
+    isOffline: false,
+    state: ''
   }
 
   return (

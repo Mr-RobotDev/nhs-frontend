@@ -16,9 +16,8 @@ export const timeFrameOptions = [
 ];
 
 export const triggerWhenOptions = [
-  { label: 'Relative Humidity', value: 'relativeHumidity' },
-  { label: 'Temperature', value: 'temperature' },
-  { label: 'Pressure', value: 'pressure' },
+  { label: 'Motion Detected', value: 'MOTION_DETECTED' },
+  { label: 'No Motion Detected', value: 'NO_MOTION_DETECTED' },
 ];
 
 export const triggerRangeTypeOptions = [

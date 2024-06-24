@@ -58,9 +58,9 @@ export interface DashboardCardType {
 }
 
 interface Device {
-  oem: string;
-  name: string;
   id: string;
+  state: string;
+  name: string;
 }
 
 export interface EventType {
@@ -155,8 +155,7 @@ export interface AlertDataType {
 }
 
 interface Trigger {
-  field: string;
-  range: Range;
+  state: string;
   duration: number;
 }
 

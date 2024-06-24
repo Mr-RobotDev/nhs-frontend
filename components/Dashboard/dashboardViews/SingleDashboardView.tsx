@@ -60,9 +60,6 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
 
   useEffect(() => {
     if (id && !currentSelectedDashboard) {
-      const currentDashboard = dashboards.find(
-        (dashboard) => dashboard.id === id
-      );
 
       const params = new URLSearchParams(window.location.search);
       const from = params.get("from");
@@ -77,14 +74,18 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
 
         dispatch(setTimeFrame(timeFrame));
       }
-      console.log('currentDashboard->', currentDashboard)
-      dispatch(setCurrentDashboard(currentDashboard));
+      
       dispatch(getDashboardCards({ dashboardId: id }));
     } else {
-      dispatch(setCurrentDashboard(currentSelectedDashboard));
       dispatch(getDashboardCards({ dashboardId: id }));
     }
+
   }, [currentSelectedDashboard, router, id, dashboards, dispatch]);
+
+
+  useEffect(() => {
+    dispatch(setCurrentDashboard(currentSelectedDashboard))
+  }, [dispatch, currentSelectedDashboard])
 
   const handleLayoutChange = (layout: any, layouts: any) => {
     if (layouts.sm || layouts.xs) return;

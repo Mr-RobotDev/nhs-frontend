@@ -11,10 +11,10 @@ const NoReport = () => {
           </div>
         </div>
         <div className="text-center mt-2 text-xl font-semibold">
-          No Report For this Dashboard
+          No Reports to Show
         </div>
         <div className="!text-sm text-secondary-300 text-center mt-3">
-          Create a new report by clicking the button in the top right corner.
+          Start by creating the new Report for the dashboard
         </div>
       </div>
     </div>
