@@ -38,7 +38,7 @@ const countStates = (devices: any) => {
 
 const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [editingName, setEditingName] = useState(cardObj.name);
   const [card, setCard] = useState<DashboardCardType>(cardObj);
@@ -57,14 +57,13 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
 
   useEffect(() => {
-    let isCancelled = false;
+    // let isCancelled = false;
 
     const fetchEventsForDevices = async () => {
-      if (!isCancelled) {
-        setLoading(true);
-        const eventsMapTemp: EventsMap = {};
 
-        const fetchPromises = card.devices.map(async (device) => {
+      const fetchPromises = card.devices.map(async (device) => {
+        if (timeFrame.startDate && timeFrame.endDate) {
+          setLoading(true);
           const { id, name } = device;
           try {
             const response = await axiosInstance.get(`/devices/${device.id}/events`, {
@@ -74,26 +73,19 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               },
             });
 
-            if (!isCancelled) {
-              eventsMapTemp[id] = { data: response.data, name: name };
-            }
           } catch (error) {
             console.error(`Error fetching events for device ${id}:`, error);
+          } finally {
+            setLoading(false)
           }
-        });
-
-        await Promise.all(fetchPromises);
-        if (!isCancelled) {
-          setLoading(false);
         }
-      }
+      });
+
+      await Promise.all(fetchPromises);
     };
 
-    fetchEventsForDevices();
+    // fetchEventsForDevices();
 
-    return () => {
-      isCancelled = true;
-    };
   }, [card, timeFrame.startDate, timeFrame.endDate]);
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -236,9 +228,9 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
       <div
         onMouseEnter={() => setIsHovered2(true)}
         onMouseLeave={() => setIsHovered2(false)}
-        className=" pt-6 relative -top-4"
+        className=" pt-6 relative -top-4 z-[999px]"
       >
-        {(isHovered || isHovered2) && (
+        {((isHovered || isHovered2) && card.devices.length !== 1) && (
           <Card
 
             className=" duration-300 transform transition-all relative z-[999px]">

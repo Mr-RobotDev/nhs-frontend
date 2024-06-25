@@ -518,13 +518,13 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
                 </div>
               </div>
               <div className=" w-12 h-12 flex items-center justify-center ml-auto">
-                {/* <Image
-                  src={deviceData?.signalStrength ? '/icons/signal-strength.png' : '/icons/offline.png'}
+                <Image
+                  src={iconsBasedOnType(deviceData.state.toLowerCase())}
                   className=" w-full h-full"
                   alt="icon"
                   width={100}
                   height={100}
-                /> */}
+                />
               </div>
             </div>
           </Card>

@@ -135,7 +135,9 @@ export const iconsBasedOnType = (key: string) => {
     pressure: '/icons/highest-pressure.png',
     freezer: '/icons/freezer.png',
     fridge: '/icons/fridge.png',
-    motion: '/icons/motion-sensor.png'
+    motion: '/icons/motion-sensor.png',
+    no_motion_detected: '/icons/no-motion.png',
+    motion_detected: '/icons/motion.png'
   }
 
   return icons[key] || '';

@@ -24,15 +24,16 @@ const MainDashboardView = () => {
     dispatch(getDashboards());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (dashboards.length > 0) {
-      setFirstDashboard(dashboards[0]);
-      dispatch(setCurrentDashboard(dashboards[0]));
-    }
-  }, [dashboards, dispatch]);
+  // useEffect(() => {
+  //   if (dashboards.length > 0) {
+  //     setFirstDashboard(dashboards[0]);
+  //     dispatch(setCurrentDashboard(dashboards[0]));
+  //   }
+  // }, [dashboards, dispatch]);
 
   useEffect(() => {
     if (currentSelectedDashboard.id !== "") {
+      console.log('called!!!')
       router.push(`/dashboard/${currentSelectedDashboard.id}`);
       dispatch(getDashboardCards({ dashboardId: currentSelectedDashboard.id }));
     }
@@ -40,15 +41,19 @@ const MainDashboardView = () => {
 
   return (
     <>
-      <div className="flex justify-between flex-wrap gap-2">
-        <div className="flex gap-x-10 gap-y-2 flex-wrap">
-          <DashboardMenu
-            dashboardsList={dashboards}
-            routingFunctionality={true}
-          />
-        </div>
-      </div>
-      <NoDashboardSelected />
+      {currentSelectedDashboard.id === '' &&
+        <>
+          <div className="flex justify-between flex-wrap gap-2">
+            <div className="flex gap-x-10 gap-y-2 flex-wrap">
+              <DashboardMenu
+                dashboardsList={dashboards}
+                routingFunctionality={true}
+              />
+            </div>
+          </div>
+          <NoDashboardSelected />
+        </>
+      }
     </>
   );
 };

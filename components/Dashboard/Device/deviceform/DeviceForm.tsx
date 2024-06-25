@@ -263,7 +263,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
               <div className='flex justify-end mt-4'>
                 <button
                   type="submit"
-                  className="inline-block cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 gap-2 items-center"
+                  className="inline-block cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 gap-2 items-center"
                 >
                   Add New Device
                 </button>

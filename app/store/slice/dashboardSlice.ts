@@ -15,6 +15,7 @@ interface DashboardState {
     get: boolean;
     delete: boolean;
     updateCard: boolean;
+    gettingDashboardCards: boolean;
   };
   dashboardCards: DashboardCardType[];
   error: string;
@@ -42,6 +43,7 @@ const initialState: DashboardState = {
     get: false,
     delete: false,
     updateCard: false,
+    gettingDashboardCards: false,
   },
   dashboardCards: [],
   error: '',
@@ -156,6 +158,7 @@ const dashboardSlice = createSlice({
       Object.assign(state, initialState);
     },
     setCurrentDashboard: (state, action: PayloadAction<any>) => {
+      state.dashboardCards = []
       state.currentDashboard = action.payload
     },
     setTimeFrame: (state, action) => {
@@ -163,6 +166,9 @@ const dashboardSlice = createSlice({
     },
     setFullScreen: (state, action) => {
       state.fullScreen = action.payload
+    },
+    clearDashboardCards: (state) => {
+      state.dashboardCards = []
     }
   },
   extraReducers: (builder) => {
@@ -173,7 +179,7 @@ const dashboardSlice = createSlice({
       .addCase(getDashboards.fulfilled, (state, action) => {
         state.dashboards = action.payload
         state.isLoading.list = false;
-        if (state.dashboards.length > 0 && !state.currentDashboard) {
+        if (state.dashboards.length > 0 && !state.currentDashboard.id) {
           state.currentDashboard = state.dashboards[0]
         }
       })
@@ -192,25 +198,26 @@ const dashboardSlice = createSlice({
       })
       .addCase(getDashboardCards.pending, (state, action) => {
         state.isLoading.get = true
+        state.isLoading.gettingDashboardCards = true;
       })
       .addCase(getDashboardCards.fulfilled, (state, action) => {
         state.dashboardCards = action.payload
         state.isLoading.get = false;
+        state.isLoading.gettingDashboardCards = false;
       })
       .addCase(getDashboardCards.rejected, (state, action) => {
         state.isLoading.get = false
+        state.isLoading.gettingDashboardCards = false;
       })
-
-
       .addCase(createDashboard.pending, (state, action) => {
         state.isLoading.create = true;
       })
       .addCase(createDashboard.fulfilled, (state, action) => {
         state.isLoading.create = false;
-        state.currentDashboard = action.payload;
         state.dashboards.push(action.payload);
         state.currentDashboard = action.payload
         state.dashboardCards = []
+        
       })
       .addCase(createDashboard.rejected, (state, action) => {
         state.isLoading.create = false
@@ -229,6 +236,7 @@ const dashboardSlice = createSlice({
         if (index !== -1) {
           state.dashboards[index] = action.payload;  // Update with the confirmed data from the server
         }
+        state.currentDashboard = action.payload
       })
 
       .addCase(createCard.pending, (state, action) => {
@@ -270,7 +278,8 @@ export const {
   resetState,
   setCurrentDashboard,
   setTimeFrame,
-  setFullScreen
+  setFullScreen,
+  clearDashboardCards
 } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

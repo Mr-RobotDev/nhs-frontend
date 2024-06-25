@@ -39,7 +39,7 @@ const EmptyDashboard: React.FC = () => {
             <div className="flex justify-center mt-3">
               <span
                 onClick={showModal}
-                className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 flex gap-2 items-center"
+                className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
               >
                 <FontAwesomeIcon icon={faCirclePlus} />
                 Create New Card
