@@ -5,7 +5,7 @@ import classes from "./Input.module.css";
 interface PrimaryInputProps {
   type?: string;
   placeholder?: string;
-  value?: string;
+  value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;

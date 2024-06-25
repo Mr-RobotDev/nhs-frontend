@@ -13,16 +13,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
 import { setNewRoom } from '@/app/store/slice/roomSlice';
 import { emptyRoomObject } from '@/utils/form';
+import { useForm, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 interface DeviceFormProps {
   device: DeviceFormType;
 }
 
+const schema = yup.object().shape({
+  oem: yup.string().required('OEM is required'),
+  name: yup.string().required('Name is required'),
+  type: yup.string().required('type is required'),
+  description: yup.string().required('Description is required'),
+  organization: yup.string().required('Organization is required'),
+  site: yup.string().required('Site is required'),
+  building: yup.string().required('Building is required'),
+  floor: yup.string().required('Floor is required'),
+  room: yup.string().required('Room is required'),
+});
+
 const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState('Content of the modal');
-  const { room: roomFromGlobalState } = useSelector((state: RootState) => state.roomReducer)
+  const { room: roomFromGlobalState } = useSelector((state: RootState) => state.roomReducer);
   const [formData, setFormData] = useState<DeviceFormType>(device);
   const [error, setError] = useState(false);
   const [data, setData] = useState({
@@ -34,7 +49,12 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  const { register, handleSubmit, control, formState: { errors } } = useForm<DeviceFormType>({
+    resolver: yupResolver(schema),
+    defaultValues: device,
+  });
 
   const fetchData = useCallback(
     async (url: string, key: keyof typeof data) => {
@@ -57,22 +77,13 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   );
 
   const handleCreateNewRoomModalShow = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
-  const handleAddNewDevice = async () => {
-    const requiredFields = ['oem', 'name', 'description', 'organization', 'site', 'building', 'floor', 'room'];
-
-    for (const field of requiredFields) {
-      if ((formData as any)[field] === '') {
-        toast.error(`${field.charAt(0).toUpperCase() + field.slice(1)} is required`);
-        return;
-      }
-    }
-
+  const handleAddNewDevice = async (data: DeviceFormType) => {
     try {
       setLoading(true);
-      const response = await axiosInstance.post('/devices', formData);
+      const response = await axiosInstance.post('/devices', data);
       if (response.status === 200) {
         toast.success('Device added successfully');
         router.push('/dashboard/devices');
@@ -85,7 +96,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   };
 
   useEffect(() => {
-    console.log(formData.floor)
+    console.log(formData.floor);
     fetchData('/organizations', 'organizations');
   }, [fetchData, formData.floor]);
 
@@ -113,28 +124,27 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
     }
   }, [formData.floor, fetchData]);
 
-
   useEffect(() => {
     if (roomFromGlobalState.id !== '') {
       const newOption = {
         id: roomFromGlobalState.id,
-        name: roomFromGlobalState.name
+        name: roomFromGlobalState.name,
       };
 
       setData((prevData: any) => ({
         ...prevData,
-        rooms: [...prevData.rooms, newOption]
+        rooms: [...prevData.rooms, newOption],
       }));
 
       setFormData((prevState: any) => ({
         ...prevState,
-        room: roomFromGlobalState.id
+        room: roomFromGlobalState.id,
       }));
     }
 
     return () => {
-      dispatch(setNewRoom(emptyRoomObject))
-    }
+      dispatch(setNewRoom(emptyRoomObject));
+    };
   }, [roomFromGlobalState, dispatch]);
 
   const organizationsOptions = tranformObjectForSelectComponent(data.organizations);
@@ -146,18 +156,29 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   const renderCustomMenu = (label: string, value: keyof DeviceFormType, options: any, isAdmin: boolean) => (
     <div className="h-[100px]">
       <p className="!mb-1 font-semibold">{label}</p>
-      <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
-        <CustomMenu
-          handleTypeChange={(val: string) => setFormData({ ...formData, [value]: val })}
-          isAdmin={isAdmin}
-          options={options}
-          initialValue={formData[value] as string}
-          createNewRoom={value === 'room'}
-          handleCreateNewRoomModalShow={value === 'room' ? handleCreateNewRoomModalShow : undefined}
-        />
-      </div>
+      <Controller
+        name={value}
+        control={control}
+        render={({ field }) => (
+          <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+            <CustomMenu
+              handleTypeChange={(val: string) => {
+                field.onChange(val); 
+                setFormData({ ...formData, [value]: val }); 
+              }}
+              isAdmin={isAdmin}
+              options={options}
+              initialValue={formData[value] as string}
+              createNewRoom={value === 'room'}
+              handleCreateNewRoomModalShow={value === 'room' ? handleCreateNewRoomModalShow : undefined}
+            />
+          </div>
+        )}
+      />
+      {errors[value] && <p className="!text-red-500 text-xs mt-1">{(errors[value] as any)?.message}</p>}
     </div>
   );
+  
 
   const handleOk = () => {
     setModalText('The modal will be closed after two seconds');
@@ -177,67 +198,78 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
     <>
       <LoadingWrapper loading={loading}>
         <Card>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
-            <div className='p-0 md:p-3'>
-              <div className='max-w-[700px] flex flex-col gap-3'>
-                <div className="flex-1">
-                  <p className="font-semibold !text-sm !mb-1">OEM</p>
-                  <PrimaryInput
-                    name="oem"
-                    value={formData.oem}
-                    onChange={(e) => setFormData({ ...formData, oem: e.target.value })}
-                  />
-                </div>
-
-                <div className="flex-1">
-                  <p className="font-semibold !text-sm !mb-1">Name</p>
-                  <PrimaryInput
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-
-                <div className="flex-1">
-                  <p className="font-semibold !text-sm !mb-1">Description</p>
-                  <PrimaryInput
-                    name="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  />
-                </div>
-
-                <div className=''>
-                  <p className="!mb-1 font-semibold">Type</p>
-                  <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
-                    <CustomMenu
-                      handleTypeChange={(value: string) => setFormData({ ...formData, type: value })}
-                      isAdmin={true}
-                      options={[{ value: 'motion', label: 'Motion' }]}
-                      initialValue={'motion'}
+          <form onSubmit={handleSubmit(handleAddNewDevice)}>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
+              <div className='p-0 md:p-3'>
+                <div className='max-w-[700px] flex flex-col gap-3'>
+                  <div className="flex-1">
+                    <p className="font-semibold !text-sm !mb-1">OEM</p>
+                    <Controller
+                      name="oem"
+                      control={control}
+                      render={({ field }) => (
+                        <PrimaryInput {...field} />
+                      )}
                     />
+                    {errors.oem && <p className="!text-red-500 text-xs mt-1">{errors.oem.message}</p>}
+                  </div>
+
+                  <div className="flex-1">
+                    <p className="font-semibold !text-sm !mb-1">Name</p>
+                    <Controller
+                      name="name"
+                      control={control}
+                      render={({ field }) => (
+                        <PrimaryInput {...field} />
+                      )}
+                    />
+                    {errors.name && <p className="!text-red-500 text-xs mt-1">{errors.name.message}</p>}
+                  </div>
+
+                  <div className="flex-1">
+                    <p className="font-semibold !text-sm !mb-1">Description</p>
+                    <Controller
+                      name="description"
+                      control={control}
+                      render={({ field }) => (
+                        <PrimaryInput {...field} />
+                      )}
+                    />
+                    {errors.description && <p className="!text-red-500 text-xs mt-1">{errors.description.message}</p>}
+                  </div>
+
+                  <div className=''>
+                    <p className="!mb-1 font-semibold">Type</p>
+                    <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                      <CustomMenu
+                        handleTypeChange={(value: string) => setFormData({ ...formData, type: value })}
+                        isAdmin={true}
+                        options={[{ value: 'motion', label: 'Motion' }]}
+                        initialValue={'motion'}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className='grid grid-cols-1 lg:grid-cols-2 gap-0 md:gap-3 p-0 md:p-3'>
+                {renderCustomMenu("Organization", "organization", organizationsOptions, true)}
+                {renderCustomMenu("Site", "site", sitesOptions, formData.organization !== '')}
+                {renderCustomMenu("Building", "building", buildingsOptions, formData.site !== '')}
+                {renderCustomMenu("Floor", "floor", floorsOptions, formData.building !== '')}
+                {renderCustomMenu("Room", "room", roomsOptions, formData.floor !== '')}
+              </div>
             </div>
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-0 md:gap-3 p-0 md:p-3'>
-              {renderCustomMenu("Organization", "organization", organizationsOptions, true)}
-              {renderCustomMenu("Site", "site", sitesOptions, formData.organization !== '')}
-              {renderCustomMenu("Building", "building", buildingsOptions, formData.site !== '')}
-              {renderCustomMenu("Floor", "floor", floorsOptions, formData.building !== '')}
-              {renderCustomMenu("Room", "room", roomsOptions, formData.floor !== '')}
+            <div>
+              <div className='flex justify-end mt-4'>
+                <button
+                  type="submit"
+                  className="inline-block cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 gap-2 items-center"
+                >
+                  Add New Device
+                </button>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className='flex justify-end mt-4'>
-              <span
-                onClick={handleAddNewDevice}
-                className="inline-block cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 gap-2 items-center"
-              >
-                Add New Device
-              </span>
-            </div>
-          </div>
+          </form>
         </Card>
       </LoadingWrapper>
       <Modal
