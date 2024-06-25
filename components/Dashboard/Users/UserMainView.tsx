@@ -35,7 +35,7 @@ const initialUserState: User = {
   email: "",
   password: "",
   role: "User",
-  organization: "Origin Smart",
+  organization: "Origin Smart Controls",
 };
 
 const formItemLayout = {
