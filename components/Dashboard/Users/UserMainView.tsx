@@ -35,7 +35,7 @@ const initialUserState: User = {
   email: "",
   password: "",
   role: "User",
-  organization: "Origin Smart",
+  organization: "Origin Smart Controls",
 };
 
 const formItemLayout = {
@@ -199,7 +199,6 @@ const UserMainView = () => {
         const response = await axiosInstance.get("/users");
         if (response.status === 200) {
           setUsers(response.data.results);
-          console.log(response);
         } else {
           console.log("error ->", response);
         }
@@ -226,7 +225,7 @@ const UserMainView = () => {
             className="flex justify-center"
             onClick={showModal}
           >
-            <span className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 flex gap-2 items-center">
+            <span className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center">
               <FontAwesomeIcon icon={faCirclePlus} />
               Create New User
             </span>
@@ -271,7 +270,6 @@ const UserMainView = () => {
               >
                 <Input onChange={(e) => setUser({ ...user, firstName: e.target.value })} value={user.firstName} />
               </Form.Item>
-
 
               <Form.Item
                 label="Last Name"

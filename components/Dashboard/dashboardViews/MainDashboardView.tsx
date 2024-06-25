@@ -25,13 +25,6 @@ const MainDashboardView = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (dashboards.length > 0) {
-      setFirstDashboard(dashboards[0]);
-      dispatch(setCurrentDashboard(dashboards[0]));
-    }
-  }, [dashboards, dispatch]);
-
-  useEffect(() => {
     if (currentSelectedDashboard.id !== "") {
       router.push(`/dashboard/${currentSelectedDashboard.id}`);
       dispatch(getDashboardCards({ dashboardId: currentSelectedDashboard.id }));
@@ -40,15 +33,20 @@ const MainDashboardView = () => {
 
   return (
     <>
-      <div className="flex justify-between flex-wrap gap-2">
-        <div className="flex gap-x-10 gap-y-2 flex-wrap">
-          <DashboardMenu
-            dashboardsList={dashboards}
-            routingFunctionality={true}
-          />
-        </div>
-      </div>
-      <NoDashboardSelected />
+      {currentSelectedDashboard.id === '' &&
+        <>
+          <div className="flex justify-between flex-wrap gap-2">
+            <div className=" w-full sm:w-60">
+              <p className=" text-sm mb-1">Current Dashboard</p>
+              <DashboardMenu
+                dashboardsList={dashboards}
+                routingFunctionality={true}
+              />
+            </div>
+          </div>
+          <NoDashboardSelected />
+        </>
+      }
     </>
   );
 };

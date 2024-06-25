@@ -16,7 +16,7 @@ const AlertMainView = () => {
         <h1 className=" text-3xl font-semibold !mb-0">Alerts</h1>
         {isAdmin && <Link href={'/dashboard/alerts/create'} className="flex justify-center mt-3">
           <span
-            className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 flex gap-2 items-center"
+            className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
           >
             <FontAwesomeIcon icon={faCirclePlus} />
             Create New Alert

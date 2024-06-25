@@ -1,4 +1,4 @@
-import { AlertDataType, ReportsType } from "@/type";
+import { AlertDataType, ReportsType, SingleNameIdObject } from "@/type";
 import dayjs from 'dayjs';
 import { triggerWhenOptions } from "./form";
 
@@ -135,7 +135,9 @@ export const iconsBasedOnType = (key: string) => {
     pressure: '/icons/highest-pressure.png',
     freezer: '/icons/freezer.png',
     fridge: '/icons/fridge.png',
-    motion: '/icons/motion-sensor.png'
+    motion: '/icons/motion-sensor.png',
+    no_motion_detected: '/icons/no-motion.png',
+    motion_detected: '/icons/motion.png'
   }
 
   return icons[key] || '';
@@ -145,3 +147,10 @@ export const getDeviceLabelFromState = (value: string) => {
   const option = triggerWhenOptions.find(option => option.value === value);
   return option ? option.label : 'UnKnown State';
 }
+
+export const tranformObjectForSelectComponent = (objects: SingleNameIdObject[]) => {
+  return objects.map(org => ({
+    label: org.name,
+    value: org.id
+  }));
+};

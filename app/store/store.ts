@@ -14,12 +14,14 @@ import authReducer from "./slice/authSlice";
 import statisticsReducer from "./slice/StatisticsSlice"
 import dashboardReducer from "./slice/dashboardSlice"
 import devicesReducer from "./slice/devicesSlice"
+import roomReducer from "./slice/roomSlice";
 
 const rootReducer = combineReducers({
   authReducer,
   statisticsReducer,
   dashboardReducer,
-  devicesReducer
+  devicesReducer,
+  roomReducer
 });
 
 const persistConfig = {

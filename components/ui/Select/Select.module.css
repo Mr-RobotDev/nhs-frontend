@@ -54,7 +54,7 @@
 }
 .selectionMenuContent span.only {
   display: inline-flex;
-  max-width: 200px;
+  max-width: 300px;
 }
 .selectionMenuContent span.only span {
   color: var(--secondary-color);

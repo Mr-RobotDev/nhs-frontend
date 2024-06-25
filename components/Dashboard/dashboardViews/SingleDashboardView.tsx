@@ -20,11 +20,14 @@ import EmptyDashboard from "./EmptyDashboard";
 import { useRouter } from "next/navigation";
 import AddCardModal from "../Modals/AddCardModal";
 import TimeFrameMenu from "./TimeFrameMenu";
-import { Spin } from "antd";
+import { DatePicker, Spin } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
 import timeFrames from "@/utils/time_frames";
+import dayjs, { Dayjs } from "dayjs";
+
+const { RangePicker } = DatePicker;
 
 interface singleDashboardViewProps {
   id: string;
@@ -40,12 +43,19 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
     dashboards,
     currentDashboard: currentSelectedDashboard,
     dashboardCards,
+    timeFrame,
+    isLoading
   } = useSelector((state: RootState) => state.dashboardReducer);
   const { isAdmin } = useSelector((state: RootState) => state.authReducer);
+  const [range, setRange] = useState<[Dayjs, Dayjs]>([
+    dayjs().subtract(1, "day").startOf("day"),
+    dayjs().endOf("day"),
+  ])
 
   useEffect(() => {
     dispatch(getDashboards());
-  }, [dispatch]);
+    dispatch(getDashboardCards({ dashboardId: id }));
+  }, [dispatch, id]);
 
   useEffect(() => {
     function handleResize() {
@@ -59,7 +69,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
   }, []);
 
   useEffect(() => {
-    if (id && !currentSelectedDashboard) {
+    if (id) {
 
       const params = new URLSearchParams(window.location.search);
       const from = params.get("from");
@@ -72,20 +82,15 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
         timeFrame.startDate = from;
         timeFrame.endDate = to;
 
-        dispatch(setTimeFrame(timeFrame));
+        console.log('key->', key)
+        if (key !== 'CUSTOM') {
+          console.log('first called')
+          dispatch(setTimeFrame(timeFrame));
+        }
+
       }
-      
-      dispatch(getDashboardCards({ dashboardId: id }));
-    } else {
-      dispatch(getDashboardCards({ dashboardId: id }));
     }
-
-  }, [currentSelectedDashboard, router, id, dashboards, dispatch]);
-
-
-  useEffect(() => {
-    dispatch(setCurrentDashboard(currentSelectedDashboard))
-  }, [dispatch, currentSelectedDashboard])
+  }, [id, dispatch]);
 
   const handleLayoutChange = (layout: any, layouts: any) => {
     if (layouts.sm || layouts.xs) return;
@@ -122,34 +127,89 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
     });
   };
 
+  const handleRangeChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates && dates.length > 0) {
+      let newRange: [Dayjs, Dayjs];
+      newRange = [dayjs(dates[0]), dayjs(dates[1])];
+      setRange(newRange);
+      const from = newRange[0].format("YYYY-MM-DD");
+      const to = newRange[1].format("YYYY-MM-DD");
+      if (window && window.history) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("from", from);
+        url.searchParams.set("to", to);
+        window.history.replaceState({}, "", url.toString());
+      }
+
+      const timeFrame = { ...timeFrames['CUSTOM'] };
+
+      timeFrame.startDate = from;
+      timeFrame.endDate = to;
+
+      console.log('Called')
+      dispatch(setTimeFrame(timeFrame));
+    } else {
+      toast.error("Date Range cannot be empty");
+    }
+  };
+
   return currentSelectedDashboard ? (
     <>
       <div>
-        <div className=" flex flex-col gap-3 md:flex-row md:gap-0 justify-between items-center">
-          <div className=" flex flex-row gap-3 order-2 md:order-1">
-            <DashboardMenu
-              dashboardsList={dashboards}
-              routingFunctionality={true}
-            />
-            {currentSelectedDashboard && dashboardCards.length !== 0 && (
-              <TimeFrameMenu functionality={true} />
-            )}
+        <div className=" flex flex-col gap-3 sm:flex-row sm:gap-0 justify-between items-center">
+          <div className=" flex flex-row gap-3 mr-auto ">
+            <div className=" w-full sm:w-60">
+              <p className=" text-sm mb-1">Current Dashboard</p>
+              <DashboardMenu
+                dashboardsList={dashboards}
+                routingFunctionality={true}
+                activeDashboardId={id}
+              />
+            </div>
           </div>
-          {isAdmin && (
-            <div className="flex md:justify-center md:w-auto justify-end w-full  order-1 md:order-2">
-              <span
-                onClick={() => setIsModalOpen(true)}
-                className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 flex gap-2 items-center"
-              >
-                <FontAwesomeIcon icon={faCirclePlus} />
-                Create New Card
-              </span>
+          {isAdmin && currentSelectedDashboard && dashboardCards.length !== 0 && (
+            <div className="  flex flex-row items-center justify-end gap-3 ml-auto">
+              <div>
+                <p className=" text-sm mb-1">Time frame</p>
+                <TimeFrameMenu functionality={true} />
+              </div>
+              {
+                timeFrame.key === 'CUSTOM' &&
+                <div className=" mt-6">
+                  <RangePicker
+                    className="flex h-[42px]"
+                    onChange={handleRangeChange}
+                    defaultValue={range}
+                  />
+                </div>
+              }
+              <div>
+
+              </div>
+              <div className="flex md:justify-center md:w-auto justify-end w-full mt-6">
+                <span
+                  onClick={() => setIsModalOpen(true)}
+                  className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
+                >
+                  <FontAwesomeIcon icon={faCirclePlus} />
+                  Create New Card
+                </span>
+              </div>
             </div>
           )}
         </div>
-        {!(dashboardCards && dashboardCards.length > 0) ? (
+
+        {(dashboardCards.length === 0 && !isLoading.gettingDashboardCards) &&
           <EmptyDashboard />
-        ) : (
+        }
+
+        {isLoading.gettingDashboardCards && 
+          <div className=" w-full h-full flex justify-center items-center mt-28">
+            <Spin size="large" />
+          </div>
+        }
+
+        {dashboardCards.length !== 0 &&
           <div className="mt-3">
             <ResponsiveGridLayout
               className="layout"
@@ -186,7 +246,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
               ))}
             </ResponsiveGridLayout>
           </div>
-        )}
+        }
       </div>
       <AddCardModal
         isVisible={isModalOpen}

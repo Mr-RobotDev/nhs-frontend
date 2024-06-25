@@ -21,7 +21,7 @@ const SidebarMenu = ({
       key={key}
       className={`!w-auto !rounded-none py-2 transform duration-150 transition-all !px-5 ${
         isActive
-          ? " bg-blue-100 border-r-[6px] border-r-blue-700"
+          ? " bg-blue-100 border-l-[6px] border-l-custom-nhs-blue"
           : "hover:bg-blue-50"
       }`}
     >
@@ -30,7 +30,7 @@ const SidebarMenu = ({
           <div>{icon}</div>
           <span
             className={`label !text-base ${
-              isActive ? "text-blue-700 font-semibold" : "text-black"
+              isActive ? " text-custom-nhs-blue font-semibold" : "text-black"
             } `}
           >
             {title}

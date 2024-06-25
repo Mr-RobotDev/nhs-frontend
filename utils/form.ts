@@ -33,8 +33,8 @@ export const userRoleOptions = [
 ];
 
 export const userOrganizationOptions = [
-  { label: 'Origin Smart', value: 'Origin Smart' },
-  { label: 'Seda', value: 'Seda' },
+  { label: 'Origin Smart Controls', value: 'Origin Smart Controls' },
+  { label: 'NHS', value: 'NHS' },
 ]
 
 export const daysOfWeek = [
@@ -46,3 +46,17 @@ export const daysOfWeek = [
   "saturday",
   "sunday",
 ];
+
+export const emptyRoomObject = {
+  id: "",
+  code: "",
+  name: "",
+  function: "",
+  netUseableArea: 0,
+  department: "",
+  division: "",
+  cluster: "",
+  clusterDescription: "",
+  operationHours: "",
+  hoursPerDay: 0
+}

@@ -295,7 +295,7 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
           <div className='grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
             <div>
               <p className="!mb-1 text-sm">When</p>
-              <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0">
+              <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0 !h-[48px]">
                 <CustomMenu handleTypeChange={handleTriggerWhenChange} isAdmin={isAdmin} initialValue={formData.trigger.state} options={triggerWhenOptions} />
               </div>
             </div>

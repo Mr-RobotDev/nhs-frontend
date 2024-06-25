@@ -16,9 +16,9 @@ const DeviceTypeDetail = ({ title, value, image, subtitle }: DeviceTypeDetailPro
       <Card bordered={false} className="criclebox h-full">
         <div className=" text-2xl flex flex-row justify-between">
           <div>
-            <div className='flex flex-row gap-2 items-end'>
+            <div className='flex flex-col gap-0 '>
               <p className=" text-2xl font-semibold !mb-0">{title}</p>
-              {subtitle && <p className=' mb-1 text-sm'>{subtitle}</p>}
+              <p className=' mb-1 text-sm h-5'>{subtitle }</p>
             </div>
             <div className="text-2xl font-bold">
               <span className="!text-3xl !font-bold">
@@ -29,7 +29,7 @@ const DeviceTypeDetail = ({ title, value, image, subtitle }: DeviceTypeDetailPro
               </span>
             </div>
           </div>
-          <div className=" w-12 h-12 flex items-center justify-center ml-auto">
+          <div className=" w-13 h-14 flex items-center justify-center ml-auto">
             <Image
               src={image}
               className=" w-full h-full"

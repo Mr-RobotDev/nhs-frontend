@@ -22,7 +22,7 @@ import {
 } from "@/utils/graph";
 import DeviceTypeDetail from "./DeviceTypeDetail";
 import PressueChart from "./PressueChart";
-import { iconsBasedOnType } from "@/utils/helper_functions";
+import { getDeviceLabelFromState, iconsBasedOnType } from "@/utils/helper_functions";
 import GanttChart from "./Chart/GhanttChart";
 
 dayjs.extend(isBetween);
@@ -445,7 +445,7 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
     </div>
   ) : (
     <>
-      <div className={`gap-3 mx-auto mb-14 ${deviceData?.type === 'pressure' ? 'grid grid-cols-1 md:grid-cols-2' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+      <div className={`gap-3 mx-auto mb-14 grid grid-cols-1 md:grid-cols-3`}>
         <div className=" h-full">
           <Card bordered={false} className="criclebox h-full">
             <div className=" text-2xl flex flex-row justify-between">
@@ -504,6 +504,31 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
             </div>
           </Card>
         </div>
+        { deviceData?.state && <div>
+          <Card bordered={false} className="criclebox h-full">
+            <div className=" text-2xl flex flex-row justify-between">
+              <div>
+                <span className=" text-lg">
+                  State
+                </span>
+                <div className="">
+                  <span className="!text-3xl !font-bold">
+                    {getDeviceLabelFromState(deviceData?.state)}
+                  </span>
+                </div>
+              </div>
+              <div className=" w-12 h-12 flex items-center justify-center ml-auto">
+                <Image
+                  src={iconsBasedOnType(deviceData.state.toLowerCase())}
+                  className=" w-full h-full"
+                  alt="icon"
+                  width={100}
+                  height={100}
+                />
+              </div>
+            </div>
+          </Card>
+        </div>}
 
       </div>
       <div className=" mx-auto">

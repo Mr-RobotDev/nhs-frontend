@@ -2,7 +2,7 @@ import TemperatureChart from "@/components/Dashboard/dashboardViews/TemperatureC
 import axiosInstance from "@/lib/axiosInstance";
 import { DashboardCardType, DevicesType } from "@/type";
 import { memo, useEffect, useState } from "react";
-import { Button, Spin, Tooltip } from "antd";
+import { Button, Card, Spin, Tooltip } from "antd";
 import { EventsMap, Event, DeviceData } from "@/type";
 import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,25 +12,33 @@ import { PrimaryInput } from "../Input/Input";
 import { updateCard } from "@/app/store/slice/dashboardSlice";
 import SingleDeviceDashCard from "@/components/Dashboard/dashboardViews/SingleDeviceDashCard";
 import { getDeviceLabelFromState } from "@/utils/helper_functions";
+import Link from "next/link";
 
 interface CardProps {
   cardObj: DashboardCardType;
 }
-
 const countStates = (devices: any) => {
-  return devices.reduce((acc: any, device: any) => {
-    if (device.state === 'MOTION_DETECTED') {
-      acc.motionDetected++;
-    } else if (device.state === 'NO_MOTION_DETECTED') {
-      acc.noMotionDetected++;
+  return devices.reduce(
+    (acc: any, device: any) => {
+      if (device.state === 'MOTION_DETECTED') {
+        acc.motionDetected.count++;
+        acc.motionDetected.devices.push(device);
+      } else if (device.state === 'NO_MOTION_DETECTED') {
+        acc.noMotionDetected.count++;
+        acc.noMotionDetected.devices.push(device);
+      }
+      return acc;
+    },
+    {
+      motionDetected: { count: 0, devices: [] },
+      noMotionDetected: { count: 0, devices: [] },
     }
-    return acc;
-  }, { motionDetected: 0, noMotionDetected: 0 });
+  );
 };
 
 const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [editingName, setEditingName] = useState(cardObj.name);
   const [card, setCard] = useState<DashboardCardType>(cardObj);
@@ -40,6 +48,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const { isAdmin } = useSelector((state: RootState) => state.authReducer);
   const dispatch: AppDispatch = useDispatch();
   const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isHovered2, setIsHovered2] = useState(false);
 
   useEffect(() => {
     setCard(cardObj);
@@ -47,14 +57,13 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
 
   useEffect(() => {
-    let isCancelled = false;
+    // let isCancelled = false;
 
     const fetchEventsForDevices = async () => {
-      if (!isCancelled) {
-        setLoading(true);
-        const eventsMapTemp: EventsMap = {};
 
-        const fetchPromises = card.devices.map(async (device) => {
+      const fetchPromises = card.devices.map(async (device) => {
+        if (timeFrame.startDate && timeFrame.endDate) {
+          setLoading(true);
           const { id, name } = device;
           try {
             const response = await axiosInstance.get(`/devices/${device.id}/events`, {
@@ -64,40 +73,20 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               },
             });
 
-            if (!isCancelled) {
-              eventsMapTemp[id] = { data: response.data, name: name };
-            }
           } catch (error) {
             console.error(`Error fetching events for device ${id}:`, error);
+          } finally {
+            setLoading(false)
           }
-        });
-
-        await Promise.all(fetchPromises);
-        if (!isCancelled) {
-          setLoading(false);
         }
-      }
+      });
+
+      await Promise.all(fetchPromises);
     };
 
-    fetchEventsForDevices();
+    // fetchEventsForDevices();
 
-    return () => {
-      isCancelled = true;
-    };
   }, [card, timeFrame.startDate, timeFrame.endDate]);
-
-  // const fetchDevice = async (id: string) => {
-  //   try {
-  //     const response = await axiosInstance.get(`/devices/${id}`);
-  //     if (response.status === 200) {
-  //       setDeviceData(response.data);
-  //     } else {
-  //       console.log("error->", response);
-  //     }
-  //   } catch (error: any) {
-  //     console.log("error->", error);
-  //   }
-  // }
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -209,20 +198,25 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
           <div className="flex-grow">
             {
               card.devices.length > 1 ?
-                <div className=" grid grid-cols-2 h-full">
+                <div
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  className=" grid grid-cols-2 h-full">
                   <div className=" w-full h-full flex justify-center items-center">
                     <div className=" flex flex-col items-center">
-                      <p className=" mb-0 text-4xl font-semibold">{motionDetected}</p>
+                      <p className=" mb-0 text-4xl font-semibold">{motionDetected.count}</p>
                       <p className=" mt-1">Occupied</p>
                     </div>
                   </div>
                   <div className=" w-full h-full flex justify-center items-center border-l border-l-gray-300">
                     <div className=" flex flex-col items-center">
-                      <p className=" mb-0 text-4xl font-semibold">{noMotionDetected}</p>
+                      <p className=" mb-0 text-4xl font-semibold">{noMotionDetected.count}</p>
                       <p className=" mt-1">Not Occupied</p>
                     </div>
                   </div>
-                </div> : (
+                </div>
+
+                : (
                   <div className=" w-full h-full flex justify-center items-center">
                     <p className=" text-3xl font-semibold">{getDeviceLabelFromState(card.devices[0].state)}</p>
                   </div>
@@ -231,6 +225,45 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
           </div>
         </div>
       )}
+      <div
+        onMouseEnter={() => setIsHovered2(true)}
+        onMouseLeave={() => setIsHovered2(false)}
+        className=" pt-6 relative -top-4 z-[999px]"
+      >
+        {((isHovered || isHovered2) && card.devices.length !== 1) && (
+          <Card
+
+            className=" duration-300 transform transition-all relative z-[999px]">
+            <div className=" bg-white flex flex-col gap-2 justify-start items-center ">
+              <div className=" flex flex-col gap-0 w-full">
+                {
+                  motionDetected.devices.map((device: any) => (
+                    <>
+                      <div key={device.name} className=" flex flex-row gap-2 w-full">
+                        <p className="!mb-0"><strong className=" mr-3">Not Occupied</strong> {device.name}</p>
+                      </div>
+                      <hr className=" h-2 w-full my-1" />
+                    </>
+                  ))
+                }
+              </div>
+
+              <div className=" flex flex-col gap-0 w-full">
+                {
+                  noMotionDetected.devices.map((device: any) => (
+                    <Link key={device.id} href={`/dashboard/devices/${device.id}`} >
+                      <div className=" flex flex-row gap-2 w-full">
+                        <p className="!mb-0"><strong className=" mr-3">Not Occupied</strong> {device.name}</p>
+                      </div>
+                      <hr className=" h-2 w-full my-1" />
+                    </Link>
+                  ))
+                }
+              </div>
+            </div>
+          </Card>
+        )}
+      </div>
     </>
   );
 };
