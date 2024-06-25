@@ -20,10 +20,10 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
     <div>
       <div className="layout-content">
         <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mx-auto">
-          <DeviceTypeDetail title="Total Rooms" value={roomStats.totalRooms as number} image="/icons/devices.png" />
-          <DeviceTypeDetail title="Red" subtitle="(0 - 60% Occupancy Rate)" value={roomStats.red as number} image="/icons/highest-temperature.png" />
-          <DeviceTypeDetail title="Yellow" subtitle="(60 - 80% Occupancy Rate)" value={roomStats.yellow as number} image="/icons/highest-humidity.png" />
-          <DeviceTypeDetail title="Green" subtitle="(>80% Occupancy Rate)" value={roomStats.green as number} image="/icons/highest-pressure.png" />
+          <DeviceTypeDetail title="Total Rooms" value={roomStats.totalRooms as number} image="/icons/total-devices.png" />
+          <DeviceTypeDetail title="Red" subtitle="(0 - 60% Occupancy Rate)" value={roomStats.red as number} image="/icons/red.png" />
+          <DeviceTypeDetail title="Yellow" subtitle="(60 - 80% Occupancy Rate)" value={roomStats.yellow as number} image="/icons/yellow.png" />
+          <DeviceTypeDetail title="Green" subtitle="(>80% Occupancy Rate)" value={roomStats.green as number} image="/icons/green.png" />
         </div>
       </div>
     </div>

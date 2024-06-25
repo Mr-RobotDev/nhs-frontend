@@ -199,7 +199,6 @@ const UserMainView = () => {
         const response = await axiosInstance.get("/users");
         if (response.status === 200) {
           setUsers(response.data.results);
-          console.log(response);
         } else {
           console.log("error ->", response);
         }
