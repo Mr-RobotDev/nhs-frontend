@@ -158,7 +158,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
       <div>
         <div className=" flex flex-col gap-3 sm:flex-row sm:gap-0 justify-between items-center">
           <div className=" flex flex-row gap-3 mr-auto ">
-            <div className=" w-full sm:w-56">
+            <div className=" w-full sm:w-60">
               <p className=" text-sm mb-1">Current Dashboard</p>
               <DashboardMenu
                 dashboardsList={dashboards}

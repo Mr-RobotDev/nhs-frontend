@@ -37,7 +37,7 @@ const ReportsMainView = () => {
           <>
             <h1 className=" text-3xl font-semibold">Reports</h1>
             <div className=" flex items-center gap-1 justify-between">
-              <div className=" flex items-center gap-2 ">
+              <div className=" w-full sm:w-60">
                 <DashboardMenu
                   dashboardsList={dashboards}
                   routingFunctionality={false}
