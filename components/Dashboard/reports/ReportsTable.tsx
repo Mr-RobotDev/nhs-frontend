@@ -369,7 +369,7 @@ const ReportsTable = ({
             </div>
           }
 
-          {reports.length !== 0 &&
+          {reports.length !== 0 && !loading &&
             <div className=" shadow-md p-2 bg-white">
               <Table
                 columns={columns}
