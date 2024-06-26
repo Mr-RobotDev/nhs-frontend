@@ -358,7 +358,18 @@ const ReportsTable = ({
           className={`${showDetailsReport || createNewReport ? "hidden" : "block"
             }`}
         >
-          {reports.length > 0 ? (
+
+          {(reports.length === 0 && !loading) &&
+            <NoReport />
+          }
+
+          {loading &&
+            <div className=" w-full h-full flex justify-center items-center mt-28">
+              <Spin size="large" />
+            </div>
+          }
+
+          {reports.length !== 0 &&
             <div className=" shadow-md p-2 bg-white">
               <Table
                 columns={columns}
@@ -370,9 +381,8 @@ const ReportsTable = ({
                 onRow={showReportsDetails}
               />
             </div>
-          ) : (
-            <NoReport />
-          )}
+          }
+
         </div>
         <div
           className={`${showDetailsReport || createNewReport ? "block" : "hidden"
