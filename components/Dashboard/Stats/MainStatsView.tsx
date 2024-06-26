@@ -13,7 +13,7 @@ import FullScreenButton from "@/components/ui/FullScreenButton/FullScreenButton"
 import { RoomStatsType } from "@/type";
 import RoomStatsPieChart from "./RoomStatsPieChart";
 
-const MainFloorView = () => {
+const MainStatsView = () => {
   const dispatch = useDispatch();
   const deviceStats = useSelector(
     (state: RootState) => state.statisticsReducer
@@ -53,7 +53,7 @@ const MainFloorView = () => {
   return (
     <>
       <div className=" flex items-center justify-between mb-3">
-        <h1 className=" text-3xl font-semibold">Floor Plan</h1>
+        <h1 className=" text-3xl font-semibold">Stats</h1>
         <FullScreenButton />
       </div>
       {error ? (
@@ -91,4 +91,4 @@ const MainFloorView = () => {
   );
 };
 
-export default withDashboardLayout(MainFloorView);
+export default withDashboardLayout(MainStatsView);

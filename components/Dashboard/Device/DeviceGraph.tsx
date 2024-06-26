@@ -10,7 +10,7 @@ import Image from "next/image";
 import CountUp from "react-countup";
 import ReactApexChart from "react-apexcharts";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
-import FileDownloadButton from "../Floor/FileDownloadButton";
+import FileDownloadButton from "../Stats/FileDownloadButton";
 import Link from "next/link";
 import { CalendarDaysIcon } from "@heroicons/react/24/outline";
 import { SelectSecondary } from "@/components/ui/Select/Select";

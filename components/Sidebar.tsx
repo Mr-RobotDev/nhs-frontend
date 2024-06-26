@@ -60,9 +60,9 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
     },
     {
       key: "7",
-      title: "Floor Plan",
-      url: "/dashboard/floor",
-      menuKey: "floor",
+      title: "Stats",
+      url: "/dashboard/stats",
+      menuKey: "stats",
       icon: ClipboardIcon,
     },
     {

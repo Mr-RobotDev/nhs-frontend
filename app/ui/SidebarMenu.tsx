@@ -21,8 +21,8 @@ const SidebarMenu = ({
       key={key}
       className={`!w-auto !rounded-none py-2 transform duration-150 transition-all !px-5 ${
         isActive
-          ? " bg-blue-100 border-l-[6px] border-l-custom-nhs-blue"
-          : "hover:bg-blue-50"
+          ? " bg-blue-100 !border-l-[6px] !border-l-custom-nhs-blue"
+          : "hover:bg-blue-50 border-l-[6px] border-l-transparent"
       }`}
     >
       <Link href={url} className="w-full">

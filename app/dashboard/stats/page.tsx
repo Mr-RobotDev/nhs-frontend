@@ -1,10 +1,10 @@
-import MainFloorView from "@/components/Dashboard/Floor/MainFloorView";
+import MainStatsView from "@/components/Dashboard/Stats/MainStatsView";
 
 export const metadata = {
   title: 'Floor Plan'
 }
 const FloorPage = () => {
-  return <MainFloorView />
+  return <MainStatsView />
 };
 
 export default FloorPage;
