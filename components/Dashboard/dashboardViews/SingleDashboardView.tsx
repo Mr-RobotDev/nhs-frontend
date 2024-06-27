@@ -156,9 +156,9 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
   return currentSelectedDashboard ? (
     <>
       <div>
-        <div className=" flex flex-col gap-3 sm:flex-row sm:gap-0 justify-between items-center">
-          <div className=" flex flex-row gap-3 mr-auto ">
-            <div className=" w-full sm:w-60">
+        <div className=" flex flex-col flex-wrap gap-3 sm:flex-row sm:gap-0 justify-between items-start mr-auto">
+          <div className=" flex flex-row justify-between gap-3">
+            <div className="w-60">
               <p className=" text-sm mb-1">Current Dashboard</p>
               <DashboardMenu
                 dashboardsList={dashboards}
@@ -168,25 +168,33 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
             </div>
           </div>
           {isAdmin && currentSelectedDashboard && dashboardCards.length !== 0 && (
-            <div className="  flex flex-row items-center justify-end gap-3 ml-auto">
-              <div>
-                <p className=" text-sm mb-1">Time frame</p>
-                <TimeFrameMenu functionality={true} />
-              </div>
-              {
-                timeFrame.key === 'CUSTOM' &&
-                <div className=" mt-6">
-                  <RangePicker
-                    className="flex h-[42px]"
-                    onChange={handleRangeChange}
-                    defaultValue={range}
-                  />
+            <div className="  flex flex-row items-end justify-between gap-3 w-full lg:w-auto mt-2 md:mt-0">
+              <div className=" flex flex-row- items-end gap-3 flex-wrap">
+                <div>
+                  <p className=" text-sm mb-1">Time frame</p>
+                  <TimeFrameMenu functionality={true} />
                 </div>
-              }
-              <div>
-
+                <div className="block md:hidden">
+                  <span
+                    onClick={() => setIsModalOpen(true)}
+                    className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
+                  >
+                    <FontAwesomeIcon icon={faCirclePlus} />
+                    Create New Card
+                  </span>
+                </div>
+                {
+                  timeFrame.key === 'CUSTOM' &&
+                  <div className="">
+                    <RangePicker
+                      className="flex h-[42px]"
+                      onChange={handleRangeChange}
+                      defaultValue={range}
+                    />
+                  </div>
+                }
               </div>
-              <div className="flex md:justify-center md:w-auto justify-end w-full mt-6">
+              <div className="mt-6 hidden md:block">
                 <span
                   onClick={() => setIsModalOpen(true)}
                   className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
@@ -203,7 +211,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
           <EmptyDashboard />
         }
 
-        {isLoading.gettingDashboardCards && 
+        {isLoading.gettingDashboardCards &&
           <div className=" w-full h-full flex justify-center items-center mt-28">
             <Spin size="large" />
           </div>

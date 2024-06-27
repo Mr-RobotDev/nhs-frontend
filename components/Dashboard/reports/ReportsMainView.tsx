@@ -43,7 +43,7 @@ const ReportsMainView = () => {
             </div>
             {!createNewReport && isAdmin && (
               <div
-                className="flex justify-center"
+                className="flex justify-end w-full"
                 onClick={() => setCreateNewReport(true)}
               >
                 <span className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center">
