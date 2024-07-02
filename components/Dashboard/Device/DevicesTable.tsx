@@ -392,6 +392,8 @@ const DevicesTable = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
+                    apiEndpoint="/organizations?page=1&limit=50"
+                    searchable={true}
                   />
                 </div>
               </div>
@@ -409,6 +411,8 @@ const DevicesTable = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/sites?${convertObjectToQueryString({ organization: deviceFilters.organization })}`}
+                    searchable={true}
                   />
                 </div>
               </div>
@@ -426,6 +430,8 @@ const DevicesTable = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/buildings?${convertObjectToQueryString({ site: deviceFilters.site })}`}
+                    searchable={true}
                   />
                 </div>
               </div>
@@ -442,6 +448,8 @@ const DevicesTable = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/floors?${convertObjectToQueryString({ building: deviceFilters.building })}`}
+                    searchable={true}
                   />
                 </div>
               </div>
@@ -459,6 +467,8 @@ const DevicesTable = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/floors?${convertObjectToQueryString({ floor: deviceFilters.floor })}`}
+                    searchable={true}
                   />
                 </div>
               </div>
