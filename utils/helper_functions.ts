@@ -154,3 +154,26 @@ export const tranformObjectForSelectComponent = (objects: SingleNameIdObject[]) 
     value: org.id
   }));
 };
+
+export const convertObjectToQueryString = (params: { [key: string]: any }): string => {
+  const queryStringParts: string[] = [];
+
+  for (const key in params) {
+    if (params.hasOwnProperty(key)) {
+      if (Array.isArray(params[key])) {
+        params[key].forEach((value: string) => {
+          queryStringParts.push(`${key}=${value}`);
+        });
+      } else {
+        queryStringParts.push(`${key}=${params[key]}`);
+      }
+    }
+  }
+
+  
+
+  if(queryStringParts.length === 0){
+    return ''
+  }
+  return queryStringParts.join('&');
+}

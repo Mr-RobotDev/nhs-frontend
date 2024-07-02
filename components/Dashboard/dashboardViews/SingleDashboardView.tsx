@@ -220,6 +220,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
         {dashboardCards.length !== 0 &&
           <div className="mt-3">
             <ResponsiveGridLayout
+              draggableCancel=".cancelSelectorName" 
               className="layout"
               margin={[20, 20]}
               rowHeight={160}

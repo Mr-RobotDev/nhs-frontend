@@ -57,10 +57,16 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   });
 
   const fetchData = useCallback(
-    async (url: string, key: keyof typeof data) => {
+    async (url: string, key: keyof typeof data, queryparams: any) => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get(url);
+        const response = await axiosInstance.get(url, {
+          params: {
+            limit: 10,
+            page: 1,
+            ...queryparams
+          }
+        });
         if (response.status === 200) {
           setData(prevData => ({ ...prevData, [key]: response.data.results }));
         } else {
@@ -96,31 +102,30 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   };
 
   useEffect(() => {
-    console.log(formData.floor);
-    fetchData('/organizations', 'organizations');
-  }, [fetchData, formData.floor]);
+    fetchData('/organizations', 'organizations', {});
+  }, [fetchData]);
 
   useEffect(() => {
     if (formData.organization) {
-      fetchData(`/organizations/${formData.organization}/sites`, 'sites');
+      fetchData(`/sites`, 'sites', { organization: formData.organization });
     }
   }, [formData.organization, fetchData]);
 
   useEffect(() => {
     if (formData.site) {
-      fetchData(`/sites/${formData.site}/buildings`, 'buildings');
+      fetchData(`/buildings`, 'buildings', { site: formData.site });
     }
   }, [formData.site, fetchData]);
 
   useEffect(() => {
     if (formData.building) {
-      fetchData(`/buildings/${formData.building}/floors`, 'floors');
+      fetchData(`/floors`, 'floors', { building: formData.building });
     }
   }, [formData.building, fetchData]);
 
   useEffect(() => {
     if (formData.floor) {
-      fetchData(`/floors/${formData.floor}/rooms`, 'rooms');
+      fetchData(`/rooms`, 'rooms', { floor: formData.floor });
     }
   }, [formData.floor, fetchData]);
 
@@ -162,15 +167,17 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
         render={({ field }) => (
           <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
             <CustomMenu
-              handleTypeChange={(val: string) => {
-                field.onChange(val); 
-                setFormData({ ...formData, [value]: val }); 
+              handleTypeChange={(vals: string[]) => {
+                const selectedValue = vals[0];
+                field.onChange(selectedValue);
+                setFormData({ ...formData, [value]: selectedValue });
               }}
               isAdmin={isAdmin}
               options={options}
-              initialValue={formData[value] as string}
+              initialValue={[formData[value] as string]}
               createNewRoom={value === 'room'}
               handleCreateNewRoomModalShow={value === 'room' ? handleCreateNewRoomModalShow : undefined}
+              multiple={false}
             />
           </div>
         )}
@@ -178,7 +185,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
       {errors[value] && <p className="!text-red-500 text-xs mt-1">{(errors[value] as any)?.message}</p>}
     </div>
   );
-  
+
 
   const handleOk = () => {
     setModalText('The modal will be closed after two seconds');
@@ -242,10 +249,14 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
                     <p className="!mb-1 font-semibold">Type</p>
                     <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                       <CustomMenu
-                        handleTypeChange={(value: string) => setFormData({ ...formData, type: value })}
+                        handleTypeChange={(vals: string[]) => {
+                          const selectedValue = vals[0];
+                          setFormData({ ...formData, type: selectedValue });
+                        }}
                         isAdmin={true}
                         options={[{ value: 'motion', label: 'Motion' }]}
-                        initialValue={'motion'}
+                        initialValue={['motion']}
+                        multiple={false}
                       />
                     </div>
                   </div>

@@ -1,25 +1,38 @@
 'use client'
-import React, { useCallback, useState, useRef, useEffect } from 'react'
+import React, { useCallback, useState, useEffect, useRef } from 'react'
 import { SelectSecondary } from '../Select/Select';
 import { Divider, Popover } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 
 interface customMenuProps {
-  handleTypeChange: (value: string) => void;
-  initialValue?: string
+  handleTypeChange: (values: string[]) => void;
+  initialValue?: string[];
   isAdmin: boolean;
   options: Array<{
     label: string;
     value: string;
-  }>
+  }>;
   createNewRoom?: boolean;
   handleCreateNewRoomModalShow?: () => void;
+  multiple?: boolean; // Add the multiple prop
+  clearInternalStateFlag: boolean; // Add the flag prop
+  onClearInternalState: () => void; // Add the callback prop
 }
 
-const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options, createNewRoom, handleCreateNewRoomModalShow }: customMenuProps) => {
+const CustomMenu = ({
+  handleTypeChange,
+  initialValue = [],
+  isAdmin,
+  options,
+  createNewRoom,
+  handleCreateNewRoomModalShow,
+  multiple = true,
+  clearInternalStateFlag,
+  onClearInternalState
+}: customMenuProps) => {
   const [visible, setVisible] = useState(false);
-  const [type, setType] = useState(initialValue || '');
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(initialValue);
   const [width, setWidth] = useState<number | undefined>(undefined);
   const selectDisplayRef = useRef<HTMLDivElement>(null);
 
@@ -31,24 +44,46 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options, createNe
 
   const handleScheduleTimeClick = useCallback((value: string) => {
     if (isAdmin) {
-      setType(value);
+      setSelectedTypes((prevSelected) => {
+        if (multiple) {
+          const isSelected = prevSelected.includes(value);
+          const newSelected = isSelected
+            ? prevSelected.filter((type) => type !== value)
+            : [...prevSelected, value];
+          handleTypeChange(newSelected);
+          return newSelected;
+        } else {
+          handleTypeChange([value]);
+          return [value];
+        }
+      });
       setVisible(false);
-      handleTypeChange(value);
     }
-  }, [handleTypeChange, isAdmin]);
+  }, [handleTypeChange, isAdmin, multiple]);
+
+  const clearInternalState = useCallback(() => {
+    setSelectedTypes([]);
+    onClearInternalState(); // Notify the parent that the internal state is cleared
+  }, [onClearInternalState])
+
+  useEffect(() => {
+    if (clearInternalStateFlag) {
+      clearInternalState();
+    }
+  }, [clearInternalStateFlag, clearInternalState]);
 
   const handleCreateNewRoom = () => {
-    if(handleCreateNewRoomModalShow){
-      handleCreateNewRoomModalShow()
+    if (handleCreateNewRoomModalShow) {
+      handleCreateNewRoomModalShow();
       setVisible(false);
     }
-  }
+  };
 
   const selectDisplay = (
     <div ref={selectDisplayRef} className={`inline-block cursor-pointer shadow-sm rounded-lg !bg-white p-1 px-2 w-full ${!isAdmin ? "opacity-50" : ""}`}>
       <div className="flex flex-row">
         <SelectSecondary
-          only={options.find(opt => opt.value === initialValue)?.label}
+          only={selectedTypes.map(type => options.find(opt => opt.value === type)?.label).join(', ')}
           disabled={!isAdmin}
         />
       </div>
@@ -66,10 +101,10 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options, createNe
           >
             <span className="flex flex-col justify-center w-[6px]">
               <span
-                className={`w-[6px] h-[6px] rounded-[50%] bg-blue-600 ${type === option.value ? "visible" : "hidden"}`}
+                className={`w-[6px] h-[6px] rounded-[50%] bg-blue-600 ${selectedTypes.includes(option.value) ? "visible" : "hidden"}`}
               ></span>
             </span>
-            <span className="text-sm font-medium !text-black">{option?.label}</span>
+            <span className="text-sm font-medium !text-black">{option.label}</span>
           </div>
         ))}
         {createNewRoom && <div className=' pt-2' onClick={handleCreateNewRoom}>
@@ -105,6 +140,8 @@ const CustomMenu = ({ handleTypeChange, initialValue, isAdmin, options, createNe
   ) : (
     selectDisplay
   );
-}
+};
+
+CustomMenu.displayName = 'CustomMenu';
 
 export default CustomMenu;

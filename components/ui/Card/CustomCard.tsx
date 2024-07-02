@@ -1,7 +1,7 @@
 import TemperatureChart from "@/components/Dashboard/dashboardViews/TemperatureChart";
 import axiosInstance from "@/lib/axiosInstance";
 import { DashboardCardType, DevicesType } from "@/type";
-import { memo, useEffect, useState } from "react";
+import { TouchEventHandler, memo, useEffect, useState } from "react";
 import { Button, Card, Spin, Tooltip } from "antd";
 import { EventsMap, Event, DeviceData } from "@/type";
 import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
@@ -88,12 +88,12 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
   }, [card, timeFrame.startDate, timeFrame.endDate]);
 
-  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const handleOnClick = (e: any) => {
+    // e.stopPropagation();
+    
   };
 
-  const handleOnCancelClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOnCancelClick = (e: any) => {
     e.stopPropagation();
     e.preventDefault();
     setIsRenaming(false);
@@ -101,7 +101,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     setEditingName(card.name);
   };
 
-  const handleUpdateCard = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUpdateCard = (e: any) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -167,6 +167,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                         <button
                           disabled={editingName.length < 3}
                           onMouseDown={handleUpdateCard}
+                          onTouchStart={handleUpdateCard}
                           className="mini-button hover:bg-blue-50 bg-transparent border-l-none px-3 disabled:cursor-not-allowed disabled:opacity-80 hover:bg-hover-primary transition-all ease-in-out duration-300 w-full"
                         >
                           Save
@@ -178,6 +179,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                         disabled={false}
                         className="mini-button border-l px-2 bg-transparent border-l-none rounded-e-lg hover:bg-blue-50 !w-full transition-all ease-in-out duration-300"
                         onMouseDown={handleOnCancelClick}
+                        onTouchStart={handleOnCancelClick}
                       >
                         Cancel
                       </button>
@@ -190,7 +192,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               </div>
             </div>
             {isAdmin && !isRenaming && (
-              <Button onMouseDown={handleOnClick} className=" w-10 h-10 border flex items-center justify-center">
+              <Button  onMouseDown={handleOnClick} onTouchStart={handleOnClick} className=" w-10 h-10 border flex items-center justify-center cancelSelectorName">
                 <OptionsMenu cardId={card.id} setIsRenaming={setIsRenaming} />
               </Button>
             )}
@@ -201,6 +203,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                 <div
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
+                  onTouchStart={() => setIsHovered(true)}
+                  onTouchEnd={()=>setIsHovered(false)}
                   className=" grid grid-cols-2 h-full">
                   <div className=" w-full h-full flex justify-center items-center">
                     <div className=" flex flex-col items-center">
@@ -228,6 +232,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
       <div
         onMouseEnter={() => setIsHovered2(true)}
         onMouseLeave={() => setIsHovered2(false)}
+        onMouseDown={() => setIsHovered(!isHovered2)}
         className=" pt-6 relative -top-4 z-[999px]"
       >
         {((isHovered || isHovered2) && card.devices.length !== 1) && (
