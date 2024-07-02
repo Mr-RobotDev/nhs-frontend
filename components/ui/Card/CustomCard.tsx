@@ -90,7 +90,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
   const handleOnClick = (e: any) => {
     // e.stopPropagation();
-    
+
   };
 
   const handleOnCancelClick = (e: any) => {
@@ -192,7 +192,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               </div>
             </div>
             {isAdmin && !isRenaming && (
-              <Button  onMouseDown={handleOnClick} onTouchStart={handleOnClick} className=" w-10 h-10 border flex items-center justify-center cancelSelectorName">
+              <Button onMouseDown={handleOnClick} onTouchStart={handleOnClick} className=" w-10 h-10 border flex items-center justify-center cancelSelectorName">
                 <OptionsMenu cardId={card.id} setIsRenaming={setIsRenaming} />
               </Button>
             )}
@@ -204,7 +204,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                   onTouchStart={() => setIsHovered(true)}
-                  onTouchEnd={()=>setIsHovered(false)}
+                  onTouchEnd={() => setIsHovered(false)}
                   className=" grid grid-cols-2 h-full">
                   <div className=" w-full h-full flex justify-center items-center">
                     <div className=" flex flex-col items-center">
@@ -243,12 +243,12 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               <div className=" flex flex-col gap-0 w-full">
                 {
                   motionDetected.devices.map((device: any) => (
-                    <>
-                      <div key={device.name} className=" flex flex-row gap-2 w-full">
-                        <p className="!mb-0"><strong className=" mr-3">Not Occupied</strong> {device.name}</p>
+                    <Link key={device.id} href={`/dashboard/devices/${device.id}`} >
+                      <div className=" flex flex-row gap-2 w-full">
+                        <p className="!mb-0"><strong className=" mr-3">Occupied</strong> {device.name}</p>
                       </div>
                       <hr className=" h-2 w-full my-1" />
-                    </>
+                    </Link>
                   ))
                 }
               </div>
