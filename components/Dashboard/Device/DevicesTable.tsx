@@ -314,24 +314,29 @@ const DevicesTable = () => {
     }
   }, [fetchData, deviceFilters.floor]);
 
+  // Run fetchDevices only once initially
+  const didMount = useRef(false);
+
   useEffect(() => {
-    fetchDevices();
-  }, []); // Fetch devices initially
+    if (!didMount.current) {
+      fetchDevices();
+      didMount.current = true;
+    }
+  }, [fetchDevices]);
 
   const applyFilterHandler = () => {
     fetchDevices();
   };
 
   const clearFilterHandler = () => {
-    setClearInternalStateFlag(true)
+    setClearInternalStateFlag(true);
     clearFilterTriggered.current = true;
     setDeviceFilters(emptyFilters);
     setData((prevData) => ({
       organization: prevData.organization,
       ...initialStateDropdownsData
     }));
-    fetchDevices();
-  }
+  };
 
   useEffect(() => {
     if (clearFilterTriggered.current) {
@@ -341,7 +346,6 @@ const DevicesTable = () => {
   }, [deviceFilters, data, fetchDevices]);
 
   const handleClearInternalState = () => {
-    // This function will be called by the child component to reset the flag
     setClearInternalStateFlag(false);
   };
 
@@ -353,7 +357,7 @@ const DevicesTable = () => {
     };
   };
 
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(false);
 
   return (
     <>

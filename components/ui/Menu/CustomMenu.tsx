@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { SelectSecondary } from '../Select/Select';
 import { Popover, Input } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -45,7 +45,7 @@ const CustomMenu = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredOptions, setFilteredOptions] = useState(options);
   const selectDisplayRef = useRef<HTMLDivElement>(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const clearInternalState = useCallback(() => {
     setSelectedTypes([]);
@@ -70,20 +70,23 @@ const CustomMenu = ({
     setFilteredOptions(options);
   }, [options]);
 
-  const fetchFilteredOptions = async (query: string) => {
+  const fetchFilteredOptions = useCallback(async (query: string) => {
     if (apiEndpoint) {
-      setLoading(true)
+      setLoading(true);
       const response = await axiosInstance.get(`${apiEndpoint}&search=${query}`);
       setFilteredOptions(tranformObjectForSelectComponent(response.data.results));
-      setLoading(false)
+      setLoading(false);
     } else {
       setFilteredOptions(
         options.filter(option => option.label.toLowerCase().includes(query.toLowerCase()))
       );
     }
-  };
+  }, [apiEndpoint, options]);
 
-  const debouncedFetchFilteredOptions = useCallback(debounce(fetchFilteredOptions, 500), [apiEndpoint, options]);
+  const debouncedFetchFilteredOptions = useMemo(
+    () => debounce(fetchFilteredOptions, 500),
+    [fetchFilteredOptions]
+  );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
@@ -107,7 +110,7 @@ const CustomMenu = ({
         }
       });
       setVisible(false);
-      setSearchQuery('')
+      setSearchQuery('');
     }
   }, [handleTypeChange, isAdmin, multiple]);
 
@@ -140,7 +143,7 @@ const CustomMenu = ({
         />
       )}
       <LoadingWrapper loading={loading} size='small'>
-        <div className="flex flex-col h-[90px] overflow-y-scroll">
+        <div className="flex flex-col max-h-[90px] overflow-y-scroll">
           {filteredOptions.map(option => (
             <div
               key={option.value}
