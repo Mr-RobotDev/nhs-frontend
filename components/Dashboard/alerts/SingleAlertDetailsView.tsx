@@ -110,12 +110,12 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
     setFormData((prevState) => prevState && { ...prevState, scheduleType: value })
   }
 
-  const handleTriggerWhenChange = (value: string) => {
+  const handleTriggerWhenChange = (value: string[]) => {
     setFormData(prevState => ({
       ...prevState,
       trigger: {
         ...prevState.trigger,
-        state: value
+        state: value[0]
       }
     }));
   }
@@ -296,7 +296,11 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
             <div>
               <p className="!mb-1 text-sm">When</p>
               <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0 !h-[48px]">
-                <CustomMenu handleTypeChange={handleTriggerWhenChange} isAdmin={isAdmin} initialValue={formData.trigger.state} options={triggerWhenOptions} />
+                <CustomMenu 
+                  handleTypeChange={handleTriggerWhenChange} 
+                  isAdmin={isAdmin} 
+                  initialValue={[formData.trigger.state as string]} 
+                  options={triggerWhenOptions} />
               </div>
             </div>
             <div>

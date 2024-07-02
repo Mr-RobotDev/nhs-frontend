@@ -16,8 +16,8 @@ interface customMenuProps {
   createNewRoom?: boolean;
   handleCreateNewRoomModalShow?: () => void;
   multiple?: boolean; // Add the multiple prop
-  clearInternalStateFlag: boolean; // Add the flag prop
-  onClearInternalState: () => void; // Add the callback prop
+  clearInternalStateFlag?: boolean; // Add the flag prop
+  onClearInternalState?: () => void; // Add the callback prop
 }
 
 const CustomMenu = ({
@@ -63,7 +63,9 @@ const CustomMenu = ({
 
   const clearInternalState = useCallback(() => {
     setSelectedTypes([]);
-    onClearInternalState(); // Notify the parent that the internal state is cleared
+    if (onClearInternalState) {
+      onClearInternalState();
+    }
   }, [onClearInternalState])
 
   useEffect(() => {
