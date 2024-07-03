@@ -181,15 +181,33 @@ const DevicesTable = () => {
     } finally {
       setLoading(false);
     }
-    console.log(deviceId);
   };
 
   if (isMobile) {
     columns = columns.filter(column => column.key !== 'lastUpdated' && column.key !== 'sensorId');
   }
 
-  const fetchDevices = useCallback(async () => {
-    const queryParams = convertObjectToQueryString(deviceFilters);
+  const fetchDevicesBySearch = useCallback(async () => {
+    
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get(`/devices?page=1&limit=50`, {
+        params: {
+          search: debouncedSearch
+        }
+      });
+      if (response.status === 200) {
+        setDevices(response.data.results);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [debouncedSearch]);
+
+  const fetchDevicesByFilter = useCallback(async (filters: any) => {
+    const queryParams = convertObjectToQueryString(filters);
     setLoading(true);
     try {
       const response = await axiosInstance.get(`/devices?page=1&limit=50&${queryParams}`, {
@@ -205,7 +223,7 @@ const DevicesTable = () => {
     } finally {
       setLoading(false);
     }
-  }, [deviceFilters, debouncedSearch]);
+  }, [debouncedSearch]);
 
   const fetchData = useCallback(
     async (url: string, key: string, queryparams?: any) => {
@@ -226,8 +244,8 @@ const DevicesTable = () => {
   );
 
   useEffect(() => {
-    fetchDevices();
-  }, [debouncedSearch]);
+    fetchDevicesBySearch();
+  }, [debouncedSearch, fetchDevicesBySearch]);
 
   useEffect(() => {
     fetchData('/organizations', 'organization', {});
@@ -325,15 +343,15 @@ const DevicesTable = () => {
     }
   }, [fetchData, deviceFilters.floor]);
 
-  // Run fetchDevices only once initially
+  // Run fetchDevicesByFilter only once initially and when filters change
   const didMount = useRef(false);
 
   useEffect(() => {
     if (!didMount.current) {
-      fetchDevices();
+      fetchDevicesByFilter(deviceFilters);
       didMount.current = true;
     }
-  }, [fetchDevices]);
+  }, [fetchDevicesByFilter, deviceFilters]);
 
   const applyFilterHandler = () => {
     const queryParams = new URLSearchParams();
@@ -346,7 +364,7 @@ const DevicesTable = () => {
     const queryString = queryParams.toString();
     router.push(`/dashboard/devices?${queryString}`);
 
-    fetchDevices();
+    fetchDevicesByFilter(deviceFilters);
   };
 
   const clearFilterHandler = () => {
@@ -362,10 +380,10 @@ const DevicesTable = () => {
 
   useEffect(() => {
     if (clearFilterTriggered.current) {
-      fetchDevices();
+      fetchDevicesByFilter(emptyFilters);
       clearFilterTriggered.current = false;
     }
-  }, [deviceFilters, data, fetchDevices]);
+  }, [deviceFilters, data, fetchDevicesByFilter]);
 
   const handleClearInternalState = () => {
     setClearInternalStateFlag(false);
@@ -400,7 +418,7 @@ const DevicesTable = () => {
               className="button_ready-animation w-full cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
             >
               <FontAwesomeIcon icon={faFilter} />
-              {showFilters ? 'Hide' : 'Show'} Filters
+              Filters
             </div>
           </div>
         </div>
