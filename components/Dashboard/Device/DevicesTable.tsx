@@ -18,7 +18,7 @@ import CustomMenu from "@/components/ui/Menu/CustomMenu";
 import LoadingWrapper from "@/components/ui/LoadingWrapper/LoadingWrapper";
 import { PrimaryInput } from "@/components/ui/Input/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCirclePlus, faFilter } from "@fortawesome/free-solid-svg-icons";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import useDebounce from "@/app/hooks/useDebounce";
 
 const emptyFilters = {
@@ -27,6 +27,7 @@ const emptyFilters = {
   building: [] as string[],
   floor: [] as string[],
   room: [] as string[],
+  search: ''
 }
 
 const initialStateDropdownsData = {
@@ -43,8 +44,8 @@ const DevicesTable = () => {
   const clearFilterTriggered = useRef(false);
   const customMenuRef = useRef(null);
   const [clearInternalStateFlag, setClearInternalStateFlag] = useState(false);
-  const [search, setSearch] = useState('')
-  const debouncedSearch = useDebounce(search, 500);
+  const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
+  const debouncedFilters = useDebounce(deviceFilters, 500);
 
   const { TimeAgo } = useTimeAgo();
   const isMobile = useIsMobile();
@@ -55,7 +56,33 @@ const DevicesTable = () => {
     organization: [] as SingleNameIdObject[],
     ...initialStateDropdownsData
   });
-  const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
+
+  // Initialize deviceFilters from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialFilters = { ...emptyFilters };
+
+    if (params.has('organization')) {
+      initialFilters.organization = params.getAll('organization');
+    }
+    if (params.has('site')) {
+      initialFilters.site = params.getAll('site');
+    }
+    if (params.has('building')) {
+      initialFilters.building = params.getAll('building');
+    }
+    if (params.has('floor')) {
+      initialFilters.floor = params.getAll('floor');
+    }
+    if (params.has('room')) {
+      initialFilters.room = params.getAll('room');
+    }
+    if (params.has('search')) {
+      initialFilters.search = params.get('search') || '';
+    }
+
+    setDeviceFilters(initialFilters);
+  }, []);
 
   let columns: TableProps<DevicesType>["columns"] = [
     {
@@ -187,34 +214,11 @@ const DevicesTable = () => {
     columns = columns.filter(column => column.key !== 'lastUpdated' && column.key !== 'sensorId');
   }
 
-  const fetchDevicesBySearch = useCallback(async () => {
-    
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get(`/devices?page=1&limit=50`, {
-        params: {
-          search: debouncedSearch
-        }
-      });
-      if (response.status === 200) {
-        setDevices(response.data.results);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedSearch]);
-
-  const fetchDevicesByFilter = useCallback(async (filters: any) => {
+  const fetchDevices = useCallback(async (filters: any) => {
     const queryParams = convertObjectToQueryString(filters);
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/devices?page=1&limit=50&${queryParams}`, {
-        params: {
-          search: debouncedSearch
-        }
-      });
+      const response = await axiosInstance.get(`/devices?page=1&limit=50&${queryParams}`);
       if (response.status === 200) {
         setDevices(response.data.results);
       }
@@ -223,7 +227,7 @@ const DevicesTable = () => {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch]);
+  }, []);
 
   const fetchData = useCallback(
     async (url: string, key: string, queryparams?: any) => {
@@ -243,9 +247,26 @@ const DevicesTable = () => {
     []
   );
 
+  const updateQueryParams = useCallback((filters: any) => {
+    const queryParams = new URLSearchParams();
+
+    filters.organization.forEach((org: any) => queryParams.append('organization', org));
+    filters.site.forEach((site: any) => queryParams.append('site', site));
+    filters.building.forEach((building: any) => queryParams.append('building', building));
+    filters.floor.forEach((floor: any) => queryParams.append('floor', floor));
+    filters.room.forEach((room: any) => queryParams.append('room', room));
+    if (filters.search) {
+      queryParams.append('search', filters.search);
+    }
+
+    const queryString = queryParams.toString();
+    router.push(`/dashboard/devices?${queryString}`);
+  }, [router])
+
   useEffect(() => {
-    fetchDevicesBySearch();
-  }, [debouncedSearch, fetchDevicesBySearch]);
+    fetchDevices(debouncedFilters);
+    updateQueryParams(debouncedFilters);
+  }, [debouncedFilters, fetchDevices, updateQueryParams]);
 
   useEffect(() => {
     fetchData('/organizations', 'organization', {});
@@ -254,24 +275,6 @@ const DevicesTable = () => {
   useEffect(() => {
     const orgQueryParams = { organization: deviceFilters.organization };
 
-    // Reset sites, buildings, and floors to empty arrays
-    setData(prevData => ({
-      ...prevData,
-      site: [],
-      building: [],
-      floor: [],
-      room: []
-    }));
-
-    setDeviceFilters(prevState => ({
-      ...prevState,
-      site: [],
-      building: [],
-      floor: [],
-      room: []
-    }));
-
-    // Fetch sites based on organization
     if (deviceFilters.organization.length > 0) {
       fetchData('/sites', 'site', orgQueryParams);
     }
@@ -280,22 +283,6 @@ const DevicesTable = () => {
   useEffect(() => {
     const siteQueryParams = { site: deviceFilters.site };
 
-    // Reset buildings and floors to empty arrays
-    setData(prevData => ({
-      ...prevData,
-      building: [],
-      floor: [],
-      room: []
-    }));
-
-    setDeviceFilters(prevState => ({
-      ...prevState,
-      building: [],
-      floor: [],
-      room: []
-    }));
-
-    // Fetch buildings based on site
     if (deviceFilters.site.length > 0) {
       fetchData('/buildings', 'building', siteQueryParams);
     }
@@ -304,20 +291,6 @@ const DevicesTable = () => {
   useEffect(() => {
     const buildingQueryParams = { building: deviceFilters.building };
 
-    // Reset floors to empty arrays
-    setData(prevData => ({
-      ...prevData,
-      floor: [],
-      room: []
-    }));
-
-    setDeviceFilters(prevState => ({
-      ...prevState,
-      floor: [],
-      room: []
-    }));
-
-    // Fetch floors based on building
     if (deviceFilters.building.length > 0) {
       fetchData('/floors', 'floor', buildingQueryParams);
     }
@@ -326,46 +299,10 @@ const DevicesTable = () => {
   useEffect(() => {
     const floorQueryParams = { floor: deviceFilters.floor };
 
-    // Reset rooms to empty arrays
-    setData(prevData => ({
-      ...prevData,
-      room: []
-    }));
-
-    setDeviceFilters(prevState => ({
-      ...prevState,
-      room: []
-    }));
-
-    // Fetch rooms based on floor
     if (deviceFilters.floor.length > 0) {
       fetchData('/rooms', 'room', floorQueryParams);
     }
   }, [fetchData, deviceFilters.floor]);
-
-  // Run fetchDevicesByFilter only once initially and when filters change
-  const didMount = useRef(false);
-
-  useEffect(() => {
-    if (!didMount.current) {
-      fetchDevicesByFilter(deviceFilters);
-      didMount.current = true;
-    }
-  }, [fetchDevicesByFilter, deviceFilters]);
-
-  const applyFilterHandler = () => {
-    const queryParams = new URLSearchParams();
-
-    deviceFilters.organization.forEach(org => queryParams.append('organization', org));
-    deviceFilters.site.forEach(site => queryParams.append('site', site));
-    deviceFilters.building.forEach(building => queryParams.append('building', building));
-    deviceFilters.floor.forEach(floor => queryParams.append('floor', floor));
-
-    const queryString = queryParams.toString();
-    router.push(`/dashboard/devices?${queryString}`);
-
-    fetchDevicesByFilter(deviceFilters);
-  };
 
   const clearFilterHandler = () => {
     setClearInternalStateFlag(true);
@@ -376,14 +313,8 @@ const DevicesTable = () => {
       ...initialStateDropdownsData
     }));
     router.push(`/dashboard/devices`);
+    fetchDevices(emptyFilters);
   };
-
-  useEffect(() => {
-    if (clearFilterTriggered.current) {
-      fetchDevicesByFilter(emptyFilters);
-      clearFilterTriggered.current = false;
-    }
-  }, [deviceFilters, data, fetchDevicesByFilter]);
 
   const handleClearInternalState = () => {
     setClearInternalStateFlag(false);
@@ -406,8 +337,8 @@ const DevicesTable = () => {
           <p className="font-semibold text-base !mb-0">Search</p>
           <PrimaryInput
             name="name"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={deviceFilters.search}
+            onChange={(e) => setDeviceFilters(prev => ({ ...prev, search: e.target.value }))}
             placeholder="Search By Name or Sensor ID"
           />
         </div>
@@ -418,14 +349,14 @@ const DevicesTable = () => {
               className="button_ready-animation w-full cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
             >
               <FontAwesomeIcon icon={faFilter} />
-              Filters
+              {showFilters ? 'Hide' : 'Show'} Filters
             </div>
           </div>
         </div>
       </div>
 
       <LoadingWrapper loading={devicesFilterLoading} >
-        <div className={`overflow-hidden transform transition-all duration-300 ${showFilters ? 'h-full' : 'h-0'}`}>
+        <div className={`overflow-hidden transform ${showFilters ? 'h-full' : 'h-0'}`}>
           <div className={`border border-gray-200 rounded-md p-6 my-5`}>
             <div className="grid grid-cols-4 gap-3">
               <div>
@@ -525,7 +456,6 @@ const DevicesTable = () => {
               </div>
             </div>
             <div className=" flex flex-row gap-3">
-              <Button type="primary" onClick={applyFilterHandler}>Apply Filter</Button>
               <Button onClick={clearFilterHandler}>Clear Filters</Button>
             </div>
           </div>

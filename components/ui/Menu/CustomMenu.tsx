@@ -47,6 +47,18 @@ const CustomMenu = ({
   const selectDisplayRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    setSelectedTypes(initialValue)
+  }, [initialValue])
+
+  useEffect(() => {
+    console.log('<----------------->')
+    console.log('Options ->', options)
+    console.log('selectedTypes ->', selectedTypes)
+    console.log('initialValue ->', initialValue)
+    console.log('<----------------->')
+  }, [options, selectedTypes, initialValue])
+
   const clearInternalState = useCallback(() => {
     setSelectedTypes([]);
     if (onClearInternalState) {
