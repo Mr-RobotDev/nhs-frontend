@@ -7,11 +7,12 @@ import { DevicesType, Event } from "@/type";
 import SimSignal from "../Device/SimSignal";
 import { useTimeAgo } from "next-timeago";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
-import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/store/store";
 import { setDeviceForAlert, setDevicesToGlobal } from "@/app/store/slice/devicesSlice";
 import { iconsBasedOnType } from "@/utils/helper_functions";
+import useDebounce from "@/app/hooks/useDebounce";
+import { PrimaryInput } from "@/components/ui/Input/Input";
 
 interface DevicesSelectorProps {
   setSelectedRowKeys: (selectedRowKeys: string[]) => void;
@@ -30,6 +31,8 @@ const DevicesSelector = ({
   const [loading, setLoading] = useState(false)
   const { TimeAgo } = useTimeAgo();
   const dispatch: AppDispatch = useDispatch()
+  const [search, setSearch] = useState<string>('');
+  const debouncedSearch = useDebounce(search, 500);
 
   const addOrRemoveDeviceIdToTheList = (e: any, id: string) => {
     e.stopPropagation()
@@ -124,7 +127,7 @@ const DevicesSelector = ({
     (async () => {
       try {
         setLoading(true);
-        const params: any = { page: 1, limit: 50 };
+        const params: any = { page: 1, limit: 50, search: debouncedSearch };
         const response = await axiosInstance.get("/devices", { params });
         if (response.status === 200) {
           setDevices(response.data.results);
@@ -136,7 +139,7 @@ const DevicesSelector = ({
         setLoading(false);
       }
     })();
-  }, [dispatch, deviceType]);
+  }, [dispatch, deviceType, debouncedSearch]);
 
   const onRowClick = (record: DevicesType) => {
     return {
@@ -156,6 +159,15 @@ const DevicesSelector = ({
 
   return (
     <div className="mt-8">
+      <div className="pr-10 mb-6">
+        <p className="!text-base font-bold !mb-0">Search</p>
+        <PrimaryInput
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className=""
+          placeholder="Search By Name or Sensor ID"
+        />
+      </div>
       <Table
         columns={columns}
         dataSource={devices}

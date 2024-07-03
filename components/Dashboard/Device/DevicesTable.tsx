@@ -3,7 +3,7 @@ import { Button, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import axiosInstance from "@/lib/axiosInstance";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DevicesType, SingleNameIdObject } from "@/type";
 import SimSignal from "./SimSignal";
 import { useTimeAgo } from "next-timeago";
@@ -19,13 +19,14 @@ import LoadingWrapper from "@/components/ui/LoadingWrapper/LoadingWrapper";
 import { PrimaryInput } from "@/components/ui/Input/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlus, faFilter } from "@fortawesome/free-solid-svg-icons";
+import useDebounce from "@/app/hooks/useDebounce";
 
 const emptyFilters = {
   organization: [] as string[],
   site: [] as string[],
   building: [] as string[],
   floor: [] as string[],
-  search: ''
+  room: [] as string[],
 }
 
 const initialStateDropdownsData = {
@@ -42,10 +43,13 @@ const DevicesTable = () => {
   const clearFilterTriggered = useRef(false);
   const customMenuRef = useRef(null);
   const [clearInternalStateFlag, setClearInternalStateFlag] = useState(false);
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 500);
 
   const { TimeAgo } = useTimeAgo();
   const isMobile = useIsMobile();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [data, setData] = useState({
     organization: [] as SingleNameIdObject[],
@@ -188,7 +192,11 @@ const DevicesTable = () => {
     const queryParams = convertObjectToQueryString(deviceFilters);
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/devices?page=1&limit=50&${queryParams}`);
+      const response = await axiosInstance.get(`/devices?page=1&limit=50&${queryParams}`, {
+        params: {
+          search: debouncedSearch
+        }
+      });
       if (response.status === 200) {
         setDevices(response.data.results);
       }
@@ -197,7 +205,7 @@ const DevicesTable = () => {
     } finally {
       setLoading(false);
     }
-  }, [deviceFilters]);
+  }, [deviceFilters, debouncedSearch]);
 
   const fetchData = useCallback(
     async (url: string, key: string, queryparams?: any) => {
@@ -216,6 +224,10 @@ const DevicesTable = () => {
     },
     []
   );
+
+  useEffect(() => {
+    fetchDevices();
+  }, [debouncedSearch]);
 
   useEffect(() => {
     fetchData('/organizations', 'organization', {});
@@ -267,7 +279,6 @@ const DevicesTable = () => {
 
     // Fetch buildings based on site
     if (deviceFilters.site.length > 0) {
-      console.log('fetched Buildingsss')
       fetchData('/buildings', 'building', siteQueryParams);
     }
   }, [fetchData, deviceFilters.site]);
@@ -297,7 +308,7 @@ const DevicesTable = () => {
   useEffect(() => {
     const floorQueryParams = { floor: deviceFilters.floor };
 
-    // Reset floors to empty arrays
+    // Reset rooms to empty arrays
     setData(prevData => ({
       ...prevData,
       room: []
@@ -308,7 +319,7 @@ const DevicesTable = () => {
       room: []
     }));
 
-    // Fetch floors based on building
+    // Fetch rooms based on floor
     if (deviceFilters.floor.length > 0) {
       fetchData('/rooms', 'room', floorQueryParams);
     }
@@ -325,6 +336,16 @@ const DevicesTable = () => {
   }, [fetchDevices]);
 
   const applyFilterHandler = () => {
+    const queryParams = new URLSearchParams();
+
+    deviceFilters.organization.forEach(org => queryParams.append('organization', org));
+    deviceFilters.site.forEach(site => queryParams.append('site', site));
+    deviceFilters.building.forEach(building => queryParams.append('building', building));
+    deviceFilters.floor.forEach(floor => queryParams.append('floor', floor));
+
+    const queryString = queryParams.toString();
+    router.push(`/dashboard/devices?${queryString}`);
+
     fetchDevices();
   };
 
@@ -336,6 +357,7 @@ const DevicesTable = () => {
       organization: prevData.organization,
       ...initialStateDropdownsData
     }));
+    router.push(`/dashboard/devices`);
   };
 
   useEffect(() => {
@@ -361,26 +383,32 @@ const DevicesTable = () => {
 
   return (
     <>
-      <div className=" flex justify-start">
-        <span
-          onClick={() => setShowFilters(!showFilters)}
-          className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center w-24"
-        >
-          <FontAwesomeIcon icon={faFilter} />
-          Filters
-        </span>
+      <div className=" flex flex-col md:flex-row md:gap-4">
+        <div className=" md:my-3 flex-1">
+          <p className="font-semibold text-base !mb-0">Search</p>
+          <PrimaryInput
+            name="name"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search By Name or Sensor ID"
+          />
+        </div>
+        <div className=" flex items-center md:justify-center mt-3 md:mt-7">
+          <div className=" flex justify-start w-[148px]">
+            <div
+              onClick={() => setShowFilters(!showFilters)}
+              className="button_ready-animation w-full cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
+            >
+              <FontAwesomeIcon icon={faFilter} />
+              {showFilters ? 'Hide' : 'Show'} Filters
+            </div>
+          </div>
+        </div>
       </div>
+
       <LoadingWrapper loading={devicesFilterLoading} >
         <div className={`overflow-hidden transform transition-all duration-300 ${showFilters ? 'h-full' : 'h-0'}`}>
           <div className={`border border-gray-200 rounded-md p-6 my-5`}>
-            <div className=" mb-3">
-              <p className="font-semibold text-lg !mb-1">Search</p>
-              <PrimaryInput
-                name="name"
-                value={deviceFilters.search}
-                onChange={(e: any) => setDeviceFilters(prev => ({ ...prev, search: e.target.value }))}
-              />
-            </div>
             <div className="grid grid-cols-4 gap-3">
               <div>
                 <p className="!mb-1 font-semibold">Organizations</p>
@@ -389,7 +417,7 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, organization: vals }));
                     }}
-                    initialValue={[]}
+                    initialValue={deviceFilters.organization} // Pass initial value from query params
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.organization)}
                     createNewRoom={false}
@@ -408,7 +436,7 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, site: vals }));
                     }}
-                    initialValue={[]}
+                    initialValue={deviceFilters.site} // Pass initial value from query params
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.site)}
                     createNewRoom={false}
@@ -427,8 +455,8 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, building: vals }));
                     }}
+                    initialValue={deviceFilters.building} // Pass initial value from query params
                     isAdmin={true}
-                    initialValue={[]}
                     options={tranformObjectForSelectComponent(data.building)}
                     createNewRoom={false}
                     multiple={true}
@@ -446,6 +474,7 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, floor: vals }));
                     }}
+                    initialValue={deviceFilters.floor} // Pass initial value from query params
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.floor)}
                     createNewRoom={false}
@@ -464,14 +493,14 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, room: vals }));
                     }}
+                    initialValue={deviceFilters.room} // Pass initial value from query params
                     isAdmin={true}
-                    initialValue={[]}
                     options={tranformObjectForSelectComponent(data.room)}
                     createNewRoom={false}
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/floors?${convertObjectToQueryString({ floor: deviceFilters.floor })}`}
+                    apiEndpoint={`/rooms?${convertObjectToQueryString({ floor: deviceFilters.floor })}`}
                     searchable={true}
                   />
                 </div>
