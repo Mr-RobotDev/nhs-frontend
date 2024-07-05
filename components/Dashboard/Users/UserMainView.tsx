@@ -189,7 +189,7 @@ const UserMainView = () => {
 
   useEffect(() => {
     if (loggedInUser && loggedInUser?.role !== 'Admin') {
-      router.push('/dashboard/floor')
+      router.push('/dashboard')
     }
   }, [router, loggedInUser])
 
