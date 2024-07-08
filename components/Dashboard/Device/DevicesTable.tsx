@@ -358,7 +358,7 @@ const DevicesTable = () => {
       <LoadingWrapper loading={devicesFilterLoading} >
         <div className={`overflow-hidden transform ${showFilters ? 'h-full' : 'h-0'}`}>
           <div className={`border border-gray-200 rounded-md p-6 my-5`}>
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               <div>
                 <p className="!mb-1 font-semibold">Organizations</p>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
@@ -455,7 +455,7 @@ const DevicesTable = () => {
                 </div>
               </div>
             </div>
-            <div className=" flex flex-row gap-3">
+            <div className=" flex flex-row gap-3 my-2">
               <Button onClick={clearFilterHandler}>Clear Filters</Button>
             </div>
           </div>

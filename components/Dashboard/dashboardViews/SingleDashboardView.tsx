@@ -156,48 +156,49 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
   return currentSelectedDashboard ? (
     <>
       <div>
-        <div className=" flex flex-col flex-wrap gap-3 sm:flex-row sm:gap-0 justify-between items-start mr-auto">
-          <div className=" flex flex-row justify-between gap-3">
-            <div className="w-60">
-              <p className=" text-sm mb-1">Current Dashboard</p>
-              <DashboardMenu
-                dashboardsList={dashboards}
-                routingFunctionality={true}
-                activeDashboardId={id}
-              />
-            </div>
+        <div className=" flex justify-end">
+          <div className="block md:hidden mb-1">
+            <span
+              onClick={() => setIsModalOpen(true)}
+              className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 flex gap-2 items-center"
+            >
+              <FontAwesomeIcon icon={faCirclePlus} />
+              Create New Card
+            </span>
+          </div>
+        </div>
+        <div className=" flex flex-wrap gap-3 flex-row sm:gap-0 justify-between items-start w-full">
+          <div className=" flex-1 sm:flex-none">
+            <p className=" text-sm mb-1">Current Dashboard</p>
+            <DashboardMenu
+              dashboardsList={dashboards}
+              routingFunctionality={true}
+            />
           </div>
           {isAdmin && currentSelectedDashboard && dashboardCards.length !== 0 && (
-            <div className="  flex flex-row items-end justify-between gap-3 w-full lg:w-auto mt-2 md:mt-0">
-              <div className=" flex flex-row- items-end gap-3 flex-wrap">
-                <div>
+            <div className=" flex-1 flex flex-row items-end flex-wrap justify-start sm:justify-end gap-3 w-full lg:w-auto">
+              <div className=" flex flex-row- items-end gap-0 md:gap-3 w-full sm:w-auto">
+                <div className="w-full sm:w-auto">
                   <p className=" text-sm mb-1">Time frame</p>
                   <TimeFrameMenu functionality={true} />
                 </div>
-                <div className="block md:hidden">
-                  <span
-                    onClick={() => setIsModalOpen(true)}
-                    className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
-                  >
-                    <FontAwesomeIcon icon={faCirclePlus} />
-                    Create New Card
-                  </span>
+                <div>
+                  {
+                    timeFrame.key === 'CUSTOM' &&
+                    <div className="hidden md:block">
+                      <RangePicker
+                        className="flex h-[42px] w-72"
+                        onChange={handleRangeChange}
+                        defaultValue={range}
+                      />
+                    </div>
+                  }
                 </div>
-                {
-                  timeFrame.key === 'CUSTOM' &&
-                  <div className="">
-                    <RangePicker
-                      className="flex h-[42px]"
-                      onChange={handleRangeChange}
-                      defaultValue={range}
-                    />
-                  </div>
-                }
               </div>
-              <div className="mt-6 hidden md:block">
+              <div className="hidden md:block">
                 <span
                   onClick={() => setIsModalOpen(true)}
-                  className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
+                  className="button_ready-animation cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-blue-600 text-white hover:bg-blue-700 transition-all ease-in-out duration-300 flex gap-2 items-center"
                 >
                   <FontAwesomeIcon icon={faCirclePlus} />
                   Create New Card
@@ -205,6 +206,18 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
               </div>
             </div>
           )}
+        </div>
+        <div className=" block md:hidden mt-2">
+          {
+            timeFrame.key === 'CUSTOM' &&
+            <div className="">
+              <RangePicker
+                className="flex h-[42px]"
+                onChange={handleRangeChange}
+                defaultValue={range}
+              />
+            </div>
+          }
         </div>
 
         {(dashboardCards.length === 0 && !isLoading.gettingDashboardCards) &&
@@ -220,7 +233,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
         {dashboardCards.length !== 0 &&
           <div className="mt-3">
             <ResponsiveGridLayout
-              draggableCancel=".cancelSelectorName" 
+              draggableCancel=".cancelSelectorName"
               className="layout"
               margin={[20, 20]}
               rowHeight={160}
