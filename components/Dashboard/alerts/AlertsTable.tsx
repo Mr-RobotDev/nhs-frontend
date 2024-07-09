@@ -2,7 +2,7 @@
 import { scheduletypeOptions, timeFrameOptions } from '@/utils/form';
 import { CheckIcon, TrashIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Image, Table, TableProps } from 'antd';
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { AlertDataType } from '@/type';
 import axiosInstance from '@/lib/axiosInstance';
 import { useRouter } from 'next/navigation';
@@ -10,10 +10,15 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
 
 const AlertsTable = () => {
+
+  const router = useRouter()
+
   const { isAdmin } = useSelector((state: RootState) => state.authReducer)
   const [alerts, setAlerts] = useState<AlertDataType[]>([])
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   const handleDeleteAlert = async (e: any, alertId: string) => {
     e.stopPropagation();
@@ -105,23 +110,36 @@ const AlertsTable = () => {
     },)
   }
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true)
-      try {
-        const response = await axiosInstance.get(`/alerts`)
-        setAlerts(response.data.results)
-      } catch (err) {
-        console.log('Error->', err);
-      } finally {
-        setLoading(false)
-      }
-    })()
+  const fetchAlerts = useCallback(async (page: number, limit: number) => {
+    setLoading(true)
+    try {
+      const response = await axiosInstance.get(`/alerts`, {
+        params: { page, limit },
+      })
+      
+      setAlerts(response.data.results)
+      setCurrentPage(response.data.pagination.page);
+      setPageSize(response.data.pagination.limit);
+      setTotalItems(response.data.pagination.totalResults);
+    } catch (err) {
+      console.log('Error->', err);
+    } finally {
+      setLoading(false)
+    }
   }, [])
+
+  useEffect(() => {
+    fetchAlerts(currentPage, pageSize)
+  }, [fetchAlerts, currentPage, pageSize])
 
   const showReportsDetails = (record: AlertDataType) => ({
     onClick: () => router.push(`alerts/${record.id}`)
   });
+
+  const handleTablePaginationChange = (newPagination: any) => {
+    setCurrentPage(newPagination);
+    setPageSize(10);
+  }
 
   return (
     <div className=" shadow-md p-2 bg-white">
@@ -133,6 +151,12 @@ const AlertsTable = () => {
         rowClassName="overflow-hidden"
         loading={loading}
         onRow={showReportsDetails}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: totalItems,
+          onChange: handleTablePaginationChange,
+        }}
       />
     </div>
   )
