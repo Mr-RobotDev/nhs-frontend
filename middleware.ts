@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   const isPublicPath = path === '/login'
 
   if (isPublicPath && token) {
-    return NextResponse.redirect(new URL('/dashboard/floor', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   if (!isPublicPath && !token) {

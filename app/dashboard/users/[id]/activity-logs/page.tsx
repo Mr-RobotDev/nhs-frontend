@@ -10,7 +10,7 @@ const UserPage = (props: any) => {
 
   useEffect(() => {
     if (user && !isAdmin) {
-      router.push('/dashboard/floor')
+      router.push('/dashboard')
     }
   }, [router, user, isAdmin])
 

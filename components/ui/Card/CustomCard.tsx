@@ -1,22 +1,20 @@
-import TemperatureChart from "@/components/Dashboard/dashboardViews/TemperatureChart";
-import axiosInstance from "@/lib/axiosInstance";
-import { DashboardCardType, DevicesType } from "@/type";
-import { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Button, Card, Spin, Tooltip } from "antd";
-import { EventsMap, Event, DeviceData } from "@/type";
-import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
+import { DashboardCardType } from "@/type";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store/store";
 import Image from "next/image";
 import { PrimaryInput } from "../Input/Input";
 import { updateCard } from "@/app/store/slice/dashboardSlice";
-import SingleDeviceDashCard from "@/components/Dashboard/dashboardViews/SingleDeviceDashCard";
-import { getDeviceLabelFromState } from "@/utils/helper_functions";
 import Link from "next/link";
+import axiosInstance from "@/lib/axiosInstance";
+import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
+import { getDeviceLabelFromState } from "@/utils/helper_functions";
 
 interface CardProps {
   cardObj: DashboardCardType;
 }
+
 const countStates = (devices: any) => {
   return devices.reduce(
     (acc: any, device: any) => {
@@ -37,7 +35,6 @@ const countStates = (devices: any) => {
 };
 
 const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
-
   const [loading, setLoading] = useState<boolean>(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [editingName, setEditingName] = useState(cardObj.name);
@@ -55,53 +52,31 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     setCard(cardObj);
   }, [cardObj]);
 
-
   useEffect(() => {
-    // let isCancelled = false;
-
     const fetchEventsForDevices = async () => {
-
       const fetchPromises = card.devices.map(async (device) => {
         if (timeFrame.startDate && timeFrame.endDate) {
           setLoading(true);
-          const { id, name } = device;
           try {
-            const response = await axiosInstance.get(`/devices/${device.id}/events`, {
+            await axiosInstance.get(`/devices/${device.id}/events`, {
               params: {
                 from: timeFrame.startDate,
                 to: timeFrame.endDate,
               },
             });
-
           } catch (error) {
-            console.error(`Error fetching events for device ${id}:`, error);
+            console.error(`Error fetching events for device ${device.id}:`, error);
           } finally {
-            setLoading(false)
+            setLoading(false);
           }
         }
       });
-
       await Promise.all(fetchPromises);
     };
-
-    // fetchEventsForDevices();
-
+    fetchEventsForDevices();
   }, [card, timeFrame.startDate, timeFrame.endDate]);
 
-  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
-
-  const handleOnCancelClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setIsRenaming(false);
-    console.log("clicked");
-    setEditingName(card.name);
-  };
-
-  const handleUpdateCard = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUpdateCard = (e: any) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -132,7 +107,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
           <Spin />
         </div>
       ) : (
-        <div className="flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3">
+        <div className="flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3 relative z-10">
           <div className=" flex flex-row justify-between items-center border-b pb-2">
             <div className=" flex flex-row items-center gap-2">
               <div className=" w-11 h-11 border border-blue-100 rounded-md p-1">
@@ -160,13 +135,14 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                       getTooltipContainer={(triggerNode) =>
                         triggerNode.parentNode as HTMLElement
                       }
-                      title={`${editingName.length < 3 ? "Atleast 3 characters" : ""
+                      title={`${editingName.length < 3 ? "At least 3 characters" : ""
                         }`}
                     >
                       <span className="flex">
                         <button
                           disabled={editingName.length < 3}
                           onMouseDown={handleUpdateCard}
+                          onTouchStart={handleUpdateCard}
                           className="mini-button hover:bg-blue-50 bg-transparent border-l-none px-3 disabled:cursor-not-allowed disabled:opacity-80 hover:bg-hover-primary transition-all ease-in-out duration-300 w-full"
                         >
                           Save
@@ -177,7 +153,18 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                       <button
                         disabled={false}
                         className="mini-button border-l px-2 bg-transparent border-l-none rounded-e-lg hover:bg-blue-50 !w-full transition-all ease-in-out duration-300"
-                        onMouseDown={handleOnCancelClick}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setIsRenaming(false);
+                          setEditingName(card.name);
+                        }}
+                        onTouchStart={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setIsRenaming(false);
+                          setEditingName(card.name);
+                        }}
                       >
                         Cancel
                       </button>
@@ -190,7 +177,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               </div>
             </div>
             {isAdmin && !isRenaming && (
-              <Button onMouseDown={handleOnClick} className=" w-10 h-10 border flex items-center justify-center">
+              <Button onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} className=" w-10 h-10 border flex items-center justify-center cancelSelectorName">
                 <OptionsMenu cardId={card.id} setIsRenaming={setIsRenaming} />
               </Button>
             )}
@@ -201,6 +188,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                 <div
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
+                  onTouchStart={() => setIsHovered(true)}
+                  onTouchEnd={() => setIsHovered(false)}
                   className=" grid grid-cols-2 h-full">
                   <div className=" w-full h-full flex justify-center items-center">
                     <div className=" flex flex-col items-center">
@@ -228,22 +217,22 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
       <div
         onMouseEnter={() => setIsHovered2(true)}
         onMouseLeave={() => setIsHovered2(false)}
-        className=" pt-6 relative -top-4 z-[999px]"
+        onMouseDown={() => setIsHovered2(true)}
+        className=" pt-3 relative z-[9999]"
       >
         {((isHovered || isHovered2) && card.devices.length !== 1) && (
           <Card
-
-            className=" duration-300 transform transition-all relative z-[999px]">
+            className=" duration-300 transform transition-all relative z-[9999]">
             <div className=" bg-white flex flex-col gap-2 justify-start items-center ">
               <div className=" flex flex-col gap-0 w-full">
                 {
                   motionDetected.devices.map((device: any) => (
-                    <>
-                      <div key={device.name} className=" flex flex-row gap-2 w-full">
-                        <p className="!mb-0"><strong className=" mr-3">Not Occupied</strong> {device.name}</p>
+                    <Link key={device.id} href={`/dashboard/devices/${device.id}`} >
+                      <div className=" flex flex-row gap-2 w-full">
+                        <p className="!mb-0"><strong className=" mr-3">Occupied</strong> {device.name}</p>
                       </div>
                       <hr className=" h-2 w-full my-1" />
-                    </>
+                    </Link>
                   ))
                 }
               </div>

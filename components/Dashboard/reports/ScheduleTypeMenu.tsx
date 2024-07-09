@@ -23,7 +23,7 @@ const ScheduleTypeMenu = ({ handleScheduleTypeChange, initialScheduleType = 'wee
   }, [handleScheduleTypeChange, isAdmin]);
 
   const selectDisplay = (
-    <div className={`inline-block shadow-sm rounded-lg !bg-white p-1 px-2 w-full ${!isAdmin ? "opacity-50" : ""}`}>
+    <div className={`inline-block shadow-sm rounded-lg !bg-white p-1 px-2 w-[200px] ${!isAdmin ? "opacity-50" : ""}`}>
       <div className="flex flex-row gap-2">
         <SelectSecondary
           only={scheduletypeOptions.find(option => option.value === scheduleType)?.label}
@@ -35,7 +35,7 @@ const ScheduleTypeMenu = ({ handleScheduleTypeChange, initialScheduleType = 'wee
   );
 
   const popoverContent = (
-    <div className="w-[170px]">
+    <div className="w-[200px]">
       <div className="flex flex-col">
         {['everyday', 'weekdays', 'custom'].map(type => (
           <div

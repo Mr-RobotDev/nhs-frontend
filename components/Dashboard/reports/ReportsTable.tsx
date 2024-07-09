@@ -447,7 +447,7 @@ const ReportsTable = ({
                   </div>
                   <div className=" flex flex-col items-start mb-6">
                     <p className="!mb-1 text-sm">Time Frame </p>
-                    <div className="flex flex-row items-center border rounded-md shadow-md w-[170px]">
+                    <div className="flex flex-row items-center border rounded-md shadow-md w-[200px]">
                       <TimeFrameMenu
                         functionality={false}
                         initialValue={formData?.timeframe}
@@ -459,7 +459,7 @@ const ReportsTable = ({
                     <p className="!mb-1 text-sm">Type </p>
                   </div>
                   <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-12">
-                    <div className="flex flex-row items-center border rounded-md shadow-md w-[170px] mb-3 md:mb-0">
+                    <div className="flex flex-row items-center border rounded-md shadow-md w-[200px] mb-3 md:mb-0">
                       <ScheduleTypeMenu isAdmin={isAdmin} initialScheduleType={formData?.scheduleType} handleScheduleTypeChange={handleScheduleTypeChange} />
                     </div>
                     <div className=" grid grid-cols-3 md:flex md:flex-row md:flex-wrap md:justify-between w-full">

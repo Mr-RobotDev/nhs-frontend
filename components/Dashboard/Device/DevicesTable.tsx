@@ -1,31 +1,94 @@
-import React, { useEffect, useState } from "react";
-import { Table, Tag } from "antd";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Button, Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import axiosInstance from "@/lib/axiosInstance";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { DevicesType } from "@/type";
+import { useRouter, useSearchParams } from "next/navigation";
+import { DevicesType, SingleNameIdObject } from "@/type";
 import SimSignal from "./SimSignal";
 import { useTimeAgo } from "next-timeago";
 import Link from "next/link";
 import { ArrowUpRightIcon } from "@heroicons/react/16/solid";
 import useIsMobile from "@/app/hooks/useMobile";
-import './DeviceTable.css'
-import { iconsBasedOnType } from "@/utils/helper_functions";
+import './DeviceTable.css';
+import { convertObjectToQueryString, tranformObjectForSelectComponent } from "@/utils/helper_functions";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
+import CustomMenu from "@/components/ui/Menu/CustomMenu";
+import LoadingWrapper from "@/components/ui/LoadingWrapper/LoadingWrapper";
+import { PrimaryInput } from "@/components/ui/Input/Input";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import useDebounce from "@/app/hooks/useDebounce";
+
+const emptyFilters = {
+  organization: [] as string[],
+  site: [] as string[],
+  building: [] as string[],
+  floor: [] as string[],
+  room: [] as string[],
+  search: ''
+}
+
+const initialStateDropdownsData = {
+  site: [] as SingleNameIdObject[],
+  building: [] as SingleNameIdObject[],
+  floor: [] as SingleNameIdObject[],
+  room: [] as SingleNameIdObject[]
+}
 
 const DevicesTable = () => {
   const [devices, setDevices] = useState<DevicesType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [devicesFilterLoading, setDevicesFilterLoading] = useState(false);
+  const clearFilterTriggered = useRef(false);
+  const customMenuRef = useRef(null);
+  const [clearInternalStateFlag, setClearInternalStateFlag] = useState(false);
+  const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
+  const debouncedFilters = useDebounce(deviceFilters, 500);
+
   const { TimeAgo } = useTimeAgo();
   const isMobile = useIsMobile();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [data, setData] = useState({
+    organization: [] as SingleNameIdObject[],
+    ...initialStateDropdownsData
+  });
+
+  // Initialize deviceFilters from URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialFilters = { ...emptyFilters };
+
+    if (params.has('organization')) {
+      initialFilters.organization = params.getAll('organization');
+    }
+    if (params.has('site')) {
+      initialFilters.site = params.getAll('site');
+    }
+    if (params.has('building')) {
+      initialFilters.building = params.getAll('building');
+    }
+    if (params.has('floor')) {
+      initialFilters.floor = params.getAll('floor');
+    }
+    if (params.has('room')) {
+      initialFilters.room = params.getAll('room');
+    }
+    if (params.has('search')) {
+      initialFilters.search = params.get('search') || '';
+    }
+
+    setDeviceFilters(initialFilters);
+  }, []);
 
   let columns: TableProps<DevicesType>["columns"] = [
     {
       title: "TYPE",
       dataIndex: "type",
-      render: (_,) => (
+      render: (_, record) => (
         <div className=" flex flex-row items-center">
           <div className=" w-10 h-10">
             <Image
@@ -131,43 +194,131 @@ const DevicesTable = () => {
   ];
 
   const handleDeleteDevice = async (e: any, deviceId: string) => {
-    e.stopPropagation()
-    setLoading(true)
-    try{
-      const response = await axiosInstance.delete(`/devices/${deviceId}`)
-      if(response.status === 200){
-        const updatedDevices = devices.filter((device) => device.id!== deviceId);
+    e.stopPropagation();
+    setLoading(true);
+    try {
+      const response = await axiosInstance.delete(`/devices/${deviceId}`);
+      if (response.status === 200) {
+        const updatedDevices = devices.filter((device) => device.id !== deviceId);
         setDevices(updatedDevices);
-        toast.success('Device Removed')
+        toast.success('Device Removed');
       }
-    }catch(error: any){
-      console.log(error)
-    }finally{
-      setLoading(false)
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    console.log(deviceId)
-  }
+  };
 
   if (isMobile) {
     columns = columns.filter(column => column.key !== 'lastUpdated' && column.key !== 'sensorId');
   }
 
-  const router = useRouter();
-  useEffect(() => {
-    (async () => {
-      setLoading(true)
-      try {
-        const response = await axiosInstance.get("/devices?page=1&limit=50");
-        if (response.status === 200) {
-          setDevices(response.data.results);
-        }
-      } catch (error) {
-        console.log(error);
-      } finally{
-        setLoading(false)
+  const fetchDevices = useCallback(async (filters: any) => {
+    const queryParams = convertObjectToQueryString(filters);
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get(`/devices?page=1&limit=50&${queryParams}`);
+      if (response.status === 200) {
+        setDevices(response.data.results);
       }
-    })();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  const fetchData = useCallback(
+    async (url: string, key: string, queryparams?: any) => {
+      const newStringParams = convertObjectToQueryString(queryparams);
+      try {
+        setDevicesFilterLoading(true);
+        const response = await axiosInstance.get(`${url}?page=1&limit=50&${newStringParams}`);
+        if (response.status === 200) {
+          setData(prevData => ({ ...prevData, [key]: response.data.results }));
+        }
+      } catch (error: any) {
+        console.log(error);
+      } finally {
+        setDevicesFilterLoading(false);
+      }
+    },
+    []
+  );
+
+  const updateQueryParams = useCallback((filters: any) => {
+    const queryParams = new URLSearchParams();
+
+    filters.organization.forEach((org: any) => queryParams.append('organization', org));
+    filters.site.forEach((site: any) => queryParams.append('site', site));
+    filters.building.forEach((building: any) => queryParams.append('building', building));
+    filters.floor.forEach((floor: any) => queryParams.append('floor', floor));
+    filters.room.forEach((room: any) => queryParams.append('room', room));
+    if (filters.search) {
+      queryParams.append('search', filters.search);
+    }
+
+    const queryString = queryParams.toString();
+    router.push(`/dashboard/devices?${queryString}`);
+  }, [router])
+
+  useEffect(() => {
+    fetchDevices(debouncedFilters);
+    updateQueryParams(debouncedFilters);
+  }, [debouncedFilters, fetchDevices, updateQueryParams]);
+
+  useEffect(() => {
+    fetchData('/organizations', 'organization', {});
+  }, [fetchData]);
+
+  useEffect(() => {
+    const orgQueryParams = { organization: deviceFilters.organization };
+
+    if (deviceFilters.organization.length > 0) {
+      fetchData('/sites', 'site', orgQueryParams);
+    }
+  }, [fetchData, deviceFilters.organization]);
+
+  useEffect(() => {
+    const siteQueryParams = { site: deviceFilters.site };
+
+    if (deviceFilters.site.length > 0) {
+      fetchData('/buildings', 'building', siteQueryParams);
+    }
+  }, [fetchData, deviceFilters.site]);
+
+  useEffect(() => {
+    const buildingQueryParams = { building: deviceFilters.building };
+
+    if (deviceFilters.building.length > 0) {
+      fetchData('/floors', 'floor', buildingQueryParams);
+    }
+  }, [fetchData, deviceFilters.building]);
+
+  useEffect(() => {
+    const floorQueryParams = { floor: deviceFilters.floor };
+
+    if (deviceFilters.floor.length > 0) {
+      fetchData('/rooms', 'room', floorQueryParams);
+    }
+  }, [fetchData, deviceFilters.floor]);
+
+  const clearFilterHandler = () => {
+    setClearInternalStateFlag(true);
+    clearFilterTriggered.current = true;
+    setDeviceFilters(emptyFilters);
+    setData((prevData) => ({
+      organization: prevData.organization,
+      ...initialStateDropdownsData
+    }));
+    router.push(`/dashboard/devices`);
+    fetchDevices(emptyFilters);
+  };
+
+  const handleClearInternalState = () => {
+    setClearInternalStateFlag(false);
+  };
 
   const onRowClick = (record: DevicesType) => {
     return {
@@ -177,17 +328,150 @@ const DevicesTable = () => {
     };
   };
 
+  const [showFilters, setShowFilters] = useState(false);
+
   return (
-    <div className="mt-8">
-      <Table
-        columns={columns}
-        dataSource={devices}
-        scroll={{ x: 500 }}
-        loading={loading}
-        className="cursor-pointer"
-        onRow={onRowClick}
-      />
-    </div>
+    <>
+      <div className=" flex flex-col md:flex-row md:gap-4">
+        <div className=" md:my-3 flex-1">
+          <p className="font-semibold text-base !mb-0">Search</p>
+          <PrimaryInput
+            name="name"
+            value={deviceFilters.search}
+            onChange={(e) => setDeviceFilters(prev => ({ ...prev, search: e.target.value }))}
+            placeholder="Search By Name or Sensor ID"
+          />
+        </div>
+        <div className=" flex items-center md:justify-center mt-3 md:mt-7">
+          <div className=" flex justify-start w-[148px]">
+            <div
+              onClick={() => setShowFilters(!showFilters)}
+              className="button_ready-animation w-full cursor-pointer !text-sm border-2 rounded-lg py-[10px] px-3 bg-custom-nhs-blue text-white hover:bg-blue-600 transition-all ease-in-out duration-300 flex gap-2 items-center"
+            >
+              <FontAwesomeIcon icon={faFilter} />
+              {showFilters ? 'Hide' : 'Show'} Filters
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <LoadingWrapper loading={devicesFilterLoading} >
+        <div className={`overflow-hidden transform ${showFilters ? 'h-full' : 'h-0'}`}>
+          <div className={`border border-gray-200 rounded-md p-6 my-5`}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div>
+                <p className="!mb-1 font-semibold">Organizations</p>
+                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                  <CustomMenu
+                    handleTypeChange={(vals: string[]) => {
+                      setDeviceFilters(prev => ({ ...prev, organization: vals }));
+                    }}
+                    initialValue={deviceFilters.organization} // Pass initial value from query params
+                    isAdmin={true}
+                    options={tranformObjectForSelectComponent(data.organization)}
+                    createNewRoom={false}
+                    multiple={true}
+                    clearInternalStateFlag={clearInternalStateFlag}
+                    onClearInternalState={handleClearInternalState}
+                    apiEndpoint="/organizations?page=1&limit=50"
+                    searchable={true}
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="!mb-1 font-semibold">Sites</p>
+                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                  <CustomMenu
+                    handleTypeChange={(vals: string[]) => {
+                      setDeviceFilters(prev => ({ ...prev, site: vals }));
+                    }}
+                    initialValue={deviceFilters.site} // Pass initial value from query params
+                    isAdmin={true}
+                    options={tranformObjectForSelectComponent(data.site)}
+                    createNewRoom={false}
+                    multiple={true}
+                    clearInternalStateFlag={clearInternalStateFlag}
+                    onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/sites?${convertObjectToQueryString({ organization: deviceFilters.organization })}`}
+                    searchable={true}
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="!mb-1 font-semibold">Buildings</p>
+                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                  <CustomMenu
+                    handleTypeChange={(vals: string[]) => {
+                      setDeviceFilters(prev => ({ ...prev, building: vals }));
+                    }}
+                    initialValue={deviceFilters.building} // Pass initial value from query params
+                    isAdmin={true}
+                    options={tranformObjectForSelectComponent(data.building)}
+                    createNewRoom={false}
+                    multiple={true}
+                    clearInternalStateFlag={clearInternalStateFlag}
+                    onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/buildings?${convertObjectToQueryString({ site: deviceFilters.site })}`}
+                    searchable={true}
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="!mb-1 font-semibold">Floors</p>
+                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                  <CustomMenu
+                    handleTypeChange={(vals: string[]) => {
+                      setDeviceFilters(prev => ({ ...prev, floor: vals }));
+                    }}
+                    initialValue={deviceFilters.floor} // Pass initial value from query params
+                    isAdmin={true}
+                    options={tranformObjectForSelectComponent(data.floor)}
+                    createNewRoom={false}
+                    multiple={true}
+                    clearInternalStateFlag={clearInternalStateFlag}
+                    onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/floors?${convertObjectToQueryString({ building: deviceFilters.building })}`}
+                    searchable={true}
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="!mb-1 font-semibold">Rooms</p>
+                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                  <CustomMenu
+                    handleTypeChange={(vals: string[]) => {
+                      setDeviceFilters(prev => ({ ...prev, room: vals }));
+                    }}
+                    initialValue={deviceFilters.room} // Pass initial value from query params
+                    isAdmin={true}
+                    options={tranformObjectForSelectComponent(data.room)}
+                    createNewRoom={false}
+                    multiple={true}
+                    clearInternalStateFlag={clearInternalStateFlag}
+                    onClearInternalState={handleClearInternalState}
+                    apiEndpoint={`/rooms?${convertObjectToQueryString({ floor: deviceFilters.floor })}`}
+                    searchable={true}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className=" flex flex-row gap-3 my-2">
+              <Button onClick={clearFilterHandler}>Clear Filters</Button>
+            </div>
+          </div>
+        </div>
+      </LoadingWrapper>
+      <div className="mt-8">
+        <Table
+          columns={columns}
+          dataSource={devices}
+          scroll={{ x: 500 }}
+          loading={loading}
+          className="cursor-pointer"
+          onRow={onRowClick}
+        />
+      </div>
+    </>
   );
 };
 

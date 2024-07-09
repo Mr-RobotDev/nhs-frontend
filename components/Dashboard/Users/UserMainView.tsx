@@ -189,7 +189,7 @@ const UserMainView = () => {
 
   useEffect(() => {
     if (loggedInUser && loggedInUser?.role !== 'Admin') {
-      router.push('/dashboard/floor')
+      router.push('/dashboard')
     }
   }, [router, loggedInUser])
 
@@ -310,10 +310,13 @@ const UserMainView = () => {
                 <label>Role</label>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0">
                   <CustomMenu
+                    handleTypeChange={(vals: string[]) => {
+                      const selectedValue = vals[0];
+                      setUser({ ...user, role: selectedValue })
+                    }}
                     isAdmin={true}
-                    handleTypeChange={(value: string) => setUser({ ...user, role: value })}
                     options={userRoleOptions}
-                    initialValue={user.role}
+                    initialValue={[user.role as string]}
                   />
                 </div>
               </div>
@@ -321,10 +324,13 @@ const UserMainView = () => {
                 <label>Organization</label>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0">
                   <CustomMenu
+                    handleTypeChange={(vals: string[]) => {
+                      const selectedValue = vals[0];
+                      setUser({ ...user, organization: selectedValue })
+                    }}
                     isAdmin={true}
-                    handleTypeChange={(value: string) => setUser({ ...user, organization: value })}
                     options={userOrganizationOptions}
-                    initialValue={user.organization}
+                    initialValue={[user.organization as string]}
                   />
                 </div>
               </div>

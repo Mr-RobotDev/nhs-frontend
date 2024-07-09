@@ -110,12 +110,12 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
     setFormData((prevState) => prevState && { ...prevState, scheduleType: value })
   }
 
-  const handleTriggerWhenChange = (value: string) => {
+  const handleTriggerWhenChange = (value: string[]) => {
     setFormData(prevState => ({
       ...prevState,
       trigger: {
         ...prevState.trigger,
-        state: value
+        state: value[0]
       }
     }));
   }
@@ -279,7 +279,7 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
             <p className="!mb-1 text-sm">Type</p>
           </div>
           <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-12">
-            <div className="flex flex-row items-center border rounded-md shadow-md w-[170px] mb-3 md:mb-0">
+            <div className="flex flex-row items-center border rounded-md shadow-md w-[200px] mb-3 md:mb-0">
               <ScheduleTypeMenu isAdmin={isAdmin} initialScheduleType={formData?.scheduleType} handleScheduleTypeChange={handleScheduleTypeChange} />
             </div>
             <div className="grid grid-cols-3 md:flex md:flex-row md:flex-wrap md:justify-between w-full">
@@ -295,8 +295,12 @@ const SingleAlertDetailsView = ({ alert, device, creatingNewAlert }: SingleAlert
           <div className='grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
             <div>
               <p className="!mb-1 text-sm">When</p>
-              <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0 !h-[48px]">
-                <CustomMenu handleTypeChange={handleTriggerWhenChange} isAdmin={isAdmin} initialValue={formData.trigger.state} options={triggerWhenOptions} />
+              <div className="flex flex-row items-center border rounded-md shadow-md lg: mb-3 md:mb-0">
+                <CustomMenu 
+                  handleTypeChange={handleTriggerWhenChange} 
+                  isAdmin={isAdmin} 
+                  initialValue={[formData.trigger.state as string]} 
+                  options={triggerWhenOptions} />
               </div>
             </div>
             <div>
