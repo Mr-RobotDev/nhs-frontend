@@ -5,7 +5,7 @@ import { cookies } from 'next/headers'
 export async function generateMetadata(props: any) {
   const { id } = props.params;
   const cookieStore = cookies()
-  const token = cookieStore.get('token')
+  const token = cookieStore.get('nhs_token')
 
   const response = await fetch(`https://api.nhs.originsmartcontrols.com/v1/devices/${id}`, {
     method: 'GET',
