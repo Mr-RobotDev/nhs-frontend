@@ -29,7 +29,7 @@ const DeviceTypeDetail = ({ title, value, image, subtitle }: DeviceTypeDetailPro
               </span>
             </div>
           </div>
-          <div className=" w-13 h-14 flex items-center justify-center ml-auto">
+          <div className="w-[53px] h-14 flex items-center justify-center ml-auto">
             <Image
               src={image}
               className=" w-full h-full"
