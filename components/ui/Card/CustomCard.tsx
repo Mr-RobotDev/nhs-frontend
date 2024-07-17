@@ -47,6 +47,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
   const cardRef = useRef<HTMLDivElement>(null);
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setCard(cardObj);
@@ -80,6 +81,15 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     if (cardRef.current) {
       setPopoverWidth(cardRef.current.offsetWidth);
     }
+  }, [cardRef.current]);
+
+  useEffect(() => {
+    // Detect if the user is on a mobile device
+    const userAgent = typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
+    const mobile = Boolean(
+      userAgent.match(/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i)
+    );
+    setIsMobile(mobile);
   }, []);
 
   const handleUpdateCard = (e: any) => {
@@ -229,12 +239,12 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
             {card.devices.length > 1 ? (
               <Popover
                 content={content}
-                trigger="hover"
+                trigger={isMobile ? "click" : "hover"}
                 placement="bottom"
                 overlayStyle={{
                   width: popoverWidth,
-                  paddingTop: 10,
-                  paddingBottom: 10,
+                  paddingTop: 10, 
+                  paddingBottom: 10
                 }}
               >
                 <div className="grid grid-cols-2 h-full">
