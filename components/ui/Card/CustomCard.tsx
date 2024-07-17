@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useState } from "react";
-import { Button, Card, Spin, Tooltip } from "antd";
+import React, { memo, useEffect, useState, useRef } from "react";
+import { Button, Card, Spin, Tooltip, Popover } from "antd";
 import { DashboardCardType } from "@/type";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store/store";
@@ -18,10 +18,10 @@ interface CardProps {
 const countStates = (devices: any) => {
   return devices.reduce(
     (acc: any, device: any) => {
-      if (device.state === 'MOTION_DETECTED') {
+      if (device.state === "MOTION_DETECTED") {
         acc.motionDetected.count++;
         acc.motionDetected.devices.push(device);
-      } else if (device.state === 'NO_MOTION_DETECTED') {
+      } else if (device.state === "NO_MOTION_DETECTED") {
         acc.noMotionDetected.count++;
         acc.noMotionDetected.devices.push(device);
       }
@@ -45,8 +45,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const { isAdmin } = useSelector((state: RootState) => state.authReducer);
   const dispatch: AppDispatch = useDispatch();
   const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isHovered2, setIsHovered2] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     setCard(cardObj);
@@ -76,6 +76,12 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     fetchEventsForDevices();
   }, [card, timeFrame.startDate, timeFrame.endDate]);
 
+  useEffect(() => {
+    if (cardRef.current) {
+      setPopoverWidth(cardRef.current.offsetWidth);
+    }
+  }, []);
+
   const handleUpdateCard = (e: any) => {
     e.stopPropagation();
     e.preventDefault();
@@ -100,6 +106,35 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     });
   };
 
+  const content = (
+    <div className="bg-white flex flex-col gap-2 justify-start items-center w-full">
+      <div className="flex flex-col gap-0 w-full">
+        {motionDetected.devices.map((device: any) => (
+          <Link key={device.id} href={`/dashboard/devices/${device.id}`}>
+            <div className="flex flex-row gap-2 w-full">
+              <p className="!mb-0">
+                <strong className="mr-3">Occupied</strong> {device.name}
+              </p>
+            </div>
+            <hr className="h-2 w-full my-1" />
+          </Link>
+        ))}
+      </div>
+      <div className="flex flex-col gap-0 w-full">
+        {noMotionDetected.devices.map((device: any) => (
+          <Link key={device.id} href={`/dashboard/devices/${device.id}`}>
+            <div className="flex flex-row gap-2 w-full">
+              <p className="!mb-0">
+                <strong className="mr-3">Not Occupied</strong> {device.name}
+              </p>
+            </div>
+            <hr className="h-2 w-full my-1" />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <>
       {loading ? (
@@ -107,12 +142,15 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
           <Spin />
         </div>
       ) : (
-        <div className="flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3 relative z-10">
-          <div className=" flex flex-row justify-between items-center border-b pb-2">
-            <div className=" flex flex-row items-center gap-2">
-              <div className=" w-11 h-11 border border-blue-100 rounded-md p-1">
+        <div
+          ref={cardRef}
+          className="flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3 relative z-10"
+        >
+          <div className="flex flex-row justify-between items-center border-b pb-2">
+            <div className="flex flex-row items-center gap-2">
+              <div className="w-11 h-11 border border-blue-100 rounded-md p-1">
                 <Image
-                  src={'/icons/motion-sensor.png'}
+                  src={"/icons/motion-sensor.png"}
                   alt="Sensors"
                   className="w-full h-full object-cover rounded-sm"
                   unoptimized
@@ -120,7 +158,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                   height={100}
                 />
               </div>
-              <div className=" flex flex-col">
+              <div className="flex flex-col">
                 {!isRenaming ? (
                   <div className="!text-lg font-semibold">{card.name}</div>
                 ) : (
@@ -129,14 +167,15 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                       placeholder="Dashboard name"
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
-                      className=" !border-t-0 !border-l-0 !border-b-0 !border-r !rounded-none !border-gray-300 "
+                      className="!border-t-0 !border-l-0 !border-b-0 !border-r !rounded-none !border-gray-300"
                     />
                     <Tooltip
                       getTooltipContainer={(triggerNode) =>
                         triggerNode.parentNode as HTMLElement
                       }
-                      title={`${editingName.length < 3 ? "At least 3 characters" : ""
-                        }`}
+                      title={`${
+                        editingName.length < 3 ? "At least 3 characters" : ""
+                      }`}
                     >
                       <span className="flex">
                         <button
@@ -171,88 +210,62 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                     </span>
                   </div>
                 )}
-                <span className=" text-xs text-slate-400">
+                <span className="text-xs text-slate-400">
                   {card.devices.length} Sensors
                 </span>
               </div>
             </div>
             {isAdmin && !isRenaming && (
-              <Button onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} className=" w-10 h-10 border flex items-center justify-center cancelSelectorName">
+              <Button
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                className="w-10 h-10 border flex items-center justify-center cancelSelectorName"
+              >
                 <OptionsMenu cardId={card.id} setIsRenaming={setIsRenaming} />
               </Button>
             )}
           </div>
           <div className="flex-grow">
-            {
-              card.devices.length > 1 ?
-                <div
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  onTouchStart={() => setIsHovered(true)}
-                  onTouchEnd={() => setIsHovered(false)}
-                  className=" grid grid-cols-2 h-full">
-                  <div className=" w-full h-full flex justify-center items-center">
-                    <div className=" flex flex-col items-center">
-                      <p className=" mb-0 text-4xl font-semibold">{motionDetected.count}</p>
-                      <p className=" mt-1">Occupied</p>
+            {card.devices.length > 1 ? (
+              <Popover
+                content={content}
+                trigger="hover"
+                placement="bottom"
+                overlayStyle={{
+                  width: popoverWidth,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                }}
+              >
+                <div className="grid grid-cols-2 h-full">
+                  <div className="w-full h-full flex justify-center items-center">
+                    <div className="flex flex-col items-center">
+                      <p className="mb-0 text-4xl font-semibold">
+                        {motionDetected.count}
+                      </p>
+                      <p className="mt-1">Occupied</p>
                     </div>
                   </div>
-                  <div className=" w-full h-full flex justify-center items-center border-l border-l-gray-300">
-                    <div className=" flex flex-col items-center">
-                      <p className=" mb-0 text-4xl font-semibold">{noMotionDetected.count}</p>
-                      <p className=" mt-1">Not Occupied</p>
+                  <div className="w-full h-full flex justify-center items-center border-l border-l-gray-300">
+                    <div className="flex flex-col items-center">
+                      <p className="mb-0 text-4xl font-semibold">
+                        {noMotionDetected.count}
+                      </p>
+                      <p className="mt-1">Not Occupied</p>
                     </div>
                   </div>
                 </div>
-
-                : (
-                  <div className=" w-full h-full flex justify-center items-center">
-                    <p className=" text-3xl font-semibold">{getDeviceLabelFromState(card.devices[0].state)}</p>
-                  </div>
-                )
-            }
+              </Popover>
+            ) : (
+              <div className="w-full h-full flex justify-center items-center">
+                <p className="text-3xl font-semibold">
+                  {getDeviceLabelFromState(card.devices[0].state)}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
-      <div
-        onMouseEnter={() => setIsHovered2(true)}
-        onMouseLeave={() => setIsHovered2(false)}
-        onMouseDown={() => setIsHovered2(true)}
-        className=" pt-3 relative z-[9999]"
-      >
-        {((isHovered || isHovered2) && card.devices.length !== 1) && (
-          <Card
-            className=" duration-300 transform transition-all relative z-[9999]">
-            <div className=" bg-white flex flex-col gap-2 justify-start items-center ">
-              <div className=" flex flex-col gap-0 w-full">
-                {
-                  motionDetected.devices.map((device: any) => (
-                    <Link key={device.id} href={`/dashboard/devices/${device.id}`} >
-                      <div className=" flex flex-row gap-2 w-full">
-                        <p className="!mb-0"><strong className=" mr-3">Occupied</strong> {device.name}</p>
-                      </div>
-                      <hr className=" h-2 w-full my-1" />
-                    </Link>
-                  ))
-                }
-              </div>
-
-              <div className=" flex flex-col gap-0 w-full">
-                {
-                  noMotionDetected.devices.map((device: any) => (
-                    <Link key={device.id} href={`/dashboard/devices/${device.id}`} >
-                      <div className=" flex flex-row gap-2 w-full">
-                        <p className="!mb-0"><strong className=" mr-3">Not Occupied</strong> {device.name}</p>
-                      </div>
-                      <hr className=" h-2 w-full my-1" />
-                    </Link>
-                  ))
-                }
-              </div>
-            </div>
-          </Card>
-        )}
-      </div>
     </>
   );
 };
