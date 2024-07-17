@@ -19,11 +19,12 @@ interface customMenuProps {
   }>;
   createNewRoom?: boolean;
   handleCreateNewRoomModalShow?: () => void;
-  multiple?: boolean; // Add the multiple prop
-  clearInternalStateFlag?: boolean; // Add the flag prop
-  onClearInternalState?: () => void; // Add the callback prop
-  apiEndpoint?: string; // Make the API endpoint optional
-  searchable?: boolean; // Add the searchable prop
+  multiple?: boolean;
+  clearInternalStateFlag?: boolean;
+  onClearInternalState?: () => void;
+  apiEndpoint?: string;
+  searchable?: boolean;
+  placeholderText?: string;
 }
 
 const CustomMenu = ({
@@ -33,11 +34,12 @@ const CustomMenu = ({
   options,
   createNewRoom,
   handleCreateNewRoomModalShow,
-  multiple = true,
+  multiple = false,
   clearInternalStateFlag,
   onClearInternalState,
   apiEndpoint, // Add the API endpoint prop
-  searchable = false // Default to no search box
+  searchable = false, // Default to no search box
+  placeholderText
 }: customMenuProps) => {
   const [visible, setVisible] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>(initialValue);
@@ -50,14 +52,6 @@ const CustomMenu = ({
   useEffect(() => {
     setSelectedTypes(initialValue)
   }, [initialValue])
-
-  useEffect(() => {
-    console.log('<----------------->')
-    console.log('Options ->', options)
-    console.log('selectedTypes ->', selectedTypes)
-    console.log('initialValue ->', initialValue)
-    console.log('<----------------->')
-  }, [options, selectedTypes, initialValue])
 
   const clearInternalState = useCallback(() => {
     setSelectedTypes([]);
@@ -137,7 +131,8 @@ const CustomMenu = ({
     <div ref={selectDisplayRef} className={`inline-block cursor-pointer shadow-sm rounded-lg !bg-white p-1 px-2 w-full ${!isAdmin ? "opacity-50" : ""}`}>
       <div className="flex flex-row">
         <SelectSecondary
-          only={selectedTypes.map(type => options.find(opt => opt.value === type)?.label).join(', ')}
+          only={selectedTypes.length === 0 ?
+            placeholderText : selectedTypes.map(type => options.find(opt => opt.value === type)?.label).join(', ')}
           disabled={!isAdmin}
         />
       </div>
@@ -155,7 +150,7 @@ const CustomMenu = ({
         />
       )}
       <LoadingWrapper loading={loading} size='small'>
-        <div className="flex flex-col max-h-[90px] overflow-y-scroll">
+        <div className="flex flex-col">
           {filteredOptions.map(option => (
             <div
               key={option.value}

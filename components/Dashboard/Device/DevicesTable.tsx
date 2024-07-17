@@ -366,7 +366,8 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, organization: vals }));
                     }}
-                    initialValue={deviceFilters.organization} // Pass initial value from query params
+                    initialValue={deviceFilters.organization}
+                    placeholderText="Select the Organizations"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.organization)}
                     createNewRoom={false}
@@ -385,7 +386,8 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, site: vals }));
                     }}
-                    initialValue={deviceFilters.site} // Pass initial value from query params
+                    initialValue={deviceFilters.site}
+                    placeholderText="Select the Sites"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.site)}
                     createNewRoom={false}
@@ -404,7 +406,8 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, building: vals }));
                     }}
-                    initialValue={deviceFilters.building} // Pass initial value from query params
+                    initialValue={deviceFilters.building} 
+                    placeholderText="Select the buidings"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.building)}
                     createNewRoom={false}
@@ -423,7 +426,8 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, floor: vals }));
                     }}
-                    initialValue={deviceFilters.floor} // Pass initial value from query params
+                    initialValue={deviceFilters.floor}
+                    placeholderText="Select the floors"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.floor)}
                     createNewRoom={false}
@@ -442,7 +446,8 @@ const DevicesTable = () => {
                     handleTypeChange={(vals: string[]) => {
                       setDeviceFilters(prev => ({ ...prev, room: vals }));
                     }}
-                    initialValue={deviceFilters.room} // Pass initial value from query params
+                    initialValue={deviceFilters.room}
+                    placeholderText="Select the rooms"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.room)}
                     createNewRoom={false}
