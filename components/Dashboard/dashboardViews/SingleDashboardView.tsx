@@ -155,7 +155,7 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
 
   return currentSelectedDashboard ? (
     <>
-      <div>
+      <div className=" overflow-hidden py-3">
         <div className=" flex justify-end">
           <div className="block md:hidden mb-1">
             <span

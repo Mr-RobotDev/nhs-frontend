@@ -57,7 +57,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     )
       : (
         <Layout
-          className={`layout-dashboard ${pathname === "profile" ? "layout-profile" : ""
+          className={`layout-dashboard !p-0 ${pathname === "profile" ? "layout-profile" : ""
             } ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}
         >
           <Drawer
