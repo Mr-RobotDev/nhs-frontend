@@ -176,6 +176,7 @@ export interface RoomStatsType {
   red: number;
   yellow: number;
   green: number;
+  roomNames: string[];
 }
 
 export interface DeviceFormType {

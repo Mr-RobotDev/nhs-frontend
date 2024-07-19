@@ -12,6 +12,8 @@ import DeviceStatsPieChart from "./DeviceStatsPieChart";
 import FullScreenButton from "@/components/ui/FullScreenButton/FullScreenButton";
 import { RoomStatsType } from "@/type";
 import RoomStatsPieChart from "./RoomStatsPieChart";
+import RoomStatsBarChart from "./Graphs/RoomStatsBarChart";
+import RoomStatsDonutChart from "./Graphs/RoomStatsDonutChart";
 
 const MainStatsView = () => {
   const dispatch = useDispatch();
@@ -19,7 +21,7 @@ const MainStatsView = () => {
     (state: RootState) => state.statisticsReducer
   );
   const [error, setError] = useState(false);
-  const [roomStats, setRoomStats] = useState<RoomStatsType>({ totalRooms: 0, red: 0, yellow: 0, green: 0 })
+  const [roomStats, setRoomStats] = useState<RoomStatsType | null>()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,23 +69,27 @@ const MainStatsView = () => {
               <Spin size="large" />
             </div>
           ) : (
-            <>
-              <DevicesStats roomStats={roomStats} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                <div>
-                  <Card className="!p-0">
-                    <h2 className=" text-xl font-semibold">Devices Status</h2>
-                    <DeviceStatsPieChart />
-                  </Card>
+            roomStats && (
+              <>
+                <div className="">
+                  {<DevicesStats roomStats={roomStats} />}
                 </div>
-                <div>
-                  <Card className="!p-0">
-                    <h2 className=" text-xl font-semibold">Rooms Status</h2>
-                    {roomStats && <RoomStatsPieChart roomStats={roomStats} />}
-                  </Card>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+                  <div>
+                    <Card className="!p-0">
+                      <h2 className=" text-xl font-semibold">Rooms Status</h2>
+                      <RoomStatsDonutChart roomStats={roomStats} />
+                    </Card>
+                  </div>
+                  <div className=" col-span-2">
+                    <Card className="!p-0">
+                      <h2 className=" text-xl font-semibold">Rooms Stats</h2>
+                      <RoomStatsBarChart roomStats={roomStats} />
+                    </Card>
+                  </div>
                 </div>
-              </div>
-            </>
+              </>
+            )
           )}
         </div>
       )}
