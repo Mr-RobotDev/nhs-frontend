@@ -145,7 +145,7 @@ interface Dashboard {
 
 export interface AlertDataType {
   name: string;
-  device: string ;
+  device: string;
   recipients: string[];
   trigger: Trigger;
   scheduleType: string;
@@ -177,6 +177,18 @@ export interface RoomStatsType {
   yellow: number;
   green: number;
   roomNames: string[];
+  roomFunctions: roomFunctionsType[]
+  departments: departmentsType[]
+}
+
+export interface roomFunctionsType {
+  count: number;
+  function: string;
+}
+
+export interface departmentsType {
+  count: number;
+  department: string;
 }
 
 export interface DeviceFormType {

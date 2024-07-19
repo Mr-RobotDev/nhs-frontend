@@ -14,6 +14,8 @@ import { RoomStatsType } from "@/type";
 import RoomStatsPieChart from "./RoomStatsPieChart";
 import RoomStatsBarChart from "./Graphs/RoomStatsBarChart";
 import RoomStatsDonutChart from "./Graphs/RoomStatsDonutChart";
+import RoomFunctionsDonutChart from "./Graphs/RoomFunctionsDonutChart";
+import RoomDepartmentsDonutChart from "./Graphs/RoomDepartmentsDonutChart";
 
 const MainStatsView = () => {
   const dispatch = useDispatch();
@@ -74,17 +76,31 @@ const MainStatsView = () => {
                 <div className="">
                   {<DevicesStats roomStats={roomStats} />}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                   <div>
                     <Card className="!p-0">
                       <h2 className=" text-xl font-semibold">Rooms Status</h2>
                       <RoomStatsDonutChart roomStats={roomStats} />
                     </Card>
                   </div>
-                  <div className=" col-span-2">
+                  <div className="">
                     <Card className="!p-0">
                       <h2 className=" text-xl font-semibold">Rooms Stats</h2>
                       <RoomStatsBarChart roomStats={roomStats} />
+                    </Card>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                  <div>
+                    <Card className="!p-0">
+                      <h2 className=" text-xl font-semibold">Room Functions</h2>
+                      <RoomFunctionsDonutChart functions={roomStats.roomFunctions} />
+                    </Card>
+                  </div>
+                  <div>
+                    <Card className="!p-0">
+                      <h2 className=" text-xl font-semibold">Departments</h2>
+                      <RoomDepartmentsDonutChart departments={roomStats.departments} />
                     </Card>
                   </div>
                 </div>
