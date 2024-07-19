@@ -81,7 +81,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     if (cardRef.current) {
       setPopoverWidth(cardRef.current.offsetWidth);
     }
-  }, [cardRef.current]);
+  }, []);
 
   useEffect(() => {
     // Detect if the user is on a mobile device
