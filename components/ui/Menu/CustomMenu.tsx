@@ -140,7 +140,7 @@ const CustomMenu = ({
   );
 
   const popoverContent = (
-    <div className="w-full">
+    <div className="w-full max-h-[150px] overflow-y-auto">
       {searchable && (
         <Input
           placeholder="Search..."
