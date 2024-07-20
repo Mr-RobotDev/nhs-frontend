@@ -10,6 +10,7 @@ import {
   setCurrentDashboard,
   setTimeFrame,
   updateCard,
+  setDashboardFromDashboards
 } from "@/app/store/slice/dashboardSlice";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/app/store/store";
@@ -56,6 +57,10 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
     dispatch(getDashboards());
     dispatch(getDashboardCards({ dashboardId: id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch(setDashboardFromDashboards(id))
+  }, [dashboards, id, dispatch])
 
   useEffect(() => {
     function handleResize() {
