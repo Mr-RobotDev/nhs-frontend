@@ -230,9 +230,10 @@ const dashboardSlice = createSlice({
         state.isLoading.delete = false;
         state.dashboards = state.dashboards.filter(dashboard => dashboard.id !== action.payload.id)
 
-        if (state.currentDashboard.id === action.payload.id) {
-          state.currentDashboard = { name: '', cardsCount: 0, devicesCount: 0, id: '' }
+        if ((state.currentDashboard.id === action.payload.id) && state.dashboards.length > 0) {
+          state.currentDashboard = state.dashboards[0]
         }
+
       })
 
       .addCase(updateDashboard.fulfilled, (state, action) => {

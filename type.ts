@@ -221,3 +221,10 @@ export interface RoomFormType {
   operationHours: string;
   hoursPerDay: number;
 }
+
+export interface AlertStatsType {
+  totalActiveAlerts: number;
+  totalNonActiveAlerts: number;
+  activeAlerts: string[];
+  nonActiveAlerts: string[];
+}
