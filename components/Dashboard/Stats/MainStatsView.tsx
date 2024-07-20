@@ -4,7 +4,7 @@ import withDashboardLayout from "@/hoc/withDashboardLayout";
 import DevicesStats from "./DevicesStats";
 import axiosInstance from "@/lib/axiosInstance";
 import toast from "react-hot-toast";
-import { Button, Card, Spin } from "antd";
+import { Button, Card, DatePicker, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setDevicesStats } from "@/app/store/slice/StatisticsSlice";
 import { RootState } from "@/app/store/store";
@@ -22,33 +22,37 @@ import CustomMenu from "@/components/ui/Menu/CustomMenu";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { PrimaryInput } from "@/components/ui/Input/Input";
+import dayjs from 'dayjs';
 
+const { RangePicker } = DatePicker;
 
 const emptyFilters = {
   floor: [] as string[],
   room: [] as string[],
-  search: ''
-}
+  search: '',
+  from: null as string | null,
+  to: null as string | null,
+};
 
 const emptydropDownSelectedValue = {
   organization: [] as string[],
   site: [] as string[],
   building: [] as string[],
-}
+};
 
 const initialStateDropdownsData = {
   site: [] as SingleNameIdObject[],
   building: [] as SingleNameIdObject[],
   floor: [] as SingleNameIdObject[],
   room: [] as SingleNameIdObject[]
-}
+};
 
 const MainStatsView = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [error, setError] = useState(false);
-  const [roomStats, setRoomStats] = useState<RoomStatsType | null>()
-  const [loading, setLoading] = useState(false)
+  const [roomStats, setRoomStats] = useState<RoomStatsType | null>();
+  const [loading, setLoading] = useState(false);
   const [devicesFilterLoading, setDevicesFilterLoading] = useState(false);
   const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
   const [dropDownSelectedValue, setDropDownSelectedValue] = useState(emptydropDownSelectedValue);
@@ -64,7 +68,7 @@ const MainStatsView = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const initialFilters = { ...emptyFilters };
-    const dropdownFilters = { ...emptydropDownSelectedValue }
+    const dropdownFilters = { ...emptydropDownSelectedValue };
 
     if (params.has('organization')) {
       dropdownFilters.organization = params.getAll('organization');
@@ -85,21 +89,33 @@ const MainStatsView = () => {
     if (params.has('search')) {
       initialFilters.search = params.get('search') || '';
     }
+    if (params.has('from')) {
+      initialFilters.from = params.get('from');
+    }
+    if (params.has('to')) {
+      initialFilters.to = params.get('to');
+    }
 
     setDeviceFilters(initialFilters);
-    setDropDownSelectedValue(dropdownFilters)
+    setDropDownSelectedValue(dropdownFilters);
   }, []);
 
   const fetchRoomStats = useCallback(async (filters: any) => {
+    const { organization, site, building, from, to, ...newFilters } = filters;
 
-    const { organization, site, building, ...newFilters } = filters
+    const queryParams = convertObjectToQueryString(
+      {
+        ...newFilters,
+        ...(from ? { from } : {}),
+        ...(to ? { to } : {})
+      }
+    );
 
-    const queryParams = convertObjectToQueryString(newFilters);
     setLoading(true);
     try {
       const response = await axiosInstance.get(`/rooms/stats?page=1&limit=50&${queryParams}`);
       if (response.status === 200) {
-        console.log('response->', response.data)
+        console.log('response->', response.data);
         setRoomStats(response.data);
       }
     } catch (error) {
@@ -107,7 +123,7 @@ const MainStatsView = () => {
     } finally {
       setLoading(false);
     }
-  }, [])
+  }, []);
 
   const fetchData = useCallback(
     async (url: string, key: string, queryparams?: any) => {
@@ -135,6 +151,12 @@ const MainStatsView = () => {
     if (filters.search) {
       queryParams.append('search', filters.search);
     }
+    if (filters.from) {
+      queryParams.append('from', filters.from);
+    }
+    if (filters.to) {
+      queryParams.append('to', filters.to);
+    }
 
     dropDownFilters.organization.forEach((org: any) => queryParams.append('organization', org));
     dropDownFilters.site.forEach((site: any) => queryParams.append('site', site));
@@ -148,7 +170,6 @@ const MainStatsView = () => {
     fetchRoomStats(debouncedFilters);
     updateQueryParams(debouncedFilters, dropDownSelectedValue);
   }, [debouncedFilters, dropDownSelectedValue, fetchRoomStats, updateQueryParams]);
-
 
   useEffect(() => {
     fetchData('/organizations', 'organization', {});
@@ -203,6 +224,13 @@ const MainStatsView = () => {
     setClearInternalStateFlag(false);
   };
 
+  const handleRangeChange = (dates: any, dateStrings: [string, string]) => {
+    setDeviceFilters((prev) => ({
+      ...prev,
+      from: dateStrings[0],
+      to: dateStrings[1],
+    }));
+  };
 
   return (
     <>
@@ -211,9 +239,9 @@ const MainStatsView = () => {
         <FullScreenButton />
       </div>
 
-      <div className=" flex flex-col md:flex-row  md:gap-4 mb-3">
-        <div className=" md:my-3 flex-1">
-          <p className="font-semibold text-base !mb-0">Search</p>
+      <div className=" flex flex-col md:flex-row gap-2 md:gap-4 mb-3">
+        <div className=" flex flex-col justify-end  flex-1">
+          <p className=" text-sm mb-1">Search</p>
           <PrimaryInput
             name="name"
             value={deviceFilters.search}
@@ -221,7 +249,20 @@ const MainStatsView = () => {
             placeholder="Search By Name or Sensor ID"
           />
         </div>
-        <div className=" flex items-center md:justify-center mt-3 md:mt-7">
+        <div className=" flex items-end">
+          <div>
+            <p className=" text-sm mb-1">Date Range</p>
+            <RangePicker
+              className="flex h-[42px] w-72"
+              onChange={handleRangeChange}
+              value={[
+                deviceFilters.from ? dayjs(deviceFilters.from) : null,
+                deviceFilters.to ? dayjs(deviceFilters.to) : null
+              ]}
+            />
+          </div>
+        </div>
+        <div className=" flex items-end md:justify-center mt-3 md:mt-7">
           <div className=" flex justify-start w-[148px]">
             <div
               onClick={() => setShowFilters(!showFilters)}
@@ -232,6 +273,7 @@ const MainStatsView = () => {
             </div>
           </div>
         </div>
+
       </div>
 
       <LoadingWrapper loading={devicesFilterLoading} >

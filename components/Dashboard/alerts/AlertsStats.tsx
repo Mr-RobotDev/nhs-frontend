@@ -65,18 +65,18 @@ const AlertsStats: React.FC<AlertsStatsProps> = ({ dashboardView }) => {
                   </div>
                 </div>
                 <div className="mt-5">
-                <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto">
-                      {Array.from({ length: Math.ceil(alertStats.activeAlerts.length / thresholds) }).map((_, columnIndex) => (
-                        <ul className=" mb-0" key={columnIndex}>
-                          {alertStats.activeAlerts.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((alert: any) => (
-                            <li className="mb-[6px] w-64 flex flex-row gap-2 items-center" key={alert}>
-                              <div className=' w-[6px] h-[6px] bg-red-500 rounded-full'></div>
-                              {alert}
-                            </li>
-                          ))}
-                        </ul>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto">
+                    {Array.from({ length: Math.ceil(alertStats.activeAlerts.length / thresholds) }).map((_, columnIndex) => (
+                      <ul className=" mb-0" key={columnIndex}>
+                        {alertStats.activeAlerts.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((alert: any) => (
+                          <li className="mb-[6px] w-64 flex flex-row gap-2 items-center" key={alert}>
+                            <div className=' w-[6px] h-[6px] bg-red-500 rounded-full'></div>
+                            {alert}
+                          </li>
+                        ))}
+                      </ul>
+                    ))}
+                  </div>
                 </div>
               </Card>
             </div>
