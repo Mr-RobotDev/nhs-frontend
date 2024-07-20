@@ -44,7 +44,7 @@ const AlertsStats: React.FC<AlertsStatsProps> = ({ dashboardView }) => {
         {alertStats &&
           <div className={`grid grid-cols-1 gap-5 ${dashboardView ? '' : 'md:grid-cols-2'}`}>
             <div className='!h-full'>
-              <Card bordered={false} className="criclebox h-full">
+              <Card bordered={false} className="criclebox min-h-72">
                 <div className="text-2xl flex flex-row justify-between">
                   <div className="">
                     <span className="!mb-0 !text-xl">Active Alerts</span>
