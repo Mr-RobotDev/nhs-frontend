@@ -10,6 +10,7 @@ import {
   setCurrentDashboard,
   setTimeFrame,
   updateCard,
+  setDashboardFromDashboards
 } from "@/app/store/slice/dashboardSlice";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/app/store/store";
@@ -26,6 +27,7 @@ import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
 import timeFrames from "@/utils/time_frames";
 import dayjs, { Dayjs } from "dayjs";
+import AlertsStats from "../alerts/AlertsStats";
 
 const { RangePicker } = DatePicker;
 
@@ -56,6 +58,10 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
     dispatch(getDashboards());
     dispatch(getDashboardCards({ dashboardId: id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch(setDashboardFromDashboards(id))
+  }, [dashboards, id, dispatch])
 
   useEffect(() => {
     function handleResize() {
@@ -219,6 +225,8 @@ const SingleDashboardView = ({ id }: singleDashboardViewProps) => {
             </div>
           }
         </div>
+
+        <AlertsStats dashboardView={true} />
 
         {(dashboardCards.length === 0 && !isLoading.gettingDashboardCards) &&
           <EmptyDashboard />

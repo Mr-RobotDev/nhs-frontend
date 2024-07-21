@@ -6,25 +6,66 @@ import CountUp from "react-countup";
 import { useSelector } from "react-redux";
 import DeviceTypeDetail from "../Device/DeviceTypeDetail";
 import { RoomStatsType } from "@/type";
-
+import classNames from 'classnames';
 
 interface DeviceStatsProps {
   roomStats: RoomStatsType;
 }
 
 const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
-  const devicesStats = useSelector(
-    (state: RootState) => state.statisticsReducer
-  );
+
+  const maxOccupantRoom = Math.max(roomStats.red, roomStats.yellow, roomStats.green);
+  const thresholds = 5
+
+  let maxVariableColor = '';
+  if (maxOccupantRoom === roomStats.red) {
+    maxVariableColor = 'bg-[#EF0716]';
+  } else if (maxOccupantRoom === roomStats.yellow) {
+    maxVariableColor = 'bg-[#FDC828]';
+  } else if (maxOccupantRoom === roomStats.green) {
+    maxVariableColor = 'bg-[#7AC340]';
+  }
+
   return (
-    <div>
-      <div className="layout-content">
-        <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mx-auto">
-          <DeviceTypeDetail title="Total Rooms" value={roomStats.totalRooms as number} image="/icons/total-devices.png" />
-          <DeviceTypeDetail title="Red" subtitle="(0 - 60% Occupancy Rate)" value={roomStats.red as number} image="/icons/red.png" />
-          <DeviceTypeDetail title="Yellow" subtitle="(60 - 80% Occupancy Rate)" value={roomStats.yellow as number} image="/icons/yellow.png" />
-          <DeviceTypeDetail title="Green" subtitle="(>80% Occupancy Rate)" value={roomStats.green as number} image="/icons/green.png" />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="!p-0 h-full">
+        <div className=" h-full">
+          <div className={classNames('h-full rounded-lg', maxVariableColor)}>
+            <div className=" text-white text-xl font-semibold p-2">Maximum Occupant Room</div>
+            <div className=" w-full h-full flex justify-center items-center">
+              <p className=" text-white text-8xl">
+                <CountUp
+                  end={maxOccupantRoom}
+                  duration={2}
+                />
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
+      <div>
+        <Card className="!p-0 h-[350px]">
+          <h2 className=" text-xl font-semibold">Occupied Rooms</h2>
+
+          {roomStats.roomNames.length > 0 ? <div className=" mt-5">
+            <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto">
+              {Array.from({ length: Math.ceil(roomStats.roomNames.length / thresholds) }).map((_, columnIndex) => (
+                <ul className=" mb-0" key={columnIndex}>
+                  {roomStats.roomNames.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((roomName, index) => (
+                    <li className="mb-[6px] w-64 flex flex-row gap-2 items-center" key={index}>
+                      <div className={classNames('w-[6px] h-[6px] rounded-full', maxVariableColor)}></div>
+                      {roomName}
+                    </li>
+                  ))}
+                </ul>
+              ))}
+            </div>
+          </div> : 
+          <div className=" w-full h-full flex justify-center items-center">
+            <p>No Data Available</p>
+          </div>
+          }
+        </Card>
       </div>
     </div>
   );
