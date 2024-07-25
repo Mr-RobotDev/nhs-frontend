@@ -58,5 +58,8 @@ export const emptyRoomObject = {
   cluster: "",
   clusterDescription: "",
   operationHours: "",
-  hoursPerDay: 0
+  hoursPerDay: 0,
+  organization: "",
+  site: "",
+  building: "",
 }

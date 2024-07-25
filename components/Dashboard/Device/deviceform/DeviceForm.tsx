@@ -158,7 +158,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   const floorsOptions = tranformObjectForSelectComponent(data.floors);
   const roomsOptions = tranformObjectForSelectComponent(data.rooms);
 
-  const renderCustomMenu = (label: string, value: keyof DeviceFormType, options: any, isAdmin: boolean) => (
+  const renderCustomMenu = (label: string, value: keyof DeviceFormType, options: any, isAdmin: boolean, placeholder: string) => (
     <div className="h-[100px]">
       <p className="!mb-1 font-semibold">{label}</p>
       <Controller
@@ -174,10 +174,11 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
               }}
               isAdmin={isAdmin}
               options={options}
-              initialValue={[formData[value] as string]}
+              initialValue={formData[value].length > 0 ? [formData[value]] : []}
               createNewRoom={value === 'room'}
               handleCreateNewRoomModalShow={value === 'room' ? handleCreateNewRoomModalShow : undefined}
               multiple={false}
+              placeholderText={placeholder}
             />
           </div>
         )}
@@ -215,7 +216,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
                       name="oem"
                       control={control}
                       render={({ field }) => (
-                        <PrimaryInput {...field} />
+                        <PrimaryInput placeholder='Enter the OEM' {...field} />
                       )}
                     />
                     {errors.oem && <p className="!text-red-500 text-xs mt-1">{errors.oem.message}</p>}
@@ -227,7 +228,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
                       name="name"
                       control={control}
                       render={({ field }) => (
-                        <PrimaryInput {...field} />
+                        <PrimaryInput placeholder='Enter the Name of the Device' {...field} />
                       )}
                     />
                     {errors.name && <p className="!text-red-500 text-xs mt-1">{errors.name.message}</p>}
@@ -239,7 +240,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
                       name="description"
                       control={control}
                       render={({ field }) => (
-                        <PrimaryInput {...field} />
+                        <PrimaryInput placeholder='Enter the description' {...field} />
                       )}
                     />
                     {errors.description && <p className="!text-red-500 text-xs mt-1">{errors.description.message}</p>}
@@ -263,11 +264,11 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
                 </div>
               </div>
               <div className='grid grid-cols-1 lg:grid-cols-2 gap-0 md:gap-3 p-0 md:p-3'>
-                {renderCustomMenu("Organization", "organization", organizationsOptions, true)}
-                {renderCustomMenu("Site", "site", sitesOptions, formData.organization !== '')}
-                {renderCustomMenu("Building", "building", buildingsOptions, formData.site !== '')}
-                {renderCustomMenu("Floor", "floor", floorsOptions, formData.building !== '')}
-                {renderCustomMenu("Room", "room", roomsOptions, formData.floor !== '')}
+                {renderCustomMenu("Organization", "organization", organizationsOptions, true, 'Select the organization')}
+                {renderCustomMenu("Site", "site", sitesOptions, formData.organization !== '',  'Select the site')}
+                {renderCustomMenu("Building", "building", buildingsOptions, formData.site !== '', 'Select the building')}
+                {renderCustomMenu("Floor", "floor", floorsOptions, formData.building !== '', 'Select the floor')}
+                {renderCustomMenu("Room", "room", roomsOptions, formData.floor !== '', 'Select the room')}
               </div>
             </div>
             <div>
@@ -292,7 +293,12 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
         width={1000}
         footer={null}
       >
-        <CreateNewRoomComponent floorId={formData.floor} setOpen={setOpen} />
+        <CreateNewRoomComponent 
+          organizationId={formData.organization}
+          siteId={formData.site}
+          buildingId={formData.building} 
+          floorId={formData.floor} 
+          setOpen={setOpen} />
       </Modal>
     </>
   );

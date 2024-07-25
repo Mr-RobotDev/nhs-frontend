@@ -73,9 +73,18 @@ const RoomFunctionsDonutChart: React.FC<ApexChartProps> = ({ functions }) => {
     }));
   }, [functions]);
 
+
+  const noData = series.every(element => element === 0);
+
   return (
     <div id="chart" className='w-full h-[300px]'>
-      <ReactApexChart options={options} series={series} type="donut" width={'100%'} height={'100%'} />
+      {noData ?
+        <div className=' w-full h-full flex justify-center items-center'>
+          <p className=" font-semibold text-3xl">No Data Available</p>
+        </div>
+        :
+        <ReactApexChart options={options} series={series} type="donut" width={'100%'} height={'100%'} />
+      }
     </div>
   );
 };

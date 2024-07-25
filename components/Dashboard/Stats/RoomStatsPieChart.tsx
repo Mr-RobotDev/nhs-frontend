@@ -11,11 +11,8 @@ interface ApexChartProps {
 }
 
 const RoomStatsPieChart: React.FC<ApexChartProps> = ({ roomStats }) => {
-  const [series, setSeries] = useState<number[]>([0, 0]);
-
-  useEffect(() => {
-    setSeries([roomStats.red, roomStats.yellow, roomStats.green]);
-  }, [roomStats]);
+  const series = [0,0,0]
+  const noData = series.every(element => element === 0);
 
   const [options] = useState<any>({
     chart: {
@@ -71,7 +68,13 @@ const RoomStatsPieChart: React.FC<ApexChartProps> = ({ roomStats }) => {
 
   return (
     <div id="chart" className='w-full h-[300px]'>
-      <ReactApexChart options={options} series={series} type="pie" width={'100%'} height={'100%'} />
+      {noData ?
+        <div className=' w-full h-full flex justify-center items-center'>
+          <p className=" font-semibold text-3xl">No Data Available</p>
+        </div>
+        :
+        <ReactApexChart options={options} series={series} type="pie" width={'100%'} height={'100%'} />
+      }
     </div>
   );
 };

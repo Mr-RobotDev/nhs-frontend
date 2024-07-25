@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
 import { RoomStatsType } from '@/type';
 
@@ -11,11 +10,16 @@ interface ApexChartProps {
 }
 
 const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
-  const [series, setSeries] = useState<number[]>([0, 0, 0]);
 
-  useEffect(() => {
-    setSeries([roomStats.red, roomStats.yellow, roomStats.green]);
-  }, [roomStats]);
+
+  const [series, setSeries] = useState<any[]>([
+    {
+      name: 'Occupancy Rate',
+      data: [roomStats.red, roomStats.yellow, roomStats.green]
+    }
+  ]);
+
+  const noData = [roomStats.red, roomStats.yellow, roomStats.green].every(element => element === 0);
 
   const [options] = useState<any>({
     chart: {
@@ -24,6 +28,7 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
     },
     plotOptions: {
       bar: {
+        distributed: true,
         horizontal: true,
         dataLabels: {
           position: 'top',
@@ -55,7 +60,7 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
     yaxis: {
       max: 100,
     },
-    colors: ['#FF0000', '#FFFF00', '#008000'],
+    colors: ['#FF0000', '#FFFF00', '#008000'], // Define colors here
     responsive: [{
       breakpoint: 480,
       options: {
@@ -71,7 +76,19 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
 
   return (
     <div id="chart" className='w-full h-[300px]'>
-      <ReactApexChart options={options} series={[{ data: series }]} type="bar" width={'100%'} height={'100%'} />
+      {noData ?
+        <div className=' w-full h-full flex justify-center items-center'>
+          <p className=" font-semibold text-3xl">No Data Available</p>
+        </div>
+        :
+        <ReactApexChart
+          options={options}
+          series={series} // Use updated series
+          type="bar"
+          width={'100%'}
+          height={'100%'}
+        />
+      }
     </div>
   );
 };

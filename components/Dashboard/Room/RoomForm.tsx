@@ -28,6 +28,9 @@ const schema = yup.object().shape({
   clusterDescription: yup.string().required('Cluster Description is required'),
   operationHours: yup.string().required('Operation Hours is required'),
   hoursPerDay: yup.number().required('Hours Per Day is required'),
+  organization: yup.string().required('Organization is required'),
+  building: yup.string().required('Building is required'),
+  site: yup.string().required('Site is required'),
 });
 
 const RoomForm: React.FC<RoomFormProps> = ({ room, floorId, setOpen }) => {
