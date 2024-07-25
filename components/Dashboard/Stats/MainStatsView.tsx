@@ -95,7 +95,7 @@ const MainStatsView = () => {
   }, []);
 
   const fetchRoomStats = useCallback(async (filters: any) => {
-    const { organization, site, building, from, to, ...newFilters } = filters;
+    const { from, to, ...newFilters } = filters;
 
     const queryParams = convertObjectToQueryString(
       {

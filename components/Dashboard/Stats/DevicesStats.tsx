@@ -13,13 +13,16 @@ interface DeviceStatsProps {
 }
 
 const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
-
   const maxOccupantRoom = Math.max(roomStats.red, roomStats.yellow, roomStats.green);
-  const thresholds = 5
+  const thresholds = 5;
 
   let maxVariableColor = '';
+  let textColor = 'text-white';
 
-  if (roomStats.red === roomStats.yellow && roomStats.yellow === roomStats.green) {
+  if (roomStats.red === 0 && roomStats.yellow === 0 && roomStats.green === 0) {
+    maxVariableColor = 'bg-white';
+    textColor = 'text-black';
+  } else if (roomStats.red === roomStats.yellow && roomStats.yellow === roomStats.green) {
     maxVariableColor = 'bg-gradient-to-br from-[#FF0000] via-[#FFFF00] to-[#008000]';
   } else if (roomStats.red === roomStats.yellow && roomStats.red === maxOccupantRoom) {
     maxVariableColor = 'bg-gradient-to-br from-[#FF0000] to-[#FFFF00]';
@@ -40,9 +43,9 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
       <div className="!p-0 h-full">
         <div className=" h-full">
           <div className={classNames('h-full rounded-lg', maxVariableColor)}>
-            <div className=" text-white text-xl font-semibold p-2">Maximum Occupant Room</div>
+            <div className={classNames("text-xl font-semibold p-2", textColor)}>Maximum Occupant Room</div>
             <div className=" w-full h-full flex justify-center items-center">
-              <p className=" text-white text-8xl">
+              <p className={classNames('text-8xl', textColor)}>
                 <CountUp
                   end={maxOccupantRoom}
                   duration={2}
