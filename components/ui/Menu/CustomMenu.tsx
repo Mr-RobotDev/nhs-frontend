@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { SelectSecondary } from '../Select/Select';
 import { Popover, Input } from 'antd';
@@ -37,8 +37,8 @@ const CustomMenu = ({
   multiple = false,
   clearInternalStateFlag,
   onClearInternalState,
-  apiEndpoint, // Add the API endpoint prop
-  searchable = false, // Default to no search box
+  apiEndpoint,
+  searchable = false,
   placeholderText
 }: customMenuProps) => {
   const [visible, setVisible] = useState(false);
@@ -195,7 +195,7 @@ const CustomMenu = ({
       placement="bottomLeft"
       open={visible}
       onOpenChange={setVisible}
-      overlayStyle={{ width: width }}
+      overlayStyle={{ width: width, zIndex: 9999 }} // Set the zIndex here
     >
       {selectDisplay}
     </Popover>

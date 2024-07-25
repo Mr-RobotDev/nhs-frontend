@@ -42,7 +42,6 @@ const initialStateDropdownsData = {
   site: [] as SingleNameIdObject[],
   building: [] as SingleNameIdObject[],
   floor: [] as SingleNameIdObject[],
-  room: [] as SingleNameIdObject[]
 };
 
 const MainStatsView = () => {
@@ -166,7 +165,6 @@ const MainStatsView = () => {
     fetchData('/sites', 'site', {});
     fetchData('/buildings', 'building', {});
     fetchData('/floors', 'floor', {});
-    fetchData('/rooms', 'room', {});
   }, [fetchData]);
 
   const clearFilterHandler = () => {
@@ -232,10 +230,9 @@ const MainStatsView = () => {
         </div>
 
       </div>
-
-      <LoadingWrapper loading={devicesFilterLoading} >
-        <div className={`overflow-hidden transform ${showFilters ? 'h-full' : 'h-0'}`}>
-          <div className={`border border-gray-200 rounded-md p-6 my-5`}>
+      <LoadingWrapper loading={devicesFilterLoading}>
+        <div className={`overflow-hidden transform ${showFilters ? 'h-full' : 'h-0 '}`}>
+          <div className={`border border-gray-200 rounded-md p-6 my-5 h-[300px] flex flex-col justify-between`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               <div>
                 <p className="!mb-1 font-semibold">Organizations</p>
@@ -317,29 +314,9 @@ const MainStatsView = () => {
                   />
                 </div>
               </div>
-              <div>
-                <p className="!mb-1 font-semibold">Rooms</p>
-                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
-                  <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, room: vals }));
-                    }}
-                    initialValue={deviceFilters.room}
-                    placeholderText="Select the rooms"
-                    isAdmin={true}
-                    options={tranformObjectForSelectComponent(data.room)}
-                    createNewRoom={false}
-                    multiple={true}
-                    clearInternalStateFlag={clearInternalStateFlag}
-                    onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/rooms?${convertObjectToQueryString({ floor: deviceFilters.floor })}`}
-                    searchable={true}
-                  />
-                </div>
-              </div>
             </div>
-            <div className=" flex flex-row gap-3 my-2">
-              <Button onClick={clearFilterHandler}>Clear Filters</Button>
+            <div className=" flex flex-row gap-3 my-2 justify-end">
+              <button className=" bg-white hover:bg-red-500 text-black hover:text-white px-3 py-2 font-medium rounded-md transform transition-all duration-300 border border-gray-300" onClick={clearFilterHandler}>Clear Filters</button>
             </div>
           </div>
         </div>
@@ -350,7 +327,7 @@ const MainStatsView = () => {
           Error Loading the Resources
         </h1>
       ) : (
-        <div>
+        <div className=" ">
           {loading ? (
             <div className="  w-full h-full flex justify-center items-center">
               <Spin size="large" />
