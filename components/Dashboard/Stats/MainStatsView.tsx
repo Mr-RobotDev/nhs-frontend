@@ -27,17 +27,14 @@ import dayjs from 'dayjs';
 const { RangePicker } = DatePicker;
 
 const emptyFilters = {
+  organization: [] as string[],
+  site: [] as string[],
+  building: [] as string[],
   floor: [] as string[],
   room: [] as string[],
   search: '',
   from: null as string | null,
   to: null as string | null,
-};
-
-const emptydropDownSelectedValue = {
-  organization: [] as string[],
-  site: [] as string[],
-  building: [] as string[],
 };
 
 const initialStateDropdownsData = {
@@ -55,7 +52,6 @@ const MainStatsView = () => {
   const [loading, setLoading] = useState(false);
   const [devicesFilterLoading, setDevicesFilterLoading] = useState(false);
   const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
-  const [dropDownSelectedValue, setDropDownSelectedValue] = useState(emptydropDownSelectedValue);
   const [clearInternalStateFlag, setClearInternalStateFlag] = useState(false);
   const debouncedFilters = useDebounce(deviceFilters, 500);
   const [showFilters, setShowFilters] = useState(false);
@@ -68,16 +64,15 @@ const MainStatsView = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const initialFilters = { ...emptyFilters };
-    const dropdownFilters = { ...emptydropDownSelectedValue };
 
     if (params.has('organization')) {
-      dropdownFilters.organization = params.getAll('organization');
+      initialFilters.organization = params.getAll('organization');
     }
     if (params.has('site')) {
-      dropdownFilters.site = params.getAll('site');
+      initialFilters.site = params.getAll('site');
     }
     if (params.has('building')) {
-      dropdownFilters.building = params.getAll('building');
+      initialFilters.building = params.getAll('building');
     }
 
     if (params.has('floor')) {
@@ -97,7 +92,6 @@ const MainStatsView = () => {
     }
 
     setDeviceFilters(initialFilters);
-    setDropDownSelectedValue(dropdownFilters);
   }, []);
 
   const fetchRoomStats = useCallback(async (filters: any) => {
@@ -143,11 +137,15 @@ const MainStatsView = () => {
     []
   );
 
-  const updateQueryParams = useCallback((filters: any, dropDownFilters: any) => {
+  const updateQueryParams = useCallback((filters: any) => {
     const queryParams = new URLSearchParams();
 
+    filters.organization.forEach((org: any) => queryParams.append('organization', org));
+    filters.site.forEach((site: any) => queryParams.append('site', site));
+    filters.building.forEach((building: any) => queryParams.append('building', building));
     filters.floor.forEach((floor: any) => queryParams.append('floor', floor));
     filters.room.forEach((room: any) => queryParams.append('room', room));
+
     if (filters.search) {
       queryParams.append('search', filters.search);
     }
@@ -158,46 +156,42 @@ const MainStatsView = () => {
       queryParams.append('to', filters.to);
     }
 
-    dropDownFilters.organization.forEach((org: any) => queryParams.append('organization', org));
-    dropDownFilters.site.forEach((site: any) => queryParams.append('site', site));
-    dropDownFilters.building.forEach((building: any) => queryParams.append('building', building));
-
     const queryString = queryParams.toString();
     router.push(`/dashboard/stats?${queryString}`);
   }, [router]);
 
   useEffect(() => {
     fetchRoomStats(debouncedFilters);
-    updateQueryParams(debouncedFilters, dropDownSelectedValue);
-  }, [debouncedFilters, dropDownSelectedValue, fetchRoomStats, updateQueryParams]);
+    updateQueryParams(debouncedFilters);
+  }, [debouncedFilters, fetchRoomStats, updateQueryParams]);
 
   useEffect(() => {
     fetchData('/organizations', 'organization', {});
   }, [fetchData]);
 
   useEffect(() => {
-    const orgQueryParams = { organization: dropDownSelectedValue.organization };
+    const orgQueryParams = { organization: deviceFilters.organization };
 
-    if (dropDownSelectedValue.organization.length > 0) {
+    if (deviceFilters.organization.length > 0) {
       fetchData('/sites', 'site', orgQueryParams);
     }
-  }, [fetchData, dropDownSelectedValue.organization]);
+  }, [fetchData, deviceFilters.organization]);
 
   useEffect(() => {
-    const siteQueryParams = { site: dropDownSelectedValue.site };
+    const siteQueryParams = { site: deviceFilters.site };
 
-    if (dropDownSelectedValue.site.length > 0) {
+    if (deviceFilters.site.length > 0) {
       fetchData('/buildings', 'building', siteQueryParams);
     }
-  }, [fetchData, dropDownSelectedValue.site]);
+  }, [fetchData, deviceFilters.site]);
 
   useEffect(() => {
-    const buildingQueryParams = { building: dropDownSelectedValue.building };
+    const buildingQueryParams = { building: deviceFilters.building };
 
-    if (dropDownSelectedValue.building.length > 0) {
+    if (deviceFilters.building.length > 0) {
       fetchData('/floors', 'floor', buildingQueryParams);
     }
-  }, [fetchData, dropDownSelectedValue.building]);
+  }, [fetchData, deviceFilters.building]);
 
   useEffect(() => {
     const floorQueryParams = { floor: deviceFilters.floor };
@@ -211,7 +205,6 @@ const MainStatsView = () => {
     setClearInternalStateFlag(true);
     clearFilterTriggered.current = true;
     setDeviceFilters(emptyFilters);
-    setDropDownSelectedValue(emptydropDownSelectedValue);
     setData((prevData) => ({
       organization: prevData.organization,
       ...initialStateDropdownsData
@@ -285,9 +278,9 @@ const MainStatsView = () => {
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
                     handleTypeChange={(vals: string[]) => {
-                      setDropDownSelectedValue(prev => ({ ...prev, organization: vals }));
+                      setDeviceFilters(prev => ({ ...prev, organization: vals }));
                     }}
-                    initialValue={dropDownSelectedValue.organization}
+                    initialValue={deviceFilters.organization}
                     placeholderText="Select the Organizations"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.organization)}
@@ -305,9 +298,9 @@ const MainStatsView = () => {
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
                     handleTypeChange={(vals: string[]) => {
-                      setDropDownSelectedValue(prev => ({ ...prev, site: vals }));
+                      setDeviceFilters(prev => ({ ...prev, site: vals }));
                     }}
-                    initialValue={dropDownSelectedValue.site}
+                    initialValue={deviceFilters.site}
                     placeholderText="Select the Sites"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.site)}
@@ -315,7 +308,7 @@ const MainStatsView = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/sites?${convertObjectToQueryString({ organization: dropDownSelectedValue.organization })}`}
+                    apiEndpoint={`/sites?${convertObjectToQueryString({ organization: deviceFilters.organization })}`}
                     searchable={true}
                   />
                 </div>
@@ -325,9 +318,9 @@ const MainStatsView = () => {
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
                     handleTypeChange={(vals: string[]) => {
-                      setDropDownSelectedValue(prev => ({ ...prev, building: vals }));
+                      setDeviceFilters(prev => ({ ...prev, building: vals }));
                     }}
-                    initialValue={dropDownSelectedValue.building}
+                    initialValue={deviceFilters.building}
                     placeholderText="Select the buidings"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.building)}
@@ -335,7 +328,7 @@ const MainStatsView = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/buildings?${convertObjectToQueryString({ site: dropDownSelectedValue.site })}`}
+                    apiEndpoint={`/buildings?${convertObjectToQueryString({ site: deviceFilters.site })}`}
                     searchable={true}
                   />
                 </div>
@@ -355,7 +348,7 @@ const MainStatsView = () => {
                     multiple={true}
                     clearInternalStateFlag={clearInternalStateFlag}
                     onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/floors?${convertObjectToQueryString({ building: dropDownSelectedValue.building })}`}
+                    apiEndpoint={`/floors?${convertObjectToQueryString({ building: deviceFilters.building })}`}
                     searchable={true}
                   />
                 </div>
