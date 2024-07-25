@@ -11,11 +11,9 @@ interface ApexChartProps {
 }
 
 const RoomStatsDonutChart: React.FC<ApexChartProps> = ({ roomStats }) => {
-  const [series, setSeries] = useState<number[]>([0, 0, 0]);
+  const series = [roomStats.red, roomStats.yellow, roomStats.green]
+  const noData = series.every(element => element === 0);
 
-  useEffect(() => {
-    setSeries([roomStats.red, roomStats.yellow, roomStats.green]);
-  }, [roomStats]);
 
   const [options] = useState<any>({
     chart: {
@@ -74,7 +72,13 @@ const RoomStatsDonutChart: React.FC<ApexChartProps> = ({ roomStats }) => {
 
   return (
     <div id="chart" className='w-full h-[300px]'>
-      <ReactApexChart options={options} series={series} type="donut" width={'100%'} height={'100%'} />
+      {noData ?
+        <div className=' w-full h-full flex justify-center items-center'>
+          <p className=" font-semibold text-3xl">No Data Available</p>
+        </div>
+        :
+        <ReactApexChart options={options} series={series} type="donut" width={'100%'} height={'100%'} />
+      }
     </div>
   );
 };

@@ -10,12 +10,16 @@ interface ApexChartProps {
 }
 
 const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
+
+
   const [series, setSeries] = useState<any[]>([
     {
       name: 'Occupancy Rate',
       data: [roomStats.red, roomStats.yellow, roomStats.green]
     }
   ]);
+
+  const noData = [roomStats.red, roomStats.yellow, roomStats.green].every(element => element === 0);
 
   const [options] = useState<any>({
     chart: {
@@ -72,13 +76,19 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
 
   return (
     <div id="chart" className='w-full h-[300px]'>
-      <ReactApexChart
-        options={options}
-        series={series} // Use updated series
-        type="bar"
-        width={'100%'}
-        height={'100%'}
-      />
+      {noData ?
+        <div className=' w-full h-full flex justify-center items-center'>
+          <p className=" font-semibold text-3xl">No Data Available</p>
+        </div>
+        :
+        <ReactApexChart
+          options={options}
+          series={series} // Use updated series
+          type="bar"
+          width={'100%'}
+          height={'100%'}
+        />
+      }
     </div>
   );
 };
