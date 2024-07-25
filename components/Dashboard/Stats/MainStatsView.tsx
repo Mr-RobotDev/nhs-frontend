@@ -209,7 +209,7 @@ const MainStatsView = () => {
       organization: prevData.organization,
       ...initialStateDropdownsData
     }));
-    router.push(`/dashboard/devices`);
+    router.push(`/dashboard/stats`);
     fetchRoomStats(emptyFilters);
   };
 
