@@ -47,7 +47,7 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
       },
     },
     xaxis: {
-      categories: ['Red (0 - 60% Occupancy Rate)', 'Yellow (60 - 80% Occupancy Rate)', 'Green (>80% Occupancy Rate)'],
+      categories: ['Red (0 - 60% Occupancy Rate)', 'Amber (60 - 80% Occupancy Rate)', 'Green (>80% Occupancy Rate)'],
       labels: {
         formatter: function (val: number) {
           return val.toFixed(0);
@@ -60,7 +60,7 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
     yaxis: {
       max: 100,
     },
-    colors: ['#FF0000', '#FFFF00', '#008000'], // Define colors here
+    colors: ['#FF0000', '#FFE363', '#008000'], // Define colors here
     responsive: [{
       breakpoint: 480,
       options: {

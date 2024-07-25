@@ -19,8 +19,8 @@ const RoomStatsDonutChart: React.FC<ApexChartProps> = ({ roomStats }) => {
     chart: {
       type: 'donut',
     },
-    labels: ['Red (0 - 60% Occupancy Rate)', 'Yellow (60 - 80% Occupancy Rate)', 'Green (>80% Occupancy Rate)'],
-    colors: ['#FF0000', '#FFFF00', '#008000'],
+    labels: ['Red (0 - 60% Occupancy Rate)', 'Amber (60 - 80% Occupancy Rate)', 'Green (>80% Occupancy Rate)'],
+    colors: ['#FF0000', '#FFE363', '#008000'],
     dataLabels: {
       enabled: true,
       style: {
