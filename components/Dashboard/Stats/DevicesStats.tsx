@@ -19,11 +19,11 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
 
   let maxVariableColor = '';
   if (maxOccupantRoom === roomStats.red) {
-    maxVariableColor = 'bg-[#EF0716]';
+    maxVariableColor = 'bg-[#FF0000]';
   } else if (maxOccupantRoom === roomStats.yellow) {
-    maxVariableColor = 'bg-[#FDC828]';
+    maxVariableColor = 'bg-[#FFFF00]';
   } else if (maxOccupantRoom === roomStats.green) {
-    maxVariableColor = 'bg-[#7AC340]';
+    maxVariableColor = 'bg-[#008000]';
   }
 
   return (
