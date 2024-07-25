@@ -31,6 +31,7 @@ const emptyFilters = {
 }
 
 const initialStateDropdownsData = {
+  organization: [] as SingleNameIdObject[],
   site: [] as SingleNameIdObject[],
   building: [] as SingleNameIdObject[],
   floor: [] as SingleNameIdObject[],
@@ -52,10 +53,7 @@ const DevicesTable = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [data, setData] = useState({
-    organization: [] as SingleNameIdObject[],
-    ...initialStateDropdownsData
-  });
+  const [data, setData] = useState(initialStateDropdownsData);
 
   // Initialize deviceFilters from URL params
   useEffect(() => {
@@ -270,48 +268,16 @@ const DevicesTable = () => {
 
   useEffect(() => {
     fetchData('/organizations', 'organization', {});
+    fetchData('/sites', 'site', {});
+    fetchData('/buildings', 'building', {});
+    fetchData('/floors', 'floor', {});
+    fetchData('/rooms', 'room', {});
   }, [fetchData]);
-
-  useEffect(() => {
-    const orgQueryParams = { organization: deviceFilters.organization };
-
-    if (deviceFilters.organization.length > 0) {
-      fetchData('/sites', 'site', orgQueryParams);
-    }
-  }, [fetchData, deviceFilters.organization]);
-
-  useEffect(() => {
-    const siteQueryParams = { site: deviceFilters.site };
-
-    if (deviceFilters.site.length > 0) {
-      fetchData('/buildings', 'building', siteQueryParams);
-    }
-  }, [fetchData, deviceFilters.site]);
-
-  useEffect(() => {
-    const buildingQueryParams = { building: deviceFilters.building };
-
-    if (deviceFilters.building.length > 0) {
-      fetchData('/floors', 'floor', buildingQueryParams);
-    }
-  }, [fetchData, deviceFilters.building]);
-
-  useEffect(() => {
-    const floorQueryParams = { floor: deviceFilters.floor };
-
-    if (deviceFilters.floor.length > 0) {
-      fetchData('/rooms', 'room', floorQueryParams);
-    }
-  }, [fetchData, deviceFilters.floor]);
 
   const clearFilterHandler = () => {
     setClearInternalStateFlag(true);
     clearFilterTriggered.current = true;
     setDeviceFilters(emptyFilters);
-    setData((prevData) => ({
-      organization: prevData.organization,
-      ...initialStateDropdownsData
-    }));
     router.push(`/dashboard/devices`);
     fetchDevices(emptyFilters);
   };
