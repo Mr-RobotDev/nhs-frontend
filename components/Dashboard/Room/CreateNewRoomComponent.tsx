@@ -2,7 +2,15 @@ import React from 'react'
 import RoomForm from './RoomForm'
 import { RoomFormType } from '@/type'
 
-const CreateNewRoomComponent = ({ floorId, setOpen }: { floorId: string, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+interface CreateNewRoomComponentProps {
+  organizationId: string
+  buildingId: string
+  siteId: string
+  floorId: string
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const CreateNewRoomComponent: React.FC<CreateNewRoomComponentProps> = ({ organizationId, siteId, buildingId, floorId, setOpen }) => {
 
   const room: RoomFormType = {
     code: "",
@@ -14,7 +22,10 @@ const CreateNewRoomComponent = ({ floorId, setOpen }: { floorId: string, setOpen
     cluster: "",
     clusterDescription: "",
     operationHours: "",
-    hoursPerDay: 0
+    hoursPerDay: 0,
+    organization: organizationId,
+    site: siteId,
+    building: buildingId,
   }
 
   return (

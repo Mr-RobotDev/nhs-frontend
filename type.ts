@@ -220,6 +220,9 @@ export interface RoomFormType {
   clusterDescription: string;
   operationHours: string;
   hoursPerDay: number;
+  organization: string;
+  building: string;
+  site: string;
 }
 
 export interface AlertStatsType {
