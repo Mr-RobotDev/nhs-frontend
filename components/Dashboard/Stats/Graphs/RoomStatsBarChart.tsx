@@ -60,7 +60,7 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
     yaxis: {
       max: 100,
     },
-    colors: ['#FF0000', '#FFE363', '#008000'], // Define colors here
+    colors: ['#FF0000', '#FEB019', '#008000'], // Define colors here
     responsive: [{
       breakpoint: 480,
       options: {
