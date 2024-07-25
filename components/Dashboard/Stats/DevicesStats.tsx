@@ -18,7 +18,16 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
   const thresholds = 5
 
   let maxVariableColor = '';
-  if (maxOccupantRoom === roomStats.red) {
+
+  if (roomStats.red === roomStats.yellow && roomStats.yellow === roomStats.green) {
+    maxVariableColor = 'bg-gradient-to-br from-[#FF0000] via-[#FFFF00] to-[#008000]';
+  } else if (roomStats.red === roomStats.yellow && roomStats.red === maxOccupantRoom) {
+    maxVariableColor = 'bg-gradient-to-br from-[#FF0000] to-[#FFFF00]';
+  } else if (roomStats.red === roomStats.green && roomStats.red === maxOccupantRoom) {
+    maxVariableColor = 'bg-gradient-to-br from-[#FF0000] to-[#008000]';
+  } else if (roomStats.yellow === roomStats.green && roomStats.yellow === maxOccupantRoom) {
+    maxVariableColor = 'bg-gradient-to-br from-[#FFFF00] to-[#008000]';
+  } else if (maxOccupantRoom === roomStats.red) {
     maxVariableColor = 'bg-[#FF0000]';
   } else if (maxOccupantRoom === roomStats.yellow) {
     maxVariableColor = 'bg-[#FFFF00]';

@@ -36,7 +36,7 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
       }
     },
     dataLabels: {
-      enabled: true,
+      enabled: false,
       offsetX: -10,
       style: {
         fontSize: '12px',
