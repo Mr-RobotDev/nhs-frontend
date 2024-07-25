@@ -231,8 +231,8 @@ const MainStatsView = () => {
 
       </div>
       <LoadingWrapper loading={devicesFilterLoading}>
-        <div className={`overflow-hidden transform ${showFilters ? 'h-full' : 'h-0 '}`}>
-          <div className={`border border-gray-200 rounded-md p-6 my-5 md:h-[300px] h-full flex flex-col justify-between`}>
+        <div className={`overflow-hidden transform ${showFilters ? 'h-[500px] md:h-[300px]' : 'h-0 '}`}>
+          <div className={`border border-gray-200 rounded-md p-6 my-5 h-[500px] md:h-[300px] flex flex-col justify-between gap-4`}>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               <div>
                 <p className="!mb-1 font-semibold">Organizations</p>
