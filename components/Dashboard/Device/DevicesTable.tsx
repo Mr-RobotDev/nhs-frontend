@@ -43,7 +43,6 @@ const DevicesTable = () => {
   const [loading, setLoading] = useState(false);
   const [devicesFilterLoading, setDevicesFilterLoading] = useState(false);
   const clearFilterTriggered = useRef(false);
-  const customMenuRef = useRef(null);
   const [clearInternalStateFlag, setClearInternalStateFlag] = useState(false);
   const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
   const debouncedFilters = useDebounce(deviceFilters, 500);
@@ -51,7 +50,7 @@ const DevicesTable = () => {
   const { TimeAgo } = useTimeAgo();
   const isMobile = useIsMobile();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [showFilters, setShowFilters] = useState(false);
 
   const [data, setData] = useState(initialStateDropdownsData);
 
@@ -294,8 +293,6 @@ const DevicesTable = () => {
     };
   };
 
-  const [showFilters, setShowFilters] = useState(false);
-
   return (
     <>
       <div className=" flex flex-col md:flex-row md:gap-4">
@@ -426,8 +423,8 @@ const DevicesTable = () => {
                 </div>
               </div>
             </div>
-            <div className=" flex flex-row gap-3 my-2">
-              <Button onClick={clearFilterHandler}>Clear Filters</Button>
+            <div className=" flex flex-row gap-3 my-2 justify-end">
+              <Button danger onClick={clearFilterHandler}>Clear Filters</Button>
             </div>
           </div>
         </div>

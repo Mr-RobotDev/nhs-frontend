@@ -188,7 +188,7 @@ const MainStatsView = () => {
   };
 
   return (
-    <>
+    <LoadingWrapper loading={loading || devicesFilterLoading}>
       <div className=" flex items-center justify-between mb-3">
         <h1 className=" text-3xl font-semibold">Stats</h1>
         <FullScreenButton />
@@ -230,148 +230,134 @@ const MainStatsView = () => {
         </div>
 
       </div>
-      <LoadingWrapper loading={devicesFilterLoading}>
-        <div className={`overflow-hidden transform ${showFilters ? 'h-[500px] md:h-[300px]' : 'h-0 '}`}>
-          <div className={`border border-gray-200 rounded-md p-6 my-5 h-[500px] md:h-[300px] flex flex-col justify-between gap-4`}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              <div>
-                <p className="!mb-1 font-semibold">Organizations</p>
-                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
-                  <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, organization: vals }));
-                    }}
-                    initialValue={deviceFilters.organization}
-                    placeholderText="Select the Organizations"
-                    isAdmin={true}
-                    options={tranformObjectForSelectComponent(data.organization)}
-                    createNewRoom={false}
-                    multiple={true}
-                    clearInternalStateFlag={clearInternalStateFlag}
-                    onClearInternalState={handleClearInternalState}
-                    apiEndpoint="/organizations?page=1&limit=50"
-                    searchable={true}
-                  />
-                </div>
-              </div>
-              <div>
-                <p className="!mb-1 font-semibold">Sites</p>
-                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
-                  <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, site: vals }));
-                    }}
-                    initialValue={deviceFilters.site}
-                    placeholderText="Select the Sites"
-                    isAdmin={true}
-                    options={tranformObjectForSelectComponent(data.site)}
-                    createNewRoom={false}
-                    multiple={true}
-                    clearInternalStateFlag={clearInternalStateFlag}
-                    onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/sites?${convertObjectToQueryString({ organization: deviceFilters.organization })}`}
-                    searchable={true}
-                  />
-                </div>
-              </div>
-              <div>
-                <p className="!mb-1 font-semibold">Buildings</p>
-                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
-                  <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, building: vals }));
-                    }}
-                    initialValue={deviceFilters.building}
-                    placeholderText="Select the buidings"
-                    isAdmin={true}
-                    options={tranformObjectForSelectComponent(data.building)}
-                    createNewRoom={false}
-                    multiple={true}
-                    clearInternalStateFlag={clearInternalStateFlag}
-                    onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/buildings?${convertObjectToQueryString({ site: deviceFilters.site })}`}
-                    searchable={true}
-                  />
-                </div>
-              </div>
-              <div>
-                <p className="!mb-1 font-semibold">Floors</p>
-                <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
-                  <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, floor: vals }));
-                    }}
-                    initialValue={deviceFilters.floor}
-                    placeholderText="Select the floors"
-                    isAdmin={true}
-                    options={tranformObjectForSelectComponent(data.floor)}
-                    createNewRoom={false}
-                    multiple={true}
-                    clearInternalStateFlag={clearInternalStateFlag}
-                    onClearInternalState={handleClearInternalState}
-                    apiEndpoint={`/floors?${convertObjectToQueryString({ building: deviceFilters.building })}`}
-                    searchable={true}
-                  />
-                </div>
+      <div className={`${showFilters ? 'block' : 'hidden'}`}>
+        <div className={`border border-gray-200 rounded-md p-6 my-5 h-full flex flex-col justify-between gap-4`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div>
+              <p className="!mb-1 font-semibold">Organizations</p>
+              <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                <CustomMenu
+                  handleTypeChange={(vals: string[]) => {
+                    setDeviceFilters(prev => ({ ...prev, organization: vals }));
+                  }}
+                  initialValue={deviceFilters.organization}
+                  placeholderText="Select the Organizations"
+                  isAdmin={true}
+                  options={tranformObjectForSelectComponent(data.organization)}
+                  createNewRoom={false}
+                  multiple={true}
+                  clearInternalStateFlag={clearInternalStateFlag}
+                  onClearInternalState={handleClearInternalState}
+                  apiEndpoint="/organizations?page=1&limit=50"
+                  searchable={true}
+                />
               </div>
             </div>
-            <div className=" flex flex-row gap-3 my-2 justify-end">
-              <button className=" bg-white hover:bg-red-500 text-black hover:text-white px-3 py-2 font-medium rounded-md transform transition-all duration-300 border border-gray-300" onClick={clearFilterHandler}>Clear Filters</button>
+            <div>
+              <p className="!mb-1 font-semibold">Sites</p>
+              <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                <CustomMenu
+                  handleTypeChange={(vals: string[]) => {
+                    setDeviceFilters(prev => ({ ...prev, site: vals }));
+                  }}
+                  initialValue={deviceFilters.site}
+                  placeholderText="Select the Sites"
+                  isAdmin={true}
+                  options={tranformObjectForSelectComponent(data.site)}
+                  createNewRoom={false}
+                  multiple={true}
+                  clearInternalStateFlag={clearInternalStateFlag}
+                  onClearInternalState={handleClearInternalState}
+                  apiEndpoint={`/sites?${convertObjectToQueryString({ organization: deviceFilters.organization })}`}
+                  searchable={true}
+                />
+              </div>
+            </div>
+            <div>
+              <p className="!mb-1 font-semibold">Buildings</p>
+              <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                <CustomMenu
+                  handleTypeChange={(vals: string[]) => {
+                    setDeviceFilters(prev => ({ ...prev, building: vals }));
+                  }}
+                  initialValue={deviceFilters.building}
+                  placeholderText="Select the buidings"
+                  isAdmin={true}
+                  options={tranformObjectForSelectComponent(data.building)}
+                  createNewRoom={false}
+                  multiple={true}
+                  clearInternalStateFlag={clearInternalStateFlag}
+                  onClearInternalState={handleClearInternalState}
+                  apiEndpoint={`/buildings?${convertObjectToQueryString({ site: deviceFilters.site })}`}
+                  searchable={true}
+                />
+              </div>
+            </div>
+            <div>
+              <p className="!mb-1 font-semibold">Floors</p>
+              <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
+                <CustomMenu
+                  handleTypeChange={(vals: string[]) => {
+                    setDeviceFilters(prev => ({ ...prev, floor: vals }));
+                  }}
+                  initialValue={deviceFilters.floor}
+                  placeholderText="Select the floors"
+                  isAdmin={true}
+                  options={tranformObjectForSelectComponent(data.floor)}
+                  createNewRoom={false}
+                  multiple={true}
+                  clearInternalStateFlag={clearInternalStateFlag}
+                  onClearInternalState={handleClearInternalState}
+                  apiEndpoint={`/floors?${convertObjectToQueryString({ building: deviceFilters.building })}`}
+                  searchable={true}
+                />
+              </div>
             </div>
           </div>
+          <div className=" flex flex-row gap-3 my-2 justify-end">
+            <Button danger onClick={clearFilterHandler}>Clear Filters</Button>
+          </div>
         </div>
-      </LoadingWrapper>
+      </div>
 
-      {error ? (
-        <h1 className=" text-2xl font-semibold mt-20 text-center">
-          Error Loading the Resources
-        </h1>
-      ) : (
-        <div className=" ">
-          {loading ? (
-            <div className="  w-full h-full flex justify-center items-center">
-              <Spin size="large" />
+      {
+        roomStats && (
+          <>
+            <div className="">
+              {<DevicesStats roomStats={roomStats} />}
             </div>
-          ) : (
-            roomStats && (
-              <>
-                <div className="">
-                  {<DevicesStats roomStats={roomStats} />}
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                  <div>
-                    <Card className="!p-0">
-                      <h2 className=" text-xl font-semibold">Rooms Status</h2>
-                      <RoomStatsDonutChart roomStats={roomStats} />
-                    </Card>
-                  </div>
-                  <div className="">
-                    <Card className="!p-0">
-                      <h2 className=" text-xl font-semibold">Rooms Stats</h2>
-                      <RoomStatsBarChart roomStats={roomStats} />
-                    </Card>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                  <div>
-                    <Card className="!p-0">
-                      <h2 className=" text-xl font-semibold">Room Functions</h2>
-                      <RoomFunctionsDonutChart functions={roomStats.roomFunctions} />
-                    </Card>
-                  </div>
-                  <div>
-                    <Card className="!p-0">
-                      <h2 className=" text-xl font-semibold">Departments</h2>
-                      <RoomDepartmentsDonutChart departments={roomStats.departments} />
-                    </Card>
-                  </div>
-                </div>
-              </>
-            )
-          )}
-        </div>
-      )}
-    </>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+              <div>
+                <Card className="!p-0">
+                  <h2 className=" text-xl font-semibold">Rooms Status</h2>
+                  <RoomStatsDonutChart roomStats={roomStats} />
+                </Card>
+              </div>
+              <div className="">
+                <Card className="!p-0">
+                  <h2 className=" text-xl font-semibold">Rooms Stats</h2>
+                  <RoomStatsBarChart roomStats={roomStats} />
+                </Card>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+              <div>
+                <Card className="!p-0">
+                  <h2 className=" text-xl font-semibold">Room Functions</h2>
+                  <RoomFunctionsDonutChart functions={roomStats.roomFunctions} />
+                </Card>
+              </div>
+              <div>
+                <Card className="!p-0">
+                  <h2 className=" text-xl font-semibold">Departments</h2>
+                  <RoomDepartmentsDonutChart departments={roomStats.departments} />
+                </Card>
+              </div>
+            </div>
+          </>
+        )
+      }
+    </LoadingWrapper>
   );
 };
 
