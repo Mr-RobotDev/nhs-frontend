@@ -14,7 +14,7 @@ interface DeviceStatsProps {
 
 const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
   const maxOccupantRoom = Math.max(roomStats.red, roomStats.yellow, roomStats.green);
-  const thresholds = 5;
+  const thresholds = 8;
 
   let maxVariableColor = '';
   let textColor = 'text-white';

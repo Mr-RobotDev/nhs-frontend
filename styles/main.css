@@ -3046,3 +3046,28 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile
   path {
   fill: #8c8c8c;
 }
+/* 
+.ant-picker-dropdown .ant-picker-panel-container .ant-picker-panels {   
+  display: inline-flex;   
+  animation: none;   
+  flex-wrap: nowrap;  
+  direction: ltr;
+
+  @media (max-width: 768px) { display: inline-grid; width: '100%'; }
+} */
+
+
+.ant-picker-panel-container .ant-picker-presets {
+  min-height: 25rem !important;
+}
+ 
+@media (max-width: 800px) {
+  .ant-picker-panel-container .ant-picker-presets{
+    overflow: scroll !important;
+    height: 400px;
+  }
+}
+
+
+
+

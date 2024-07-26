@@ -205,10 +205,10 @@ const MainStatsView = () => {
           />
         </div>
         <div className=" flex items-end">
-          <div>
+          <div className=" w-full">
             <p className=" text-sm mb-1">Date Range</p>
             <RangePicker
-              className="flex h-[42px] w-72"
+              className="flex h-[42px] !w-full md:w-72 "
               onChange={handleRangeChange}
               value={[
                 deviceFilters.from ? dayjs(deviceFilters.from) : null,
