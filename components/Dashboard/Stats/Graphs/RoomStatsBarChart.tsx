@@ -25,6 +25,9 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
     chart: {
       type: 'bar',
       height: 350,
+      toolbar: {
+        show: false
+      },
     },
     plotOptions: {
       bar: {
