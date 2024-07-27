@@ -172,7 +172,7 @@ const CustomMenu = ({
                 </span>
                 <div className=' flex gap-1 items-end'>
                   <span className="text-sm font-medium !text-black">{label}</span>
-                  {code && <span className="text-[12px] font-medium  text-slate-500">(Code: {code})</span>}
+                  {code && <span className="text-[12px] font-medium  text-slate-500">({code})</span>}
                 </div>
               </div>
             )
