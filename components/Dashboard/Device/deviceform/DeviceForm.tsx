@@ -51,7 +51,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<DeviceFormType>({
+  const { register, handleSubmit, control, formState: { errors }, trigger } = useForm<DeviceFormType>({
     resolver: yupResolver(schema),
     defaultValues: device,
   });
@@ -135,22 +135,26 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
         id: roomFromGlobalState.id,
         name: roomFromGlobalState.name,
       };
-
+  
       setData((prevData: any) => ({
         ...prevData,
         rooms: [...prevData.rooms, newOption],
       }));
-
-      setFormData((prevState: any) => ({
-        ...prevState,
-        room: roomFromGlobalState.id,
-      }));
+  
+      (async () => {
+        await setFormData((prevState: any) => ({
+          ...prevState,
+          room: roomFromGlobalState.id,
+        }));
+        trigger(); // Manually trigger validation after state update
+      })();
     }
-
+  
     return () => {
       dispatch(setNewRoom(emptyRoomObject));
     };
-  }, [roomFromGlobalState, dispatch]);
+  }, [roomFromGlobalState, dispatch, trigger]);
+  
 
   const organizationsOptions = tranformObjectForSelectComponent(data.organizations);
   const sitesOptions = tranformObjectForSelectComponent(data.sites);
