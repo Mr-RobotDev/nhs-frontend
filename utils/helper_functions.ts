@@ -150,7 +150,7 @@ export const getDeviceLabelFromState = (value: string) => {
 
 export const tranformObjectForSelectComponent = (objects: SingleNameIdObject[]) => {
   return objects.map(org => ({
-    label: org.name,
+    label: org.name+`|${org.code || ''}`,
     value: org.id
   }));
 };

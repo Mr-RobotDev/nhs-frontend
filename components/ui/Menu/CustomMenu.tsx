@@ -132,7 +132,7 @@ const CustomMenu = ({
       <div className="flex flex-row">
         <SelectSecondary
           only={selectedTypes.length === 0 ?
-            placeholderText : selectedTypes.map(type => options.find(opt => opt.value === type)?.label).join(', ')}
+            placeholderText : selectedTypes.map(type => options.find(opt => opt.value === type)?.label.split('|')[0].trim()).join(', ')}
           disabled={!isAdmin}
         />
       </div>
@@ -151,20 +151,32 @@ const CustomMenu = ({
       )}
       <LoadingWrapper loading={loading} size='small'>
         <div className="flex flex-col">
-          {filteredOptions.map(option => (
-            <div
-              key={option.value}
-              className={`flex gap-2 p-2 hover:bg-blue-100 transition-all ease-in-out duration-300 rounded-md cursor-pointer ${!isAdmin ? "pointer-events-none" : ""}`}
-              onClick={() => handleScheduleTimeClick(option.value)}
-            >
-              <span className="flex flex-col justify-center w-[6px]">
-                <span
-                  className={`w-[6px] h-[6px] rounded-[50%] bg-blue-600 ${selectedTypes.includes(option.value) ? "visible" : "hidden"}`}
-                ></span>
-              </span>
-              <span className="text-sm font-medium !text-black">{option.label}</span>
-            </div>
-          ))}
+          {filteredOptions.map(option => {
+            const lableArray = option.label.split('|')
+            const label = lableArray[0].trim();
+            let code = ''
+            if (lableArray.length > 1) {
+              code = lableArray[1].trim();
+            }
+
+            return (
+              <div
+                key={option.value}
+                className={`flex gap-2 p-2 hover:bg-blue-100 transition-all ease-in-out duration-300 rounded-md cursor-pointer ${!isAdmin ? "pointer-events-none" : ""}`}
+                onClick={() => handleScheduleTimeClick(option.value)}
+              >
+                <span className="flex flex-col justify-center w-[6px]">
+                  <span
+                    className={`w-[6px] h-[6px] rounded-[50%] bg-blue-600 ${selectedTypes.includes(option.value) ? "visible" : "hidden"}`}
+                  ></span>
+                </span>
+                <div className=' flex gap-1 items-end'>
+                  <span className="text-sm font-medium !text-black">{label}</span>
+                  {code && <span className="text-[12px] font-medium  text-slate-500">(Code: {code})</span>}
+                </div>
+              </div>
+            )
+          })}
           {createNewRoom && (
             <div className=' pt-2' onClick={handleCreateNewRoom}>
               <hr />

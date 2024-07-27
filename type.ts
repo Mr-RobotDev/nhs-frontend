@@ -204,6 +204,7 @@ export interface DeviceFormType {
 }
 
 export interface SingleNameIdObject {
+  code: string;
   name: string;
   id: string;
 }
