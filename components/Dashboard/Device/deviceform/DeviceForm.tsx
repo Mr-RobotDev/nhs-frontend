@@ -24,7 +24,7 @@ interface DeviceFormProps {
 const schema = yup.object().shape({
   oem: yup.string().required('OEM is required'),
   name: yup.string().required('Name is required'),
-  type: yup.string().required('type is required'),
+  type: yup.string().required('Type is required'),
   description: yup.string().required('Description is required'),
   organization: yup.string().required('Organization is required'),
   site: yup.string().required('Site is required'),
@@ -51,7 +51,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const { register, handleSubmit, control, formState: { errors }, trigger } = useForm<DeviceFormType>({
+  const { register, handleSubmit, control, formState: { errors }, trigger, setValue } = useForm<DeviceFormType>({
     resolver: yupResolver(schema),
     defaultValues: device,
   });
@@ -130,30 +130,30 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
   }, [formData.floor, fetchData]);
 
   useEffect(() => {
-    if (roomFromGlobalState.id !== '') {
+    if (roomFromGlobalState.id !== '' && roomFromGlobalState) {
       const newOption = {
         id: roomFromGlobalState.id,
         name: roomFromGlobalState.name,
       };
-  
+
       setData((prevData: any) => ({
         ...prevData,
         rooms: [...prevData.rooms, newOption],
       }));
-  
+
       setFormData((prevState: any) => ({
         ...prevState,
         room: roomFromGlobalState.id,
       }));
 
-      trigger();
+      setValue('room', roomFromGlobalState.id as string);  // Set the value in react-hook-form state
+      trigger('room');  // Trigger validation for the room field
     }
-  
+
     return () => {
       dispatch(setNewRoom(emptyRoomObject));
     };
-  }, [roomFromGlobalState, dispatch, trigger]);
-  
+  }, [roomFromGlobalState, dispatch, setValue, trigger]);
 
   const organizationsOptions = tranformObjectForSelectComponent(data.organizations);
   const sitesOptions = tranformObjectForSelectComponent(data.sites);
@@ -174,6 +174,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
                 const selectedValue = vals[0];
                 field.onChange(selectedValue);
                 setFormData({ ...formData, [value]: selectedValue });
+                trigger(value);  // Trigger validation for the field
               }}
               isAdmin={isAdmin}
               options={options}
@@ -189,7 +190,6 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
       {errors[value] && <p className="!text-red-500 text-xs mt-1">{(errors[value] as any)?.message}</p>}
     </div>
   );
-
 
   const handleOk = () => {
     setModalText('The modal will be closed after two seconds');
