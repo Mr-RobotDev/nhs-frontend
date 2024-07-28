@@ -15,11 +15,11 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
   const [series, setSeries] = useState<any[]>([
     {
       name: 'Occupancy Rate',
-      data: [roomStats.red, roomStats.yellow, roomStats.green]
+      data: [roomStats.red, roomStats.amber, roomStats.green]
     }
   ]);
 
-  const noData = [roomStats.red, roomStats.yellow, roomStats.green].every(element => element === 0);
+  const noData = [roomStats.red, roomStats.amber, roomStats.green].every(element => element === 0);
 
   const [options] = useState<any>({
     chart: {
@@ -57,8 +57,8 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
         },
       },
       min: 0,
-      max: Math.max(roomStats.red, roomStats.yellow, roomStats.green),
-      tickAmount: Math.max(roomStats.red, roomStats.yellow, roomStats.green) / 5,
+      max: Math.max(roomStats.red, roomStats.amber, roomStats.green),
+      tickAmount: Math.max(roomStats.red, roomStats.amber, roomStats.green) / 5,
     },
     yaxis: {
       max: 100,

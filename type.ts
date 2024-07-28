@@ -174,21 +174,26 @@ interface Device {
 export interface RoomStatsType {
   totalRooms: number;
   red: number;
-  yellow: number;
+  amber: number;
   green: number;
-  roomNames: string[];
+  rooms: RoomStatusRoomOccupancyType[];
   roomFunctions: roomFunctionsType[]
   departments: departmentsType[]
 }
 
+export interface RoomStatusRoomOccupancyType {
+  name: string;
+  occupancy: string;
+}
+
 export interface roomFunctionsType {
   count: number;
-  function: string;
+  name: string;
 }
 
 export interface departmentsType {
   count: number;
-  department: string;
+  name: string;
 }
 
 export interface DeviceFormType {
@@ -216,9 +221,9 @@ export interface RoomFormType {
   function: string;
   netUseableArea: number;
   department: string;
-  division: string;
-  cluster: string;
-  clusterDescription: string;
+  division?: string;
+  cluster?: string;
+  clusterDescription?: string;
   operationHours: string;
   hoursPerDay: number;
   organization: string;

@@ -13,26 +13,26 @@ interface DeviceStatsProps {
 }
 
 const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
-  const maxOccupantRoom = Math.max(roomStats.red, roomStats.yellow, roomStats.green);
+  const maxOccupantRoom = Math.max(roomStats.red, roomStats.amber, roomStats.green);
   const thresholds = 8;
 
   let maxVariableColor = '';
   let textColor = 'text-white';
 
-  if (roomStats.red === 0 && roomStats.yellow === 0 && roomStats.green === 0) {
+  if (roomStats.red === 0 && roomStats.amber === 0 && roomStats.green === 0) {
     maxVariableColor = 'bg-white';
     textColor = 'text-black';
-  } else if (roomStats.red === roomStats.yellow && roomStats.yellow === roomStats.green) {
+  } else if (roomStats.red === roomStats.amber && roomStats.amber === roomStats.green) {
     maxVariableColor = 'bg-gradient-to-br from-[#FF0000] via-[#FEB019] to-[#008000]';
-  } else if (roomStats.red === roomStats.yellow && roomStats.red === maxOccupantRoom) {
+  } else if (roomStats.red === roomStats.amber && roomStats.red === maxOccupantRoom) {
     maxVariableColor = 'bg-gradient-to-br from-[#FF0000] to-[#FEB019]';
   } else if (roomStats.red === roomStats.green && roomStats.red === maxOccupantRoom) {
     maxVariableColor = 'bg-gradient-to-br from-[#FF0000] to-[#008000]';
-  } else if (roomStats.yellow === roomStats.green && roomStats.yellow === maxOccupantRoom) {
+  } else if (roomStats.amber === roomStats.green && roomStats.amber === maxOccupantRoom) {
     maxVariableColor = 'bg-gradient-to-br from-[#FEB019] to-[#008000]';
   } else if (maxOccupantRoom === roomStats.red) {
     maxVariableColor = 'bg-[#FF0000]';
-  } else if (maxOccupantRoom === roomStats.yellow) {
+  } else if (maxOccupantRoom === roomStats.amber) {
     maxVariableColor = 'bg-[#FEB019]';
   } else if (maxOccupantRoom === roomStats.green) {
     maxVariableColor = 'bg-[#008000]';
@@ -58,15 +58,15 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
       <div>
         <Card className="!p-0 !h-[350px]">
           <h2 className=" text-xl font-semibold">Occupied Rooms</h2>
-          {roomStats.roomNames.length > 0 ?
+          {roomStats.rooms.length > 0 ?
             <div className=" mt-5">
               <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto">
-                {Array.from({ length: Math.ceil(roomStats.roomNames.length / thresholds) }).map((_, columnIndex) => (
+                {Array.from({ length: Math.ceil(roomStats.rooms.length / thresholds) }).map((_, columnIndex) => (
                   <ul className=" mb-0" key={columnIndex}>
-                    {roomStats.roomNames.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((roomName, index) => (
+                    {roomStats.rooms.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((room, index) => (
                       <li className="mb-[6px] w-64 flex flex-row gap-2 items-center" key={index}>
                         <div className={classNames('w-[6px] h-[6px] rounded-full', maxVariableColor)}></div>
-                        {roomName}
+                        {room.name}
                       </li>
                     ))}
                   </ul>

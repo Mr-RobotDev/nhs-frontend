@@ -65,7 +65,7 @@ const RoomDepartmentsDonutChart: React.FC<ApexChartProps> = ({ departments }) =>
 
   useEffect(() => {
     const counts = departments.map((department: departmentsType) => department.count);
-    const functions = departments.map((department: departmentsType) => department.department);
+    const functions = departments.map((department: departmentsType) => department.name);
     setSeries(counts);
     setOptions((prevOptions: any) => ({
       ...prevOptions,

@@ -11,7 +11,7 @@ interface ApexChartProps {
 }
 
 const RoomStatsDonutChart: React.FC<ApexChartProps> = ({ roomStats }) => {
-  const series = [roomStats.red, roomStats.yellow, roomStats.green]
+  const series = [roomStats.red, roomStats.amber, roomStats.green]
   const noData = series.every(element => element === 0);
 
 

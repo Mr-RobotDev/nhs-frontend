@@ -141,13 +141,12 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ device }) => {
         rooms: [...prevData.rooms, newOption],
       }));
   
-      (async () => {
-        await setFormData((prevState: any) => ({
-          ...prevState,
-          room: roomFromGlobalState.id,
-        }));
-        trigger(); // Manually trigger validation after state update
-      })();
+      setFormData((prevState: any) => ({
+        ...prevState,
+        room: roomFromGlobalState.id,
+      }));
+
+      trigger();
     }
   
     return () => {

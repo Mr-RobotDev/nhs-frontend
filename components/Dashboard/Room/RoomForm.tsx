@@ -23,9 +23,9 @@ const schema = yup.object().shape({
   function: yup.string().required('Function is required'),
   netUseableArea: yup.number().required('Net Useable Area is required'),
   department: yup.string().required('Department is required'),
-  division: yup.string().required('Division is required'),
-  cluster: yup.string().required('Cluster is required'),
-  clusterDescription: yup.string().required('Cluster Description is required'),
+  division: yup.string().optional(),
+  cluster: yup.string().optional(),
+  clusterDescription: yup.string().optional(),
   operationHours: yup.string().required('Operation Hours is required'),
   hoursPerDay: yup.number().required('Hours Per Day is required'),
   organization: yup.string().required('Organization is required'),
@@ -42,14 +42,26 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, floorId, setOpen }) => {
 
   const [loading, setLoading] = useState(false);
 
+  const removeEmptyValues = (obj: Record<string, any>) => {
+    return Object.entries(obj)
+      .filter(([_, value]) => value !== null && value !== undefined && value !== '')
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {} as Record<string, any>);
+  };
+
   const handleCreateNewRoom = async (data: RoomFormType) => {
     try {
       setLoading(true);
 
-      data.netUseableArea = parseFloat(data.netUseableArea.toString());
-      data.hoursPerDay = parseInt(data.hoursPerDay.toString());
+      // Remove empty values from the data
+      const cleanedData = removeEmptyValues(data);
 
-      const response = await axiosInstance.post(`floors/${floorId}/rooms`, data);
+      cleanedData.netUseableArea = parseFloat(cleanedData.netUseableArea.toString());
+      cleanedData.hoursPerDay = parseInt(cleanedData.hoursPerDay.toString());
+
+      const response = await axiosInstance.post(`floors/${floorId}/rooms`, cleanedData);
       if (response.status === 201) {
         toast.success('Room created successfully');
         dispatch(setNewRoom(response.data));
@@ -60,7 +72,6 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, floorId, setOpen }) => {
     } finally {
       setLoading(false);
     }
-    console.log(data);
   };
 
   return (

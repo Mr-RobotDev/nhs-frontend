@@ -65,7 +65,7 @@ const RoomFunctionsDonutChart: React.FC<ApexChartProps> = ({ functions }) => {
 
   useEffect(() => {
     const counts = functions.map((roomFunction: roomFunctionsType) => roomFunction.count);
-    const functionLabels = functions.map((roomFunction: roomFunctionsType) => roomFunction.function);
+    const functionLabels = functions.map((roomFunction: roomFunctionsType) => roomFunction.name);
     setSeries(counts);
     setOptions((prevOptions: any) => ({
       ...prevOptions,
