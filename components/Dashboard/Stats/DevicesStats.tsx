@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import DeviceTypeDetail from "../Device/DeviceTypeDetail";
 import { RoomStatsType } from "@/type";
 import classNames from 'classnames';
+import { occupanyColor } from "@/utils/helper_functions";
 
 interface DeviceStatsProps {
   roomStats: RoomStatsType;
@@ -63,12 +64,12 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
               <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto">
                 {Array.from({ length: Math.ceil(roomStats.rooms.length / thresholds) }).map((_, columnIndex) => (
                   <ul className=" mb-0" key={columnIndex}>
-                    {roomStats.rooms.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((room, index) => (
-                      <li className="mb-[6px] w-64 flex flex-row gap-2 items-center" key={index}>
-                        <div className={classNames('w-[6px] h-[6px] rounded-full', maxVariableColor)}></div>
+                    {roomStats.rooms.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((room, index) => {
+                      return <li className="mb-[6px] w-64 flex flex-row gap-2 items-center" key={index}>
+                        <div className={`w-[6px] h-[6px] rounded-full bg-[${occupanyColor(room.occupancy)}]`}></div>
                         {room.name}
                       </li>
-                    ))}
+                    })}
                   </ul>
                 ))}
               </div>

@@ -177,3 +177,14 @@ export const convertObjectToQueryString = (params: { [key: string]: any }): stri
   }
   return queryStringParts.join('&');
 }
+
+
+export const occupanyColor = (key: string) => {
+  const icons: Record<string, string> = {
+    red: '#FF0000',
+    amber: '#FEB019',
+    green: '#008000',
+  }
+
+  return icons[key] || '';
+}
