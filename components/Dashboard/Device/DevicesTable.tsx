@@ -46,6 +46,9 @@ const DevicesTable = () => {
   const [clearInternalStateFlag, setClearInternalStateFlag] = useState(false);
   const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
   const debouncedFilters = useDebounce(deviceFilters, 500);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   const { TimeAgo } = useTimeAgo();
   const isMobile = useIsMobile();
@@ -211,13 +214,21 @@ const DevicesTable = () => {
     columns = columns.filter(column => column.key !== 'lastUpdated' && column.key !== 'sensorId');
   }
 
-  const fetchDevices = useCallback(async (filters: any) => {
-    const queryParams = convertObjectToQueryString(filters);
+  const fetchDevices = useCallback(async (filters: any, page: number, limit: number) => {
+    const filtersWithPagination = {
+      ...filters,
+      page,
+      limit
+    }
+    const queryParams = convertObjectToQueryString(filtersWithPagination);
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/devices?page=1&limit=50&${queryParams}`);
+      const response = await axiosInstance.get(`/devices?${queryParams}`);
       if (response.status === 200) {
         setDevices(response.data.results);
+        setCurrentPage(response.data.pagination.page);
+        setPageSize(response.data.pagination.limit);
+        setTotalItems(response.data.pagination.totalResults);
       }
     } catch (error) {
       console.log(error);
@@ -261,9 +272,9 @@ const DevicesTable = () => {
   }, [router])
 
   useEffect(() => {
-    fetchDevices(debouncedFilters);
+    fetchDevices(debouncedFilters, currentPage, pageSize);
     updateQueryParams(debouncedFilters);
-  }, [debouncedFilters, fetchDevices, updateQueryParams]);
+  }, [debouncedFilters, fetchDevices, updateQueryParams, currentPage, pageSize]);
 
   useEffect(() => {
     fetchData('/organizations', 'organization', {});
@@ -278,7 +289,7 @@ const DevicesTable = () => {
     clearFilterTriggered.current = true;
     setDeviceFilters(emptyFilters);
     router.push(`/dashboard/devices`);
-    fetchDevices(emptyFilters);
+    fetchDevices(emptyFilters, 1, 10);
   };
 
   const handleClearInternalState = () => {
@@ -293,6 +304,19 @@ const DevicesTable = () => {
     };
   };
 
+  const handleTableChange = (newPagination: any) => {
+    setCurrentPage(newPagination);
+    setPageSize(10);
+  };
+
+  const handleChangeDeviceFilters = (key: string, value: string | string[]) => {
+    setDeviceFilters(prev => ({
+      ...prev,
+      [key]: value
+    }))
+    setCurrentPage(1)
+  }
+
   return (
     <>
       <div className=" flex flex-col md:flex-row md:gap-4">
@@ -301,7 +325,7 @@ const DevicesTable = () => {
           <PrimaryInput
             name="name"
             value={deviceFilters.search}
-            onChange={(e) => setDeviceFilters(prev => ({ ...prev, search: e.target.value }))}
+            onChange={(e) => handleChangeDeviceFilters('search', e.target.value)}
             placeholder="Search By Name or Sensor ID"
           />
         </div>
@@ -326,9 +350,7 @@ const DevicesTable = () => {
                 <p className="!mb-1 font-semibold">Organizations</p>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, organization: vals }));
-                    }}
+                    handleTypeChange={(vals: string[]) => handleChangeDeviceFilters('organization', vals)}
                     initialValue={deviceFilters.organization}
                     placeholderText="Select the Organizations"
                     isAdmin={true}
@@ -346,9 +368,7 @@ const DevicesTable = () => {
                 <p className="!mb-1 font-semibold">Sites</p>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, site: vals }));
-                    }}
+                    handleTypeChange={(vals: string[]) => handleChangeDeviceFilters('site', vals)}
                     initialValue={deviceFilters.site}
                     placeholderText="Select the Sites"
                     isAdmin={true}
@@ -366,10 +386,8 @@ const DevicesTable = () => {
                 <p className="!mb-1 font-semibold">Buildings</p>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, building: vals }));
-                    }}
-                    initialValue={deviceFilters.building} 
+                    handleTypeChange={(vals: string[]) => handleChangeDeviceFilters('building', vals)}
+                    initialValue={deviceFilters.building}
                     placeholderText="Select the buidings"
                     isAdmin={true}
                     options={tranformObjectForSelectComponent(data.building)}
@@ -386,9 +404,7 @@ const DevicesTable = () => {
                 <p className="!mb-1 font-semibold">Floors</p>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, floor: vals }));
-                    }}
+                    handleTypeChange={(vals: string[]) => handleChangeDeviceFilters('floor', vals)}
                     initialValue={deviceFilters.floor}
                     placeholderText="Select the floors"
                     isAdmin={true}
@@ -406,9 +422,7 @@ const DevicesTable = () => {
                 <p className="!mb-1 font-semibold">Rooms</p>
                 <div className="flex flex-row items-center border rounded-md shadow-md lg:mb-3 md:mb-0">
                   <CustomMenu
-                    handleTypeChange={(vals: string[]) => {
-                      setDeviceFilters(prev => ({ ...prev, room: vals }));
-                    }}
+                    handleTypeChange={(vals: string[]) => handleChangeDeviceFilters('room', vals)}
                     initialValue={deviceFilters.room}
                     placeholderText="Select the rooms"
                     isAdmin={true}
@@ -437,6 +451,12 @@ const DevicesTable = () => {
           loading={loading}
           className="cursor-pointer"
           onRow={onRowClick}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalItems,
+            onChange: handleTableChange,
+          }}
         />
       </div>
     </>
