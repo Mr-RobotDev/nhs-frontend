@@ -66,6 +66,13 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
       icon: ClipboardIcon,
     },
     {
+      key: "20",
+      title: "Data",
+      url: "/dashboard/data",
+      menuKey: "data",
+      icon: CircleStackIcon,
+    },
+    {
       key: "8",
       title: "Alerts",
       url: "/dashboard/alerts",

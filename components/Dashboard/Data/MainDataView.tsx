@@ -1,19 +1,12 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import withDashboardLayout from "@/hoc/withDashboardLayout";
-import DevicesStats from "./DevicesStats";
+import DevicesStats from "../Stats/DevicesStats";
 import axiosInstance from "@/lib/axiosInstance";
-import toast from "react-hot-toast";
 import { Button, Card, DatePicker, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setDevicesStats } from "@/app/store/slice/StatisticsSlice";
-import { RootState } from "@/app/store/store";
 import FullScreenButton from "@/components/ui/FullScreenButton/FullScreenButton";
 import { RoomStatsType, SingleNameIdObject } from "@/type";
-import RoomStatsBarChart from "./Graphs/RoomStatsBarChart";
-import RoomStatsDonutChart from "./Graphs/RoomStatsDonutChart";
-import RoomFunctionsDonutChart from "./Graphs/RoomFunctionsDonutChart";
-import RoomDepartmentsDonutChart from "./Graphs/RoomDepartmentsDonutChart";
 import { convertObjectToQueryString, tranformObjectForSelectComponent } from "@/utils/helper_functions";
 import { useRouter } from "next/navigation";
 import useDebounce from "@/app/hooks/useDebounce";
@@ -23,6 +16,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { PrimaryInput } from "@/components/ui/Input/Input";
 import dayjs from 'dayjs';
+import DataCard from "./DataCard";
+import { Switch } from 'antd';
 
 const { RangePicker } = DatePicker;
 
@@ -32,8 +27,9 @@ const emptyFilters = {
   building: [] as string[],
   floor: [] as string[],
   room: [] as string[],
-  from: null as string | null,
-  to: null as string | null,
+  from: dayjs().format('YYYY-MM-DD'),
+  to: dayjs().format('YYYY-MM-DD'),
+  includeWeekends: false
 };
 
 const initialStateDropdownsData = {
@@ -43,11 +39,18 @@ const initialStateDropdownsData = {
   floor: [] as SingleNameIdObject[],
 };
 
-const MainStatsView = () => {
+interface RoomDataType {
+  totalOccupancy: number;
+  totalNetUseableArea: number;
+  totalMaxUseableDesks: number;
+  totalMaxUseableWorkstations: number;
+}
+
+const MainDataView = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [error, setError] = useState(false);
-  const [roomStats, setRoomStats] = useState<RoomStatsType | null>();
+  const [roomData, setRoomData] = useState<RoomDataType | null>();
   const [loading, setLoading] = useState(false);
   const [devicesFilterLoading, setDevicesFilterLoading] = useState(false);
   const [deviceFilters, setDeviceFilters] = useState(emptyFilters);
@@ -77,10 +80,13 @@ const MainStatsView = () => {
       initialFilters.room = params.getAll('room');
     }
     if (params.has('from')) {
-      initialFilters.from = params.get('from');
+      initialFilters.from = params.get('from') as string;
     }
     if (params.has('to')) {
-      initialFilters.to = params.get('to');
+      initialFilters.to = params.get('to') as string;
+    }
+    if (params.has('includeWeekends')) {
+      initialFilters.includeWeekends = params.get('includeWeekends') === 'true' ? true : false;
     }
 
     setDeviceFilters(initialFilters);
@@ -99,9 +105,9 @@ const MainStatsView = () => {
 
     setLoading(true);
     try {
-      const response = await axiosInstance.get(`/rooms/stats?page=1&limit=50&${queryParams}`);
+      const response = await axiosInstance.get(`/rooms/data?${queryParams}`);
       if (response.status === 200) {
-        setRoomStats(response.data);
+        setRoomData(response.data);
       }
     } catch (error) {
       console.log(error);
@@ -146,9 +152,12 @@ const MainStatsView = () => {
     if (filters.to) {
       queryParams.append('to', filters.to);
     }
+    if (filters.includeWeekends) {
+      queryParams.append('includeWeekends', filters.includeWeekends);
+    }
 
     const queryString = queryParams.toString();
-    router.push(`/dashboard/stats?${queryString}`);
+    router.push(`/dashboard/data?${queryString}`);
   }, [router]);
 
   useEffect(() => {
@@ -166,14 +175,31 @@ const MainStatsView = () => {
   const clearFilterHandler = () => {
     setClearInternalStateFlag(true);
     clearFilterTriggered.current = true;
-    setDeviceFilters(emptyFilters);
-    router.push(`/dashboard/stats`);
+    setDeviceFilters(prev => ({
+      organization: [],
+      site: [],
+      building: [],
+      floor: [],
+      room: [],
+      from: prev.from,
+      to: prev.to,
+      includeWeekends: false,
+    }));
+
+    router.push(`/dashboard/data`);
     fetchRoomStats(emptyFilters);
   };
 
   const handleClearInternalState = () => {
     setClearInternalStateFlag(false);
   };
+
+  const handleIncludeWeekends = () => {
+    setDeviceFilters((prev) => ({
+      ...prev,
+      includeWeekends: !prev.includeWeekends,
+    }));
+  }
 
   const handleRangeChange = (dates: any, dateStrings: [string, string]) => {
     setDeviceFilters((prev) => ({
@@ -191,6 +217,28 @@ const MainStatsView = () => {
       </div>
 
       <div className=" flex flex-col md:flex-row justify-end gap-2 md:gap-4 mb-3">
+        <div className=" flex items-end">
+          <div className=" w-full">
+            <p className=" text-sm mb-1">Date Range</p>
+            <RangePicker
+              allowClear={false}
+              className="flex h-[42px] !w-full md:w-72 "
+              onChange={handleRangeChange}
+              value={[
+                deviceFilters.from ? dayjs(deviceFilters.from) : null,
+                deviceFilters.to ? dayjs(deviceFilters.to) : null
+              ]}
+            />
+          </div>
+        </div>
+        <div className=" flex items-center">
+          <div className=" w-full gap-3">
+            <p className=" text-sm mb-1">Include Weekends</p>
+            <div className=" flex">
+              <Switch value={deviceFilters.includeWeekends} onChange={handleIncludeWeekends} className="mt-2" />
+            </div>
+          </div>
+        </div>
         <div className=" flex items-end md:justify-center mt-3 md:mt-7">
           <div className=" flex justify-start w-[148px]">
             <div
@@ -202,6 +250,7 @@ const MainStatsView = () => {
             </div>
           </div>
         </div>
+
       </div>
       <div className={`${showFilters ? 'block' : 'hidden'}`}>
         <div className={`border border-gray-200 rounded-md p-6 my-5 h-full flex flex-col justify-between gap-4`}>
@@ -294,38 +343,13 @@ const MainStatsView = () => {
       </div>
 
       {
-        roomStats && (
+        roomData && (
           <>
-            <div className="">
-              {<DevicesStats roomStats={roomStats} />}
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-              <div>
-                <Card className="!p-0">
-                  <h2 className=" text-xl font-semibold">Rooms Status</h2>
-                  <RoomStatsDonutChart roomStats={roomStats} />
-                </Card>
-              </div>
-              <div className="">
-                <Card className="!p-0">
-                  <h2 className=" text-xl font-semibold">Rooms Stats</h2>
-                  <RoomStatsBarChart roomStats={roomStats} />
-                </Card>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-              <div>
-                <Card className="!p-0">
-                  <h2 className=" text-xl font-semibold">Room Functions</h2>
-                  <RoomFunctionsDonutChart functions={roomStats.roomFunctions} />
-                </Card>
-              </div>
-              <div>
-                <Card className="!p-0">
-                  <h2 className=" text-xl font-semibold">Departments</h2>
-                  <RoomDepartmentsDonutChart departments={roomStats.departments} />
-                </Card>
-              </div>
+            <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
+              <DataCard title="Total Occupancy" count={roomData.totalOccupancy} decimals={true} />
+              <DataCard title="Total Net Useable Area" count={roomData.totalNetUseableArea} decimals={true} />
+              <DataCard title="Total Max Useable Desk" count={roomData.totalMaxUseableDesks} decimals={true} />
+              <DataCard title="Total Max Useable Work Station" count={roomData.totalMaxUseableWorkstations} decimals={true} />
             </div>
           </>
         )
@@ -334,4 +358,4 @@ const MainStatsView = () => {
   );
 };
 
-export default withDashboardLayout(MainStatsView);
+export default withDashboardLayout(MainDataView);
