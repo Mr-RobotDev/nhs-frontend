@@ -32,7 +32,15 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ deviceEvents }) => {
       return acc;
     }, {} as { [key: string]: number });
 
-    setChartData(aggregatedData);
+    // Sort the keys (dates)
+    const sortedData = Object.keys(aggregatedData)
+      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+      .reduce((acc, key) => {
+        acc[key] = aggregatedData[key];
+        return acc;
+      }, {} as { [key: string]: number });
+
+    setChartData(sortedData);
   }, [deviceEvents]);
 
   const roundedData = Object.values(chartData).map(value => Math.round(value));
@@ -40,7 +48,7 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ deviceEvents }) => {
   const chartOptions: ApexOptions = {
     chart: {
       type: 'bar',
-      toolbar:{
+      toolbar: {
         show: false
       }
     },
@@ -52,8 +60,7 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ deviceEvents }) => {
       categories: Object.keys(chartData)
     },
     dataLabels: {
-      enabled: true,
-      formatter: (val: number) => val.toFixed(0)
+      enabled: false
     },
     plotOptions: {
       bar: {
