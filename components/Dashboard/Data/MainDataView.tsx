@@ -234,7 +234,7 @@ const MainDataView = () => {
         <div className=" flex items-center">
           <div className=" w-full gap-3">
             <p className=" text-sm mb-1">Include Weekends</p>
-            <div className=" flex">
+            <div className=" flex justify-center">
               <Switch value={deviceFilters.includeWeekends} onChange={handleIncludeWeekends} className="mt-2" />
             </div>
           </div>
