@@ -101,8 +101,8 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
   };
 
   return (
-    <div>
-      <ReactApexChart options={chartOptions} series={chartData} type="heatmap" height={350} />
+    <div className='h-full'>
+      <ReactApexChart options={chartOptions} series={chartData} type="heatmap" height={'100%'} />
     </div>
   );
 };

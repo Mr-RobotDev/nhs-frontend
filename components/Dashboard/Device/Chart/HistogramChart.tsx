@@ -70,8 +70,8 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ deviceEvents }) => {
   };
 
   return (
-    <div>
-      <ReactApexChart options={chartOptions} series={chartOptions.series} type="bar" height={350} />
+    <div className=' h-full'>
+      <ReactApexChart options={chartOptions} series={chartOptions.series} type="bar" height={'100%'} />
     </div>
   );
 };

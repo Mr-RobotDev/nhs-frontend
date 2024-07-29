@@ -1,15 +1,13 @@
-import React, { memo, useEffect, useState, useRef } from "react";
-import { Button, Card, Spin, Tooltip, Popover } from "antd";
+import React, { memo, useEffect, useState, useRef, useCallback } from "react";
+import { Button, Spin, Tooltip } from "antd";
 import { DashboardCardType, DeviceEventsType } from "@/type";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store/store";
 import Image from "next/image";
 import { PrimaryInput } from "../Input/Input";
 import { updateCard } from "@/app/store/slice/dashboardSlice";
-import Link from "next/link";
 import axiosInstance from "@/lib/axiosInstance";
 import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
-import { getDeviceLabelFromState } from "@/utils/helper_functions";
 import MotionNoMotionGraph from "./MotionNoMotionGraph";
 import HistogramChart from "@/components/Dashboard/Device/Chart/HistogramChart";
 import HeatmapChart from "@/components/Dashboard/Device/Chart/HeatMapChart";
@@ -30,8 +28,9 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const dispatch: AppDispatch = useDispatch();
   const cardRef = useRef<HTMLDivElement>(null);
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
-  const [graphType, setGraphType] = useState('motion-nomotion')
-  const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([])
+  const [graphType, setGraphType] = useState('motion-nomotion');
+  const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([]);
+  const [tempWidth, setTempWidth] = useState(0)
 
   useEffect(() => {
     setCard(cardObj);
@@ -51,9 +50,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
             });
 
             if (response.status === 200) {
-              setDeviceEvents(response.data)
+              setDeviceEvents(response.data);
             }
-
           } catch (error) {
             console.error(`Error fetching events for device ${device.id}:`, error);
           } finally {
@@ -70,7 +68,9 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     if (cardRef.current) {
       setPopoverWidth(cardRef.current.offsetWidth);
     }
-  }, []);
+  }, [cardRef.current?.offsetWidth]);
+
+  console.log(popoverWidth)
 
   const handleUpdateCard = (e: any) => {
     e.stopPropagation();
@@ -187,18 +187,17 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                   setGraphType={setGraphType} 
                   graphType={graphType}
                   noOfSensors={card.devices.length}
-                  />
+                />
               </Button>
             )}
           </div>
           {graphType === 'motion-nomotion' && <MotionNoMotionGraph cardObj={cardObj} popoverWidth={popoverWidth} />}
           {graphType === 'histogram' && <HistogramChart deviceEvents={deviceEvents} />}
           {graphType === 'heatmap' && <HeatmapChart deviceEvents={deviceEvents} />}
-          {/* here is the motion, no motion componebt */}
         </div>
       )}
     </>
   );
 };
 
-export default memo(CustomCard);
+export default CustomCard;
