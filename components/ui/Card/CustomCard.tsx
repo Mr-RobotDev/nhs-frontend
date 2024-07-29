@@ -12,6 +12,7 @@ import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
 import { getDeviceLabelFromState } from "@/utils/helper_functions";
 import MotionNoMotionGraph from "./MotionNoMotionGraph";
 import HistogramChart from "@/components/Dashboard/Device/Chart/HistogramChart";
+import HeatmapChart from "@/components/Dashboard/Device/Chart/HeatMapChart";
 
 interface CardProps {
   cardObj: DashboardCardType;
@@ -192,6 +193,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
           </div>
           {graphType === 'motion-nomotion' && <MotionNoMotionGraph cardObj={cardObj} popoverWidth={popoverWidth} />}
           {graphType === 'histogram' && <HistogramChart deviceEvents={deviceEvents} />}
+          {graphType === 'heatmap' && <HeatmapChart deviceEvents={deviceEvents} />}
           {/* here is the motion, no motion componebt */}
         </div>
       )}

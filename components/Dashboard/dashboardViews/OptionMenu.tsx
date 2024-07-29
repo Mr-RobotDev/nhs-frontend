@@ -34,6 +34,11 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
     setVisible(false);
   }
 
+  const changeGraphToHeatmap = () => {
+    setGraphType('heatmap')
+    setVisible(false);
+  }
+
   return (
     <Popover
       getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}
@@ -75,6 +80,18 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
                     <PencilSquareIcon width={15} />
                   </span>
                   <span className="!text-xs font-medium">Change to Motion / No Motion</span>
+                </div>
+              }
+               {
+                graphType !== 'heatmap' &&
+                <div
+                  className="flex gap-2 p-1 hover:bg-hover-primary transition-all ease-in-out duration-300 rounded-md cursor-pointer hover:bg-blue-50"
+                  onClick={changeGraphToHeatmap}
+                >
+                  <span className="flex flex-col justify-center">
+                    <PencilSquareIcon width={15} />
+                  </span>
+                  <span className="!text-xs font-medium">Change to Heatmap</span>
                 </div>
               }
             </>
