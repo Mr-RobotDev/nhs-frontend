@@ -12,14 +12,27 @@ import { deleteCard } from "@/app/store/slice/dashboardSlice";
 interface OptionMenuProps {
   cardId: string;
   setIsRenaming: Dispatch<SetStateAction<boolean>>;
+  setGraphType: Dispatch<SetStateAction<string>>
+  graphType: string
+  noOfSensors: number
 }
 
-const OptionsMenu = ({ cardId, setIsRenaming }: OptionMenuProps) => {
+const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSensors }: OptionMenuProps) => {
   const dispatch: AppDispatch = useDispatch();
   const [visible, setVisible] = useState(false);
   const { currentDashboard } = useSelector(
     (state: RootState) => state.dashboardReducer
   );
+
+  const changeGraphToHistogram = () => {
+    setGraphType('histogram')
+    setVisible(false);
+  }
+
+  const changeGraphToMotionNoMotion = () => {
+    setGraphType('motion-nomotion')
+    setVisible(false);
+  }
 
   return (
     <Popover
@@ -38,6 +51,34 @@ const OptionsMenu = ({ cardId, setIsRenaming }: OptionMenuProps) => {
             </span>
             <span className="!text-xs font-medium">Rename Card</span>
           </div>
+          {
+            noOfSensors === 1 &&
+            <>
+              {
+                graphType !== 'histogram' && <div
+                  className="flex gap-2 p-1 hover:bg-hover-primary transition-all ease-in-out duration-300 rounded-md cursor-pointer hover:bg-blue-50"
+                  onClick={changeGraphToHistogram}
+                >
+                  <span className="flex flex-col justify-center">
+                    <PencilSquareIcon width={15} />
+                  </span>
+                  <span className="!text-xs font-medium">Change to histogram</span>
+                </div>
+              }
+              {
+                graphType !== 'motion-nomotion' &&
+                <div
+                  className="flex gap-2 p-1 hover:bg-hover-primary transition-all ease-in-out duration-300 rounded-md cursor-pointer hover:bg-blue-50"
+                  onClick={changeGraphToMotionNoMotion}
+                >
+                  <span className="flex flex-col justify-center">
+                    <PencilSquareIcon width={15} />
+                  </span>
+                  <span className="!text-xs font-medium">Change to Motion / No Motion</span>
+                </div>
+              }
+            </>
+          }
           <div
             className="bg-slate-300 dark:bg-slate-700 my-2"
             style={{ height: "1px" }}

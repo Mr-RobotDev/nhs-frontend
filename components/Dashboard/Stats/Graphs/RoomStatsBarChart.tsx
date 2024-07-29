@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { RootState } from '@/app/store/store';
 import { RoomStatsType } from '@/type';
+import { occupanyColor } from '@/utils/helper_functions';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -63,7 +64,7 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
     yaxis: {
       max: 100,
     },
-    colors: ['#FF0000', '#FEB019', '#008000'], // Define colors here
+    colors: [occupanyColor('red'), occupanyColor('amber'), occupanyColor('green')],
     responsive: [{
       breakpoint: 480,
       options: {

@@ -237,3 +237,9 @@ export interface AlertStatsType {
   activeAlerts: string[];
   nonActiveAlerts: string[];
 }
+
+export interface DeviceEventsType {
+  state: string;
+  from: string;
+  to: string;
+}

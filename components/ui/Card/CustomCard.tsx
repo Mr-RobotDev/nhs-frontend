@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useRef } from "react";
 import { Button, Card, Spin, Tooltip, Popover } from "antd";
-import { DashboardCardType } from "@/type";
+import { DashboardCardType, DeviceEventsType } from "@/type";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store/store";
 import Image from "next/image";
@@ -10,29 +10,12 @@ import Link from "next/link";
 import axiosInstance from "@/lib/axiosInstance";
 import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
 import { getDeviceLabelFromState } from "@/utils/helper_functions";
+import MotionNoMotionGraph from "./MotionNoMotionGraph";
+import HistogramChart from "@/components/Dashboard/Device/Chart/HistogramChart";
 
 interface CardProps {
   cardObj: DashboardCardType;
 }
-
-const countStates = (devices: any) => {
-  return devices.reduce(
-    (acc: any, device: any) => {
-      if (device.state === "MOTION_DETECTED") {
-        acc.motionDetected.count++;
-        acc.motionDetected.devices.push(device);
-      } else if (device.state === "NO_MOTION_DETECTED") {
-        acc.noMotionDetected.count++;
-        acc.noMotionDetected.devices.push(device);
-      }
-      return acc;
-    },
-    {
-      motionDetected: { count: 0, devices: [] },
-      noMotionDetected: { count: 0, devices: [] },
-    }
-  );
-};
 
 const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -44,10 +27,10 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   );
   const { isAdmin } = useSelector((state: RootState) => state.authReducer);
   const dispatch: AppDispatch = useDispatch();
-  const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
   const cardRef = useRef<HTMLDivElement>(null);
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
-  const [isMobile, setIsMobile] = useState(false);
+  const [graphType, setGraphType] = useState('motion-nomotion')
+  const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([])
 
   useEffect(() => {
     setCard(cardObj);
@@ -59,12 +42,17 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
         if (timeFrame.startDate && timeFrame.endDate) {
           setLoading(true);
           try {
-            await axiosInstance.get(`/devices/${device.id}/events`, {
+            const response = await axiosInstance.get(`/devices/${device.id}/events`, {
               params: {
                 from: timeFrame.startDate,
                 to: timeFrame.endDate,
               },
             });
+
+            if (response.status === 200) {
+              setDeviceEvents(response.data)
+            }
+
           } catch (error) {
             console.error(`Error fetching events for device ${device.id}:`, error);
           } finally {
@@ -81,15 +69,6 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     if (cardRef.current) {
       setPopoverWidth(cardRef.current.offsetWidth);
     }
-  }, []);
-
-  useEffect(() => {
-    // Detect if the user is on a mobile device
-    const userAgent = typeof window.navigator === 'undefined' ? '' : navigator.userAgent;
-    const mobile = Boolean(
-      userAgent.match(/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i)
-    );
-    setIsMobile(mobile);
   }, []);
 
   const handleUpdateCard = (e: any) => {
@@ -115,35 +94,6 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
       setIsRenaming(false);
     });
   };
-
-  const content = (
-    <div className="bg-white flex flex-col gap-2 justify-start items-center w-full">
-      <div className="flex flex-col gap-0 w-full">
-        {motionDetected.devices.map((device: any) => (
-          <Link key={device.id} href={`/dashboard/devices/${device.id}`}>
-            <div className="flex flex-row gap-2 w-full">
-              <p className="!mb-0">
-                <strong className="mr-3">Occupied</strong> {device.name}
-              </p>
-            </div>
-            <hr className="h-2 w-full my-1" />
-          </Link>
-        ))}
-      </div>
-      <div className="flex flex-col gap-0 w-full">
-        {noMotionDetected.devices.map((device: any) => (
-          <Link key={device.id} href={`/dashboard/devices/${device.id}`}>
-            <div className="flex flex-row gap-2 w-full">
-              <p className="!mb-0">
-                <strong className="mr-3">Not Occupied</strong> {device.name}
-              </p>
-            </div>
-            <hr className="h-2 w-full my-1" />
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
 
   return (
     <>
@@ -183,9 +133,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                       getTooltipContainer={(triggerNode) =>
                         triggerNode.parentNode as HTMLElement
                       }
-                      title={`${
-                        editingName.length < 3 ? "At least 3 characters" : ""
-                      }`}
+                      title={`${editingName.length < 3 ? "At least 3 characters" : ""
+                        }`}
                     >
                       <span className="flex">
                         <button
@@ -231,49 +180,19 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                 onTouchStart={(e) => e.stopPropagation()}
                 className="w-10 h-10 border flex items-center justify-center cancelSelectorName"
               >
-                <OptionsMenu cardId={card.id} setIsRenaming={setIsRenaming} />
+                <OptionsMenu 
+                  cardId={card.id} 
+                  setIsRenaming={setIsRenaming} 
+                  setGraphType={setGraphType} 
+                  graphType={graphType}
+                  noOfSensors={card.devices.length}
+                  />
               </Button>
             )}
           </div>
-          <div className="flex-grow">
-            {card.devices.length > 1 ? (
-              <Popover
-                content={content}
-                trigger={isMobile ? "click" : "hover"}
-                placement="bottom"
-                overlayStyle={{
-                  width: popoverWidth,
-                  paddingTop: 10, 
-                  paddingBottom: 10
-                }}
-              >
-                <div className="grid grid-cols-2 h-full">
-                  <div className="w-full h-full flex justify-center items-center">
-                    <div className="flex flex-col items-center">
-                      <p className="mb-0 text-4xl font-semibold">
-                        {motionDetected.count}
-                      </p>
-                      <p className="mt-1">Occupied</p>
-                    </div>
-                  </div>
-                  <div className="w-full h-full flex justify-center items-center border-l border-l-gray-300">
-                    <div className="flex flex-col items-center">
-                      <p className="mb-0 text-4xl font-semibold">
-                        {noMotionDetected.count}
-                      </p>
-                      <p className="mt-1">Not Occupied</p>
-                    </div>
-                  </div>
-                </div>
-              </Popover>
-            ) : (
-              <div className="w-full h-full flex justify-center items-center">
-                <p className="text-3xl font-semibold">
-                  {getDeviceLabelFromState(card.devices[0].state)}
-                </p>
-              </div>
-            )}
-          </div>
+          {graphType === 'motion-nomotion' && <MotionNoMotionGraph cardObj={cardObj} popoverWidth={popoverWidth} />}
+          {graphType === 'histogram' && <HistogramChart deviceEvents={deviceEvents} />}
+          {/* here is the motion, no motion componebt */}
         </div>
       )}
     </>

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/app/store/store';
 import { RoomStatsType } from '@/type';
+import { occupanyColor } from '@/utils/helper_functions';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -20,7 +19,7 @@ const RoomStatsDonutChart: React.FC<ApexChartProps> = ({ roomStats }) => {
       type: 'donut',
     },
     labels: ['Red (0 - 60% Occupancy Rate)', 'Amber (60 - 80% Occupancy Rate)', 'Green (>80% Occupancy Rate)'],
-    colors: ['#FF0000', '#FEB019', '#008000'],
+    colors: [occupanyColor('red'), occupanyColor('amber'), occupanyColor('green')],
     dataLabels: {
       enabled: true,
       style: {

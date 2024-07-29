@@ -24,19 +24,19 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
     maxVariableColor = 'bg-white';
     textColor = 'text-black';
   } else if (roomStats.red === roomStats.amber && roomStats.amber === roomStats.green) {
-    maxVariableColor = 'bg-gradient-to-br from-[#FF0000] via-[#FEB019] to-[#008000]';
+    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('red')}] via-[${occupanyColor('amber')}] to-[${occupanyColor('green')}]`;
   } else if (roomStats.red === roomStats.amber && roomStats.red === maxOccupantRoom) {
-    maxVariableColor = 'bg-gradient-to-br from-[#FF0000] to-[#FEB019]';
+    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('red')}] to-[${occupanyColor('amber')}]`;
   } else if (roomStats.red === roomStats.green && roomStats.red === maxOccupantRoom) {
-    maxVariableColor = 'bg-gradient-to-br from-[#FF0000] to-[#008000]';
+    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('red')}] to-[${occupanyColor('green')}]`;
   } else if (roomStats.amber === roomStats.green && roomStats.amber === maxOccupantRoom) {
-    maxVariableColor = 'bg-gradient-to-br from-[#FEB019] to-[#008000]';
+    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('amber')}] to-[${occupanyColor('green')}]`;
   } else if (maxOccupantRoom === roomStats.red) {
-    maxVariableColor = 'bg-[#FF0000]';
+    maxVariableColor = `bg-[${occupanyColor('red')}]`;
   } else if (maxOccupantRoom === roomStats.amber) {
-    maxVariableColor = 'bg-[#FEB019]';
+    maxVariableColor = `bg-[${occupanyColor('amber')}]`;
   } else if (maxOccupantRoom === roomStats.green) {
-    maxVariableColor = 'bg-[#008000]';
+    maxVariableColor = `bg-[${occupanyColor('green')}]`;
   }
 
   return (
