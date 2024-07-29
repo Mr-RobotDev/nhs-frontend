@@ -30,7 +30,6 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
   const [graphType, setGraphType] = useState('motion-nomotion');
   const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([]);
-  const [tempWidth, setTempWidth] = useState(0)
 
   useEffect(() => {
     setCard(cardObj);
@@ -69,8 +68,6 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
       setPopoverWidth(cardRef.current.offsetWidth);
     }
   }, [cardRef.current?.offsetWidth]);
-
-  console.log(popoverWidth)
 
   const handleUpdateCard = (e: any) => {
     e.stopPropagation();

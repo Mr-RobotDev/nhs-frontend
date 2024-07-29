@@ -13,7 +13,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
   useEffect(() => {
     const motionDetectedEvents = deviceEvents.filter(event => event.state === "MOTION_DETECTED");
 
-    const heatmapData = new Map();
+    const heatmapData = new Map<string, { x: string, y: number, value: number }>();
 
     motionDetectedEvents.forEach(event => {
       let dateFrom = new Date(event.from);
@@ -39,7 +39,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
           heatmapData.set(key, { x: day, y: hour, value: 0 });
         }
 
-        heatmapData.get(key).value += minutes;
+        heatmapData.get(key)!.value += minutes;
 
         dateFrom = nextHour;
       }
@@ -52,7 +52,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
       }
       acc[hour].data.push({ x: curr.x, y: Math.round(curr.value) });
       return acc;
-    }, []);
+    }, [] as { name: string, data: { x: string, y: number }[] }[]);
 
     setChartData(Object.values(groupedData));
   }, [deviceEvents]);
@@ -77,7 +77,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
             { from: 0, to: 10, color: '#00A100', name: 'low (1-10)' },
             { from: 11, to: 20, color: '#128FD9', name: 'medium (11-20)' },
             { from: 21, to: 30, color: '#FFB200', name: 'high (21-30)' },
-            { from: 31, to: 200, color: '#FF0000', name: 'extreme(31-60)' }
+            { from: 31, to: 200, color: '#FF0000', name: 'extreme (31-60)' }
           ]
         }
       }
@@ -94,7 +94,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
       },
       labels: {
         formatter: (val: number) => {
-          return `${val}`
+          return `${val}`;
         }
       }
     }
