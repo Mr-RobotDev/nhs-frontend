@@ -18,6 +18,7 @@ import { PrimaryInput } from "@/components/ui/Input/Input";
 import dayjs from 'dayjs';
 import DataCard from "./DataCard";
 import { Switch } from 'antd';
+import RoomsDataTable from "./RoomsDataTable";
 
 const { RangePicker } = DatePicker;
 
@@ -234,7 +235,7 @@ const MainDataView = () => {
         <div className=" flex items-center">
           <div className=" w-full gap-3">
             <p className=" text-sm mb-1">Include Weekends</p>
-            <div className=" flex justify-center">
+            <div className=" flex md:justify-center">
               <Switch value={deviceFilters.includeWeekends} onChange={handleIncludeWeekends} className="mt-2" />
             </div>
           </div>
@@ -345,7 +346,7 @@ const MainDataView = () => {
       {
         roomData && (
           <>
-            <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <DataCard title="Total Occupancy" count={roomData.totalOccupancy} decimals={true} />
               <DataCard title="Total Net Useable Area" count={roomData.totalNetUseableArea} decimals={true} />
               <DataCard title="Total Max Useable Desk" count={roomData.totalMaxUseableDesks} decimals={true} />
@@ -354,6 +355,10 @@ const MainDataView = () => {
           </>
         )
       }
+
+      <div className=" mt-5">
+      <RoomsDataTable globalFilters={debouncedFilters} />
+      </div>
     </LoadingWrapper>
   );
 };
