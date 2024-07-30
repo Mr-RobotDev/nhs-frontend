@@ -8,20 +8,21 @@ interface DataCardProps {
   decimals: boolean;
 }
 const DataCard: React.FC<DataCardProps> = ({ title, count, decimals }) => {
-  return (
-    <Card className="!p-0">
-      <div className="!p-0 h-[300px]">
-        <div className={'h-full rounded-lg bg-white'}>
-          <div className={'text-xl font-semibold p-2 text-black'}>{title}</div>
-          <hr />
-          <div className=" w-full h-full flex justify-center items-center">
-            <p className={'text-7xl'}>
-              <CountUp
-                end={count}
-                duration={2}
-                decimals={decimals ? 2 : 0}
-              />
-            </p>
+  return (    
+    <Card bordered={false} className="criclebox h-full">
+      <div className=" text-2xl flex flex-row justify-between">
+        <div className="w-10/12">
+          <span className=" text-lg">{title}</span>
+          <div className="">
+            <span className="">
+              <p className="!text-2xl !font-bold !mb-0">
+                <CountUp
+                  end={count}
+                  duration={2}
+                  decimals={decimals ? 2 : 0}
+                />
+              </p>
+            </span>
           </div>
         </div>
       </div>

@@ -242,3 +242,15 @@ export interface DeviceEventsType {
   hour: string;
   minutes: number;
 }
+
+export interface roomsDataTableType {
+  organization: string;
+  site: string;
+  building: string;
+  code: string;
+  floor: string;
+  netUseableArea: number;
+  maxDeskOccupation: number;
+  numWorkstations: number;
+  occupancy: number
+}
