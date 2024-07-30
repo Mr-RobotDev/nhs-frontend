@@ -15,7 +15,7 @@ interface DeviceStatsProps {
 
 const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
   const maxOccupantRoom = Math.max(roomStats.red, roomStats.amber, roomStats.green);
-  const thresholds = 8;
+  const thresholds = 10;
 
   let maxVariableColor = '';
   let textColor = 'text-white';
@@ -57,11 +57,12 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
         </div>
       </div>
       <div>
-        <Card className="!p-0 !min-h-[350px]">
+        <Card className="!p-0">
+          <div className=" h-[350px] overflow-y-auto">
           <h2 className=" text-xl font-semibold">Occupied Rooms</h2>
           {roomStats.rooms.length > 0 ?
-            <div className=" mt-5">
-              <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto">
+            <div className=" mt-5 ">
+              <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto ">
                 {Array.from({ length: Math.ceil(roomStats.rooms.length / thresholds) }).map((_, columnIndex) => (
                   <ul className=" mb-0" key={columnIndex}>
                     
@@ -80,6 +81,7 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
               <p className=" font-semibold text-3xl">No Data Available</p>
             </div>
           }
+          </div>
         </Card>
       </div>
     </div>

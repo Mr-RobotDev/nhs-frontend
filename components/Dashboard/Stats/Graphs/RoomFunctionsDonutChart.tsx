@@ -47,7 +47,7 @@ const RoomFunctionsDonutChart: React.FC<ApexChartProps> = ({ functions }) => {
   const noData = series.every(element => element === 0);
 
   return (
-    <div id="chart" className='w-full h-[300px]'>
+    <div id="chart" className='w-full h-[400px] md:h-[300px]'>
       {noData ?
         <div className=' w-full h-full flex justify-center items-center'>
           <p className=" font-semibold text-3xl">No Data Available</p>
