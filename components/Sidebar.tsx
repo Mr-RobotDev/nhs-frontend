@@ -15,6 +15,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
   AdjustmentsHorizontalIcon,
   ClipboardDocumentListIcon,
+  BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
 
 import axiosInstance from "@/lib/axiosInstance";
@@ -59,6 +60,13 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
       icon: AdjustmentsHorizontalIcon,
     },
     {
+      key: "13",
+      title: "Floor Plan",
+      url: "/dashboard/floor",
+      menuKey: "floor",
+      icon: BuildingOfficeIcon,
+    },
+    {
       key: "7",
       title: "Stats",
       url: "/dashboard/stats",
@@ -78,13 +86,6 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
       url: "/dashboard/alerts",
       menuKey: "alerts",
       icon: BellAlertIcon,
-    },
-    {
-      key: "13",
-      title: "Floor Plan",
-      url: "/dashboard/floor",
-      menuKey: "floor",
-      icon: ClipboardIcon,
     },
     {
       key: "11",

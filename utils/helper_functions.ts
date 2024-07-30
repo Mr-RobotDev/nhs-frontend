@@ -4,6 +4,7 @@ import { triggerWhenOptions } from "./form";
 
 export const activeSidebar = (path: string): string => {
   const routes = [
+    { name: 'floor', path: '/dashboard/floor' },
     { name: 'data', path: '/dashboard/data' },
     { name: 'stats', path: '/dashboard/stats' },
     { name: 'users', path: '/dashboard/users' },
