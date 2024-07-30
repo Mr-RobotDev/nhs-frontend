@@ -138,7 +138,10 @@ export const iconsBasedOnType = (key: string) => {
     fridge: '/icons/fridge.png',
     motion: '/icons/motion-sensor.png',
     no_motion_detected: '/icons/no-motion.png',
-    motion_detected: '/icons/motion.png'
+    motion_detected: '/icons/motion.png',
+    red: '/icons/redRound.png',
+    green: '/icons/greenRound.png',
+    amber: '/icons/amberRound.png'
   }
 
   return icons[key] || '';

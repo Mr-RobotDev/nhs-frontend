@@ -1,0 +1,7 @@
+.leaflet-popup-close-button {
+  display: none;
+}
+
+.leaflet-control-container .leaflet-control-attribution {
+  display: none;
+}

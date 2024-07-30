@@ -80,6 +80,13 @@ const Sidebar: React.FC<SidenavProps> = ({ color }) => {
       icon: BellAlertIcon,
     },
     {
+      key: "13",
+      title: "Floor Plan",
+      url: "/dashboard/floor",
+      menuKey: "floor",
+      icon: ClipboardIcon,
+    },
+    {
       key: "11",
       title: "Reports",
       url: "/dashboard/reports",
