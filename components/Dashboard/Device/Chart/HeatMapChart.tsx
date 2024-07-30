@@ -86,7 +86,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
             { from: 0, to: 10, color: '#00A100', name: 'low (1-10)' },
             { from: 11, to: 20, color: '#128FD9', name: 'medium (11-20)' },
             { from: 21, to: 30, color: '#FFB200', name: 'high (21-30)' },
-            { from: 31, to: 200, color: '#FF0000', name: 'extreme (31-200)' }
+            { from: 31, to: 200, color: '#DE3832', name: 'extreme (31-200)' }
           ]
         }
       }

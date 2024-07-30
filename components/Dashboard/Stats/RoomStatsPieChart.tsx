@@ -19,7 +19,7 @@ const RoomStatsPieChart: React.FC<ApexChartProps> = ({ roomStats }) => {
       type: 'pie',
     },
     labels: ['Red (0 - 60% Occupancy Rate)', 'Amber (60 - 80% Occupancy Rate)', 'Green (>80% Occupancy Rate)'],
-    colors: ['#FF0000', '#FEB019', '#008000'],
+    colors: ['#DE3832', '#EEBE45', '#5EB157'],
     dataLabels: {
       enabled: true,
       style: {

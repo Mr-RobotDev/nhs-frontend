@@ -15,9 +15,9 @@ const config: Config = {
       },
       colors: {
         'custom-nhs-blue': '#005EB8',
-        'custom-graph-red': '#FF0000',
-        'custom-graph-amber': '#FEB019',
-        'custom-graph-green': '#008000',
+        'custom-graph-red': '#DE3832',
+        'custom-graph-amber': '#EEBE45',
+        'custom-graph-green': '#5EB157',
       }
     },
   },

@@ -186,9 +186,9 @@ export const convertObjectToQueryString = (params: { [key: string]: any }): stri
 
 export const occupanyColor = (key: string) => {
   const icons: Record<string, string> = {
-    red: '#FF0000',
-    amber: '#FEB019',
-    green: '#008000',
+    red: '#DE3832',
+    amber: '#EEBE45',
+    green: '#5EB157',
   }
 
   return icons[key] || '';
