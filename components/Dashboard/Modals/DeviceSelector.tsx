@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { Table, Tag } from "antd";
 import type { TableProps } from "antd";
 import axiosInstance from "@/lib/axiosInstance";
@@ -10,9 +10,10 @@ import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/16/solid";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/app/store/store";
 import { setDeviceForAlert, setDevicesToGlobal } from "@/app/store/slice/devicesSlice";
-import { iconsBasedOnType } from "@/utils/helper_functions";
+import { convertObjectToQueryString, iconsBasedOnType } from "@/utils/helper_functions";
 import useDebounce from "@/app/hooks/useDebounce";
 import { PrimaryInput } from "@/components/ui/Input/Input";
+import './deviceSelectorTable.css'
 
 interface DevicesSelectorProps {
   setSelectedRowKeys: (selectedRowKeys: string[]) => void;
@@ -33,6 +34,10 @@ const DevicesSelector = ({
   const dispatch: AppDispatch = useDispatch()
   const [search, setSearch] = useState<string>('');
   const debouncedSearch = useDebounce(search, 500);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   const addOrRemoveDeviceIdToTheList = (e: any, id: string) => {
     e.stopPropagation()
@@ -123,23 +128,33 @@ const DevicesSelector = ({
     })
   }
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const params: any = { page: 1, limit: 50, search: debouncedSearch };
-        const response = await axiosInstance.get("/devices", { params });
-        if (response.status === 200) {
-          setDevices(response.data.results);
-          dispatch(setDevicesToGlobal(response.data.results));
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
+  const fetchDevices = useCallback(async (search: string, page: number, limit: number) => {
+    const queryParams = convertObjectToQueryString({
+      search,
+      page,
+      limit
+    })
+
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/devices?${queryParams}`);
+      if (response.status === 200) {
+        setDevices(response.data.results);
+        dispatch(setDevicesToGlobal(response.data.results));
+        setCurrentPage(response.data.pagination.page);
+        setPageSize(response.data.pagination.limit);
+        setTotalItems(response.data.pagination.totalResults);
       }
-    })();
-  }, [dispatch, deviceType, debouncedSearch]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    fetchDevices(debouncedSearch, currentPage, pageSize)
+  }, [debouncedSearch, fetchDevices, currentPage, pageSize])
 
   const onRowClick = (record: DevicesType) => {
     return {
@@ -157,13 +172,24 @@ const DevicesSelector = ({
     };
   };
 
+  const handleTableChange = (newPagination: any) => {
+    setCurrentPage(newPagination);
+    setPageSize(10);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+    setPageSize(10);
+  }
+
   return (
     <div className="mt-8">
       <div className="pr-10 mb-6">
         <p className="!text-base font-bold !mb-0">Search</p>
         <PrimaryInput
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           className=""
           placeholder="Search By Name or Sensor ID"
         />
@@ -180,6 +206,13 @@ const DevicesSelector = ({
             ? "ant-table-row-selected !border-2 !border-blue-500"
             : ""
         }
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: totalItems,
+          onChange: handleTableChange,
+          showSizeChanger: false
+        }}
       />
     </div>
   );
