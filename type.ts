@@ -239,7 +239,6 @@ export interface AlertStatsType {
 }
 
 export interface DeviceEventsType {
-  state: string;
-  from: string;
-  to: string;
+  hour: string;
+  minutes: number;
 }

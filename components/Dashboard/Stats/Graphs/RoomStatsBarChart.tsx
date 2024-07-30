@@ -12,7 +12,6 @@ interface ApexChartProps {
 
 const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
 
-
   const [series, setSeries] = useState<any[]>([
     {
       name: 'Occupancy Rate',
@@ -21,6 +20,8 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
   ]);
 
   const noData = [roomStats.red, roomStats.amber, roomStats.green].every(element => element === 0);
+
+  const maxOccupancy = Math.max(roomStats.red, roomStats.amber, roomStats.green);
 
   const [options] = useState<any>({
     chart: {
@@ -58,8 +59,8 @@ const RoomStatsBarChart: React.FC<ApexChartProps> = ({ roomStats }) => {
         },
       },
       min: 0,
-      max: Math.max(roomStats.red, roomStats.amber, roomStats.green),
-      tickAmount: Math.max(roomStats.red, roomStats.amber, roomStats.green) / 5,
+      max: maxOccupancy,
+      tickAmount: 5, // Setting the number of ticks to a fixed value
     },
     yaxis: {
       max: 100,

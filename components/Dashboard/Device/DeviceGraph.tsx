@@ -433,7 +433,7 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
                 </div>
               ) : (
                 <>
-                  <GanttChart deviceEvents={deviceEvents} />
+                  <GanttChart data={deviceEvents} />
                 </>
               )}
             </div>

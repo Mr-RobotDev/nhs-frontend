@@ -189,8 +189,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
             )}
           </div>
           {graphType === 'motion-nomotion' && <MotionNoMotionGraph cardObj={cardObj} popoverWidth={popoverWidth} />}
-          {graphType === 'histogram' && <HistogramChart deviceEvents={deviceEvents} />}
-          {graphType === 'heatmap' && <HeatmapChart deviceEvents={deviceEvents} />}
+          {graphType === 'histogram' && <HistogramChart data={deviceEvents} />}
+          {graphType === 'heatmap' && <HeatmapChart data={deviceEvents} />}
         </div>
       )}
     </>

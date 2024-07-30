@@ -24,19 +24,19 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
     maxVariableColor = 'bg-white';
     textColor = 'text-black';
   } else if (roomStats.red === roomStats.amber && roomStats.amber === roomStats.green) {
-    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('red')}] via-[${occupanyColor('amber')}] to-[${occupanyColor('green')}]`;
+    maxVariableColor = `bg-gradient-to-br from-custom-graph-red via-custom-graph-amber to-custom-graph-green`;
   } else if (roomStats.red === roomStats.amber && roomStats.red === maxOccupantRoom) {
-    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('red')}] to-[${occupanyColor('amber')}]`;
+    maxVariableColor = `bg-gradient-to-br from-custom-graph-red to-custom-graph-amber`;
   } else if (roomStats.red === roomStats.green && roomStats.red === maxOccupantRoom) {
-    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('red')}] to-[${occupanyColor('green')}]`;
+    maxVariableColor = `bg-gradient-to-br from-custom-graph-red to-custom-graph-green`;
   } else if (roomStats.amber === roomStats.green && roomStats.amber === maxOccupantRoom) {
-    maxVariableColor = `bg-gradient-to-br from-[${occupanyColor('amber')}] to-[${occupanyColor('green')}]`;
+    maxVariableColor = `bg-gradient-to-br from-custom-graph-amber to-custom-graph-green`;
   } else if (maxOccupantRoom === roomStats.red) {
-    maxVariableColor = `bg-[${occupanyColor('red')}]`;
+    maxVariableColor = `bg-custom-graph-red`;
   } else if (maxOccupantRoom === roomStats.amber) {
-    maxVariableColor = `bg-[${occupanyColor('amber')}]`;
+    maxVariableColor = `bg-custom-graph-amber`;
   } else if (maxOccupantRoom === roomStats.green) {
-    maxVariableColor = `bg-[${occupanyColor('green')}]`;
+    maxVariableColor = `bg-custom-graph-green`;
   }
 
   return (
@@ -57,16 +57,18 @@ const DevicesStats = ({ roomStats }: DeviceStatsProps) => {
         </div>
       </div>
       <div>
-        <Card className="!p-0 !h-[350px]">
+        <Card className="!p-0 !min-h-[350px]">
           <h2 className=" text-xl font-semibold">Occupied Rooms</h2>
           {roomStats.rooms.length > 0 ?
             <div className=" mt-5">
               <div className="flex flex-wrap md:flex-nowrap gap-0 md:gap-3 w-full overflow-x-auto">
                 {Array.from({ length: Math.ceil(roomStats.rooms.length / thresholds) }).map((_, columnIndex) => (
                   <ul className=" mb-0" key={columnIndex}>
+                    
                     {roomStats.rooms.slice(columnIndex * thresholds, (columnIndex + 1) * thresholds).map((room, index) => {
+                      const bgColor = room.occupancy === 'red' ? 'bg-custom-graph-red' : (room.occupancy === 'green' ? 'bg-custom-graph-green' : 'bg-custom-graph-amber')
                       return <li className="mb-[6px] w-64 flex flex-row gap-2 items-center" key={index}>
-                        <div className={`w-[6px] h-[6px] rounded-full bg-[${occupanyColor(room.occupancy)}]`}></div>
+                        <div className={classNames('w-[6px] h-[6px] rounded-full', bgColor)}></div>
                         {room.name}
                       </li>
                     })}

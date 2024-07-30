@@ -1,47 +1,47 @@
-import { DeviceEventsType } from '@/type';
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 
-interface HeatmapChartProps {
-  deviceEvents: DeviceEventsType[];
+interface DataPoint {
+  hour: string;
+  minutes: number;
 }
 
-const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
+interface HeatmapChartProps {
+  data: DataPoint[];
+}
+
+const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
   const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
-    const motionDetectedEvents = deviceEvents.filter(event => event.state === "MOTION_DETECTED");
-
     const heatmapData = new Map<string, { x: string, y: number, value: number }>();
 
-    motionDetectedEvents.forEach(event => {
-      let dateFrom = new Date(event.from);
-      let dateTo = new Date(event.to);
+    // Extract all dates and hours from the data
+    const dates = new Set<string>();
+    const hours = new Set<number>();
 
-      // Ensure from time is earlier than to time
-      if (dateFrom > dateTo) {
-        [dateFrom, dateTo] = [dateTo, dateFrom];
+    data.forEach(entry => {
+      const date = entry.hour.split('T')[0];
+      const hour = parseInt(entry.hour.split('T')[1], 10);
+      dates.add(date);
+      hours.add(hour);
+      const key = `${date}-${hour}`;
+
+      if (!heatmapData.has(key)) {
+        heatmapData.set(key, { x: date, y: hour, value: 0 });
       }
 
-      // Loop through each hour between from and to
-      while (dateFrom < dateTo) {
-        const hour = dateFrom.getHours();
-        const day = dateFrom.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      heatmapData.get(key)!.value += entry.minutes;
+    });
 
-        const key = `${day}-${hour}`;
-        const nextHour = new Date(dateFrom);
-        nextHour.setHours(dateFrom.getHours() + 1);
-
-        const minutes = Math.min((dateTo.getTime() - dateFrom.getTime()) / (1000 * 60), (nextHour.getTime() - dateFrom.getTime()) / (1000 * 60));
-
+    // Initialize all date-hour combinations to zero if not present
+    dates.forEach(date => {
+      for (let hour = 0; hour < 24; hour++) {
+        const key = `${date}-${hour}`;
         if (!heatmapData.has(key)) {
-          heatmapData.set(key, { x: day, y: hour, value: 0 });
+          heatmapData.set(key, { x: date, y: hour, value: 0 });
         }
-
-        heatmapData.get(key)!.value += minutes;
-
-        dateFrom = nextHour;
       }
     });
 
@@ -54,8 +54,17 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
       return acc;
     }, [] as { name: string, data: { x: string, y: number }[] }[]);
 
+    // Sort data by date
+    Object.values(groupedData).forEach(hourData => {
+      hourData.data.sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
+    });
+
     setChartData(Object.values(groupedData));
-  }, [deviceEvents]);
+  }, [data]);
+
+  useEffect(() => {
+    console.log("Chart Data: ", chartData);
+  }, [chartData]);
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -77,7 +86,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ deviceEvents }) => {
             { from: 0, to: 10, color: '#00A100', name: 'low (1-10)' },
             { from: 11, to: 20, color: '#128FD9', name: 'medium (11-20)' },
             { from: 21, to: 30, color: '#FFB200', name: 'high (21-30)' },
-            { from: 31, to: 200, color: '#FF0000', name: 'extreme (31-60)' }
+            { from: 31, to: 200, color: '#FF0000', name: 'extreme (31-200)' }
           ]
         }
       }

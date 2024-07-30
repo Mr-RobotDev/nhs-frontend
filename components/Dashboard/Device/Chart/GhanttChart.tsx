@@ -1,10 +1,12 @@
 'use client'
-import { DeviceEventsType } from '@/type';
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 
 interface GanttChartProps {
-  deviceEvents: DeviceEventsType[];
+  data: {
+    hour: string;
+    minutes: number;
+  }[];
 }
 
 interface SeriesData {
@@ -17,40 +19,53 @@ interface Series {
   data: SeriesData[];
 }
 
-const GanttChart: React.FC<GanttChartProps> = ({ deviceEvents }) => {
+const GanttChart: React.FC<GanttChartProps> = ({ data }) => {
   const [series, setSeries] = useState<Series[]>([]);
 
   useEffect(() => {
-    const stateToName = (state: string) => {
-      switch (state) {
-        case 'NO_MOTION_DETECTED': return 'No Motion';
-        case 'MOTION_DETECTED': return 'Motion';
-        default: return state;
-      }
-    };
-
-    const groupedByState = deviceEvents.reduce((acc: Record<string, DeviceEventsType[]>, curr) => {
-      if (!acc[curr.state]) {
-        acc[curr.state] = [];
-      }
-      acc[curr.state].push(curr);
-      return acc;
-    }, {});
-
-    const newSeries: Series[] = Object.keys(groupedByState).map(state => {
+    // Convert the data to a more usable format
+    const events = data.map(item => {
+      const from = new Date(item.hour);
+      const to = new Date(from.getTime() + item.minutes * 60000);
       return {
-        name: stateToName(state),
-        data: groupedByState[state].map((item: DeviceEventsType) => ({
-          x: stateToName(state),
-          y: [new Date(item.from).getTime(), new Date(item.to).getTime()]
-        }))
+        from,
+        to
       };
     });
 
-    console.log('Grouped by state:', JSON.stringify(groupedByState, null, 2));
-    console.log('newSeries->', newSeries)
-    setSeries(newSeries);
-  }, [deviceEvents]);
+    // Sort events by start time
+    events.sort((a, b) => a.from.getTime() - b.from.getTime());
+
+    // Create the "Motion" series
+    const motionSeries: Series = {
+      name: 'Motion',
+      data: events.map(event => ({
+        x: 'Motion',
+        y: [event.from.getTime(), event.to.getTime()]
+      }))
+    };
+
+    // Create the "No Motion" series by detecting gaps between "Motion" events
+    const noMotionData: SeriesData[] = [];
+    for (let i = 0; i < events.length - 1; i++) {
+      const currentEvent = events[i];
+      const nextEvent = events[i + 1];
+      if (currentEvent.to < nextEvent.from) {
+        noMotionData.push({
+          x: 'No Motion',
+          y: [currentEvent.to.getTime(), nextEvent.from.getTime()]
+        });
+      }
+    }
+
+    const noMotionSeries: Series = {
+      name: 'No Motion',
+      data: noMotionData
+    };
+
+    // Set the series data
+    setSeries([motionSeries, noMotionSeries]);
+  }, [data]);
 
   const options = {
     chart: {
@@ -81,32 +96,3 @@ const GanttChart: React.FC<GanttChartProps> = ({ deviceEvents }) => {
 };
 
 export default GanttChart;
-
-
-
-
-
-// const series = [
-//   {
-//     name: 'No Motion',
-//     data: [
-//       {
-//         x: 'No Motion',
-//         y: [new Date('2023-07-21').getTime(), new Date('2023-07-25').getTime()],
-//       },
-//       {
-//         x: 'No Motion',
-//         y: [new Date('2023-08-01').getTime(), new Date('2023-08-05').getTime()],
-//       },
-//     ],
-//   },
-//   {
-//     name: 'Motion',
-//     data: [
-//       {
-//         x: 'Motion',
-//         y: [new Date('2023-07-26').getTime(), new Date('2023-07-30').getTime()],
-//       },
-//     ],
-//   },
-// ];
