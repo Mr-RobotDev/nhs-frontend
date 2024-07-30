@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/app/store/store';
 import { RoomStatsType } from '@/type';
+import { occupanyColor } from '@/utils/helper_functions';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -11,51 +10,27 @@ interface ApexChartProps {
 }
 
 const RoomStatsDonutChart: React.FC<ApexChartProps> = ({ roomStats }) => {
-  const series = [roomStats.red, roomStats.amber, roomStats.green]
+  const series = [roomStats.red, roomStats.amber, roomStats.green];
   const noData = series.every(element => element === 0);
-
 
   const [options] = useState<any>({
     chart: {
       type: 'donut',
     },
     labels: ['Red (0 - 60% Occupancy Rate)', 'Amber (60 - 80% Occupancy Rate)', 'Green (>80% Occupancy Rate)'],
-    colors: ['#FF0000', '#FEB019', '#008000'],
+    colors: [occupanyColor('red'), occupanyColor('amber'), occupanyColor('green')],
     dataLabels: {
-      enabled: true,
-      style: {
-        fontSize: '16px',
-        fontFamily: 'Helvetica, Arial, sans-serif',
-        fontWeight: 'bold',
-        colors: ['#FFFFFF']
-      },
-      formatter: function (val: number) {
-        return val.toFixed(1) + "%";
-      },
-      dropShadow: {
-        enabled: true,
-        top: 1,
-        left: 1,
-        blur: 1,
-        opacity: 0.45
-      },
-      position: 'center',
-      offsetX: 0,
-      offsetY: 0,
+      enabled: false, // Disable data labels
     },
     plotOptions: {
       pie: {
         donut: {
           size: '65%',
         },
-        dataLabels: {
-          offset: -30,
-          minAngleToShowLabel: 10
-        }
       }
     },
     legend: {
-      position: 'bottom'
+      position: 'right'
     },
     responsive: [{
       breakpoint: 480,

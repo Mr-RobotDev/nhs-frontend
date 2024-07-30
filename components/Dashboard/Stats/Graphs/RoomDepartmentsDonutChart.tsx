@@ -16,39 +16,10 @@ const RoomDepartmentsDonutChart: React.FC<ApexChartProps> = ({ departments }) =>
     },
     labels: [],
     dataLabels: {
-      enabled: true,
-      style: {
-        fontSize: '12px', // Reduced font size
-        fontFamily: 'Helvetica, Arial, sans-serif',
-        fontWeight: 'bold',
-      },
-      formatter: function (val: number) {
-        return val.toFixed(1) + "%";
-      },
-      dropShadow: {
-        enabled: true,
-        top: 1,
-        left: 1,
-        blur: 1,
-        opacity: 0.45
-      },
-      position: 'center',
-      offsetX: 0,
-      offsetY: 0,
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '65%',
-        },
-        dataLabels: {
-          offset: -30,
-          minAngleToShowLabel: 10
-        }
-      }
+      enabled: false, // Disable data labels
     },
     legend: {
-      position: 'bottom'
+      position: 'right'
     },
     responsive: [{
       breakpoint: 480,

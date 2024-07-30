@@ -5,7 +5,7 @@ import axiosInstance from "@/lib/axiosInstance";
 import dayjs, { Dayjs } from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import toast from "react-hot-toast";
-import { DevicesType, DataPoint } from "@/type";
+import { DevicesType, DataPoint, DeviceEventsType } from "@/type";
 import Image from "next/image";
 import CountUp from "react-countup";
 import ReactApexChart from "react-apexcharts";
@@ -34,7 +34,6 @@ interface DeviceGraphProps {
 }
 
 const DeviceGraph = ({ id }: DeviceGraphProps) => {
-  const [data, setData] = useState<DataPoint[]>([]);
   const [deviceData, setDeviceData] = useState<DevicesType>();
   const [range, setRange] = useState<[Dayjs, Dayjs]>([
     dayjs().subtract(3, "day").startOf("day"),
@@ -43,10 +42,8 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [graphloading, setGraphLoading] = useState<boolean>(false);
   const [currentPreset, setCurrentPreset] = useState<string>("Last 3 Days");
-
-  const [temperatureData, setTemperatureData] = useState<DataPoint[]>([]);
-  const [humidityData, setHumidityData] = useState<DataPoint[]>([]);
-  const [pressureData, setPressureData] = useState<DataPoint[]>([]);
+  const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([])
+  
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -57,156 +54,6 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
     }
   }, []);
 
-  const TemperatureChart = React.memo(({ data }: { data: any }) => {
-    const options = {
-      ...commonApexOptions,
-      chart: {
-        id: "TemperatureChart",
-        group: "device",
-        ...commonApexOptions.chart
-      },
-      yaxis: {
-        title: {
-          text: "Temperature (°C)",
-        },
-      },
-      annotations: deviceData?.alert?.field === 'temperature' ? generateAnnotations(deviceData?.alert?.range) : {},
-      xaxis: {
-        type: "datetime",
-      },
-      series: [
-        {
-          name: "Temperature",
-          data,
-        },
-      ],
-      markers: {
-        size: 4,
-        strokeWidth: 2,
-        hover: {
-          size: 6,
-        },
-      },
-      colors: temperatureColors,
-    };
-
-    return (
-      <ReactApexChart
-        options={options as any}
-        series={options.series}
-        type="line"
-        height={275}
-        width={"100%"}
-      />
-    );
-  });
-
-  TemperatureChart.displayName = "TemperatureChart";
-
-  const HumidityChart = React.memo(({ data }: { data: any }) => {
-    const options = useMemo(
-      () => ({
-        ...commonApexOptions,
-        chart: {
-          id: "HumidityChart",
-          group: "device",
-          ...commonApexOptions.chart
-        },
-        yaxis: {
-          title: {
-            text: "Humidity (%)",
-          },
-          labels: {
-            formatter: (value: number) => `${value}%`,
-          },
-        },
-        annotations: deviceData?.alert?.field === 'relativeHumidity' ? generateAnnotations(deviceData?.alert?.range) : {},
-        xaxis: {
-          type: "datetime",
-        },
-        series: [
-          {
-            name: "Humidity",
-            data,
-          },
-        ],
-        markers: {
-          size: 4,
-          strokeWidth: 2,
-          hover: {
-            size: 6,
-          },
-        },
-        colors: humidityColors,
-      }),
-      [data]
-    );
-
-    return (
-      <ReactApexChart
-        options={options as any}
-        series={options.series}
-        type="line"
-        height={275}
-        width={"100%"}
-      />
-    );
-  });
-
-  HumidityChart.displayName = "HumidityChart";
-
-  const PressureChart = React.memo(({ data }: { data: any }) => {
-    const options = useMemo(
-      () => ({
-        ...commonApexOptions,
-        chart: {
-          id: "PressueChart",
-          ...commonApexOptions.chart
-        },
-        yaxis: {
-          title: {
-            text: "Pressure (Pa)",
-          },
-          labels: {
-            formatter: (value: number) => `${value}Pa`,
-          },
-        },
-        annotations: generateAnnotations(deviceData?.alert?.range),
-        xaxis: {
-          type: "datetime",
-        },
-        series: [
-          {
-            name: "Pressure",
-            data,
-          },
-        ],
-        markers: {
-          size: 4,
-          strokeWidth: 2,
-          hover: {
-            size: 6,
-          },
-        },
-        colors: humidityColors,
-      }),
-      [data]
-    );
-
-    return (
-      <ReactApexChart
-        options={options as any}
-        series={options.series}
-        type="line"
-        height={275}
-        width={"100%"}
-      />
-    );
-  });
-
-  PressureChart.displayName = "PressureChart";
-
-
   const fetchData = useCallback(
     async (from: string, to: string) => {
       if (deviceData) {
@@ -216,34 +63,7 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
             `/devices/${deviceData.id}/events?from=${from}&to=${to}`
           );
           if (response.status === 200) {
-            const sortedData = response.data.sort(
-              (a: DataPoint, b: DataPoint) => {
-                return (
-                  new Date(a.createdAt).getTime() -
-                  new Date(b.createdAt).getTime()
-                );
-              }
-            );
-
-            const tempData = sortedData.map((point: DataPoint) => ({
-              x: new Date(point.createdAt).getTime(),
-              y: point.temperature,
-            }));
-
-            const humidData = sortedData.map((point: DataPoint) => ({
-              x: new Date(point.createdAt).getTime(),
-              y: point.relativeHumidity,
-            }));
-
-            const pressureData = sortedData.map((point: DataPoint) => ({
-              x: new Date(point.createdAt).getTime(),
-              y: point.pressure
-            }));
-
-            setData(sortedData);
-            setTemperatureData(tempData);
-            setPressureData(pressureData);
-            setHumidityData(humidData);
+            setDeviceEvents(response.data)
           }
         } catch (error) {
           console.error("Error fetching data:", error);
@@ -603,18 +423,17 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
               />
             </div>
             <div className=" w-full">
-              <GanttChart />
               {graphloading ? (
                 <div className="flex justify-center items-center h-full">
                   <Spin size="large" />
                 </div>
-              ) : data.length === 0 ? (
+              ) : deviceEvents.length === 0 ? (
                 <div className="flex justify-center items-center h-full">
                   <p>No data available for the selected date range</p>
                 </div>
               ) : (
                 <>
-                  <GanttChart />
+                  <GanttChart data={deviceEvents} />
                 </>
               )}
             </div>

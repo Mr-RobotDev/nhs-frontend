@@ -237,3 +237,8 @@ export interface AlertStatsType {
   activeAlerts: string[];
   nonActiveAlerts: string[];
 }
+
+export interface DeviceEventsType {
+  hour: string;
+  minutes: number;
+}
