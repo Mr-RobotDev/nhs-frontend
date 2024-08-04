@@ -61,6 +61,7 @@ interface Device {
   id: string;
   state: string;
   name: string;
+  updatedAt: string;
 }
 
 export interface EventType {

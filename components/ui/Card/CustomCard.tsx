@@ -11,7 +11,6 @@ import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
 import MotionNoMotionGraph from "./MotionNoMotionGraph";
 import HistogramChart from "@/components/Dashboard/Device/Chart/HistogramChart";
 import HeatmapChart from "@/components/Dashboard/Device/Chart/HeatMapChart";
-import classNames from "classnames";
 
 interface CardProps {
   cardObj: DashboardCardType;

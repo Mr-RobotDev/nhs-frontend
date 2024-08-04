@@ -4,6 +4,7 @@ import { getDeviceLabelFromState } from '@/utils/helper_functions';
 import { Popover } from 'antd';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
+import { formatDistanceToNow, parseISO } from 'date-fns';
 
 const countStates = (devices: any) => {
   return devices.reduce(
@@ -112,9 +113,12 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
             <div className=' flex-1'>
               <GanttChart data={data} setHeadingData={setHeadingData} />
             </div>
-            <p className="!mb-0 text-xl text-center font-semibold flex justify-center items-center">
+            <div className='  flex justify-center items-center flex-col'>
+            <p className="!mb-0 text-xl md:text-2xl text-center font-semibold">
               {getDeviceLabelFromState(cardObj.devices[0].state)}
             </p>
+            <span className=' text-slate-500 text-xs'>{formatDistanceToNow(parseISO(cardObj.devices[0].updatedAt), { addSuffix: true })}</span>
+            </div>
           </div>
         </div>
       )}
