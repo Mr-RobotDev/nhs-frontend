@@ -158,6 +158,7 @@ const RoomsDataTable: React.FC<RoomsDataTableProps> = ({ globalFilters }) => {
           pageSize: pageSize,
           total: totalItems,
           onChange: handleTableChange,
+          showSizeChanger: false
         }}
       />
     </div>
