@@ -16,16 +16,18 @@ const CreateNewRoomComponent: React.FC<CreateNewRoomComponentProps> = ({ organiz
     code: "",
     name: "",
     function: "",
-    netUseableArea: 0,
+    netUseableArea: '',
     department: "",
     division: "",
     cluster: "",
     clusterDescription: "",
     operationHours: "",
-    hoursPerDay: 0,
+    hoursPerDay: '',
     organization: organizationId,
     site: siteId,
     building: buildingId,
+    maxDeskOccupation: "",
+    numWorkstations: ''
   }
 
   return (

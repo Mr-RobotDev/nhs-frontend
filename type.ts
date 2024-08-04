@@ -219,16 +219,18 @@ export interface RoomFormType {
   code: string;
   name: string;
   function: string;
-  netUseableArea: number;
+  netUseableArea: string;
   department: string;
   division?: string;
   cluster?: string;
   clusterDescription?: string;
   operationHours: string;
-  hoursPerDay: number;
+  hoursPerDay: string;
   organization: string;
   building: string;
   site: string;
+  maxDeskOccupation?: string;
+  numWorkstations?: string
 }
 
 export interface AlertStatsType {

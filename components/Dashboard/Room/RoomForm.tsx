@@ -21,13 +21,13 @@ const schema = yup.object().shape({
   code: yup.string().required('Code is required'),
   name: yup.string().required('Name is required'),
   function: yup.string().required('Function is required'),
-  netUseableArea: yup.number().required('Net Useable Area is required'),
+  netUseableArea: yup.string().required('Net Useable Area is required'),
   department: yup.string().required('Department is required'),
   division: yup.string().optional(),
   cluster: yup.string().optional(),
   clusterDescription: yup.string().optional(),
   operationHours: yup.string().required('Operation Hours is required'),
-  hoursPerDay: yup.number().required('Hours Per Day is required'),
+  hoursPerDay: yup.string().required('Hours Per Day is required'),
   organization: yup.string().required('Organization is required'),
   building: yup.string().required('Building is required'),
   site: yup.string().required('Site is required'),
@@ -54,12 +54,18 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, floorId, setOpen }) => {
   const handleCreateNewRoom = async (data: RoomFormType) => {
     try {
       setLoading(true);
-
-      // Remove empty values from the data
       const cleanedData = removeEmptyValues(data);
 
-      cleanedData.netUseableArea = parseFloat(cleanedData.netUseableArea.toString());
-      cleanedData.hoursPerDay = parseInt(cleanedData.hoursPerDay.toString());
+      cleanedData.netUseableArea = parseFloat(cleanedData.netUseableArea);
+      cleanedData.hoursPerDay = parseInt(cleanedData.hoursPerDay);
+
+      if (cleanedData.maxDeskOccupation) {
+        cleanedData.maxDeskOccupation = parseInt(cleanedData.maxDeskOccupation);
+      }
+
+      if (cleanedData.numWorkstations) {
+        cleanedData.numWorkstations = parseInt(cleanedData.numWorkstations);
+      }
 
       const response = await axiosInstance.post(`floors/${floorId}/rooms`, cleanedData);
       if (response.status === 201) {
@@ -135,6 +141,16 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, floorId, setOpen }) => {
               />
               {errors.department && <p className="!text-red-500 text-xs mt-1">{errors.department.message}</p>}
             </div>
+            <div className="flex-1">
+              <p className="font-semibold !text-sm !mb-1">Max Desk Occupation</p>
+              <Controller
+                name="maxDeskOccupation"
+                control={control}
+                render={({ field }) => (
+                  <PrimaryInput type="number" {...field} />
+                )}
+              />
+            </div>
           </div>
           <div className='flex flex-col gap-4'>
             <div className="flex-1">
@@ -191,6 +207,16 @@ const RoomForm: React.FC<RoomFormProps> = ({ room, floorId, setOpen }) => {
                 )}
               />
               {errors.hoursPerDay && <p className="!text-red-500 text-xs mt-1">{errors.hoursPerDay.message}</p>}
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold !text-sm !mb-1">Num Work Stations</p>
+              <Controller
+                name="numWorkstations"
+                control={control}
+                render={({ field }) => (
+                  <PrimaryInput type="number" {...field} />
+                )}
+              />
             </div>
           </div>
         </div>
