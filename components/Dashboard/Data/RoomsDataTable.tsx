@@ -135,7 +135,7 @@ const RoomsDataTable: React.FC<RoomsDataTableProps> = ({ globalFilters }) => {
       title: "OCCUPANCY",
       render: (_, { occupancy }) => (
         <div className=" w-36 md:w-full whitespace-normal flex flex-row items-center">
-          <p className=" !text-black">{occupancy.toFixed(2)}</p>
+          {occupancy ? <p className=" !text-black">{occupancy.toFixed(2)}</p>: <p>-</p>}
         </div>
       ),
     },
