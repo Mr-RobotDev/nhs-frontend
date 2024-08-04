@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Divider } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { createCard } from "@/app/store/slice/dashboardSlice";
@@ -65,7 +65,6 @@ const AddCardModal = ({
   onClose,
 }: AddCardModalProps) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSensors, setSelectedSensors] = useState<string[]>([]);
   const [cardName, setCardName] = useState("");
   const [step, setStep] = useState(0);
@@ -73,20 +72,13 @@ const AddCardModal = ({
   const dispatch: AppDispatch = useDispatch();
   const error = useSelector((state: RootState) => state.dashboardReducer.error);
   const { devices } = useSelector((state: RootState) => state.devicesReducer)
+  const [selectedDeviceName, setSelectedDeviceName] = useState("");
 
   const resetState = () => {
     setSelectedRowKeys([]);
     setSelectedSensors([]);
     setCardName("");
     setStep(0);
-  };
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
   };
 
   const handleCreateCard = () => {
@@ -117,10 +109,13 @@ const AddCardModal = ({
     }
   };
 
+  useEffect(() => {
+    setCardName(selectedDeviceName)
+  }, [selectedDeviceName])
+
   return (
     <Modal
       open={isVisible}
-      onOk={handleOk}
       onCancel={onClose}
       width={700}
       footer={[]}
@@ -131,6 +126,7 @@ const AddCardModal = ({
           <DevicesSelector
             selectedRowKeys={selectedRowKeys}
             setSelectedRowKeys={setSelectedRowKeys}
+            setSelectedDeviceName={setSelectedDeviceName}
           />
         )}
         {step === 1 && (
@@ -165,7 +161,7 @@ const AddCardModal = ({
           </Button>
         )}
 
-        {step === 1 && cardName !== "" && (
+        {step === 1 && (
           <Button onClick={handleAddCardToDashboard} type="default">
             Add to Dashboard
           </Button>

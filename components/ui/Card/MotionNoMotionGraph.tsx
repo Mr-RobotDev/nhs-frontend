@@ -107,16 +107,14 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
         </Popover>
       ) : (
         <div className="w-full h-full flex justify-center items-center">
-          <div className=' w-full h-full flex flex-col justify-between'>
-            <p className="!mb-0 text-3xl font-semibold flex justify-center items-center mt-2">
-              {getDeviceLabelFromState(cardObj.devices[0].state)}
-            </p>
+          <div className=' w-full h-full flex flex-row justify-between'>
             <div className=' flex-1'>
               <GanttChart data={data} />
             </div>
-
+            <p className="!mb-0 text-xl text-center font-semibold flex justify-center items-center">
+              {getDeviceLabelFromState(cardObj.devices[0].state)}
+            </p>
           </div>
-
         </div>
       )}
     </div>

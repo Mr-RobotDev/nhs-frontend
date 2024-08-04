@@ -196,7 +196,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ data }) => {
 
   return (
     <div className=' w-full h-full'>
-      <Chart options={options as any} series={series} type="rangeBar" height={'100%'} />
+      <Chart options={options as any} series={series} type="rangeBar" height={'100%'} width={'100%'} />
     </div>
   );
 };
