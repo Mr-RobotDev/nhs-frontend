@@ -28,9 +28,10 @@ interface MotionNoMotionGraphProps {
   cardObj: DashboardCardType;
   popoverWidth: number | undefined
   data: DeviceEventsType[];
+  setHeadingData: React.Dispatch<React.SetStateAction<string>>
 }
 
-const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popoverWidth, data }) => {
+const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popoverWidth, data, setHeadingData }) => {
   const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -109,7 +110,7 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
         <div className="w-full h-full flex justify-center items-center">
           <div className=' w-full h-full flex flex-row justify-between'>
             <div className=' flex-1'>
-              <GanttChart data={data} />
+              <GanttChart data={data} setHeadingData={setHeadingData} />
             </div>
             <p className="!mb-0 text-xl text-center font-semibold flex justify-center items-center">
               {getDeviceLabelFromState(cardObj.devices[0].state)}

@@ -43,7 +43,8 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
   const [graphloading, setGraphLoading] = useState<boolean>(false);
   const [currentPreset, setCurrentPreset] = useState<string>("Last 3 Days");
   const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([])
-  
+  const [headingData, setHeadingData] = useState('');
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -324,7 +325,7 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
             </div>
           </Card>
         </div>
-        { deviceData?.state && <div>
+        {deviceData?.state && <div>
           <Card bordered={false} className="criclebox h-full">
             <div className=" text-2xl flex flex-row justify-between">
               <div>
@@ -354,30 +355,38 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
       <div className=" mx-auto">
         <Card>
           <div className="flex flex-col gap-2">
-            <div className=" flex flex-row items-center justify-end gap-3 ">
-              {deviceData &&
-                <FileDownloadButton
-                  deviceId={deviceData?.id}
-                  from={range[0].format("YYYY-MM-DD")}
-                  to={range[1].format("YYYY-MM-DD")}
-                />}
-              <Link
-                href={`/dashboard/devices/${id}/activity-logs`}
-                target="_blank"
-              >
-                <Button
-                  className=" flex flex-row items-center justify-center gap-3"
-                  style={{ width: "170px" }}
+            <div className=" flex flex-col md:flex-row justify-between gap-2">
+              <div>
+                <h2 className="text-3xl my-auto font-semibold">Historical Data</h2>
+                <div className={`text-xs text-slate-400 !h-[18px] mt-2 ${headingData ? 'font-semibold' : 'font-medium '}`}>
+                  {headingData ? headingData : ''}
+                </div>
+              </div>
+              <div className=" flex flex-row items-center justify-end gap-3 ">
+                {deviceData &&
+                  <FileDownloadButton
+                    deviceId={deviceData?.id}
+                    from={range[0].format("YYYY-MM-DD")}
+                    to={range[1].format("YYYY-MM-DD")}
+                  />}
+                <Link
+                  href={`/dashboard/devices/${id}/activity-logs`}
+                  target="_blank"
                 >
-                  Activity Logs
-                  <div>
-                    <ArrowUpRightIcon
-                      width={16}
-                      className="transform transition-transform duration-150 group-hover:translate-x-1"
-                    />
-                  </div>
-                </Button>
-              </Link>
+                  <Button
+                    className=" flex flex-row items-center justify-center gap-3"
+                    style={{ width: "170px" }}
+                  >
+                    Activity Logs
+                    <div>
+                      <ArrowUpRightIcon
+                        width={16}
+                        className="transform transition-transform duration-150 group-hover:translate-x-1"
+                      />
+                    </div>
+                  </Button>
+                </Link>
+              </div>
             </div>
             <div className="flex justify-end">
               <div className=" flex flex-row gap-3 items-center justify-center w-full md:w-auto">
@@ -432,7 +441,7 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
                   <p className=" text-2xl font-semibold">No data available for the selected date range</p>
                 </div>
               ) : (
-                <GanttChart data={deviceEvents} />
+                <GanttChart setHeadingData={setHeadingData} data={deviceEvents} />
               )}
             </div>
           </div>

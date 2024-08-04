@@ -6,6 +6,7 @@ interface GanttChartProps {
     hour: string;
     minutes: number;
   }[];
+  setHeadingData: React.Dispatch<React.SetStateAction<string>>
 }
 
 interface SeriesData {
@@ -18,9 +19,8 @@ interface Series {
   data: SeriesData[];
 }
 
-const GanttChart: React.FC<GanttChartProps> = ({ data }) => {
+const GanttChart: React.FC<GanttChartProps> = ({ data, setHeadingData }) => {
   const [series, setSeries] = useState<Series[]>([]);
-  const [headingData, setHeadingData] = useState('');
   const [xaxisRange, setXaxisRange] = useState<{ min: number, max: number }>({ min: 0, max: 0 });
   const [annotations, setAnnotations] = useState<any>({});
 
@@ -107,7 +107,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ data }) => {
           const data = config.w.config.series[config.seriesIndex].data[config.dataPointIndex];
           const durationInMinutes = (data.y[1] - data.y[0]) / (1000 * 60);
           let durationString = '';
-        
+
           if (durationInMinutes >= 60) {
             const hours = Math.floor(durationInMinutes / 60);
             const minutes = Math.floor(durationInMinutes % 60);
@@ -115,8 +115,19 @@ const GanttChart: React.FC<GanttChartProps> = ({ data }) => {
           } else {
             durationString = `${durationInMinutes} minute${durationInMinutes !== 1 ? 's' : ''}`;
           }
-        
-          setHeadingData(`${data.x} for ${durationString}`);
+
+          const startDate = new Date(data.y[0]);
+          const options: Intl.DateTimeFormatOptions = {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+          };
+          const startDateString = startDate.toLocaleString('en-US', options).replace(',', '');
+
+          setHeadingData(`${data.x} starting on ${startDateString} for ${durationString}`);
         },
         dataPointMouseLeave: function () {
           setHeadingData('');
@@ -160,10 +171,9 @@ const GanttChart: React.FC<GanttChartProps> = ({ data }) => {
       labels: {
         style: {
           fontSize: '14px',
-          margin: '10px'
         },
         rotate: -90,
-        align: 'center',
+        align: 'left'
       },
     },
     legend: {
@@ -172,23 +182,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ data }) => {
       horizontalAlign: 'left'
     },
     tooltip: {
-      custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
-        const data = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
-
-        const startDate = new Date(data.y[0]);
-        const endDate = new Date(data.y[1]);
-
-        const options: Intl.DateTimeFormatOptions = {
-          day: 'numeric',
-          month: 'short',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true
-        };
-
-
-        return `<div style="padding: 5px;">${data.x}: <b>${startDate.toLocaleString('en-US', options).replace(',', '')} - ${endDate.toLocaleString('en-US', options).replace(',', '')}<b></div>`;
-      },
+      enabled: false
     },
     colors: ['#7cb5ec', '#434348'],
     annotations: annotations

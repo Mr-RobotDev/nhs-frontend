@@ -60,7 +60,7 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ data }) => {
     },
     plotOptions: {
       bar: {
-        columnWidth: '40%' // Adjust this value to make bars thinner or thicker
+        columnWidth: '20%'
       }
     },
     colors: ['#15394C']

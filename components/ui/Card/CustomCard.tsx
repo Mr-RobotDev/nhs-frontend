@@ -33,6 +33,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([]);
   const [height, setHeight] = useState<number | undefined>(undefined);
 
+  const [headingData, setHeadingData] = useState('');
+
   useEffect(() => {
     setCard(cardObj);
   }, [cardObj]);
@@ -175,8 +177,8 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                     </span>
                   </div>
                 )}
-                <span className="text-xs text-slate-400">
-                  {card.devices.length} Sensors
+                <span className={`text-xs text-slate-400 ${headingData ? 'font-semibold' : 'font-medium '}`}>
+                  {headingData ? headingData : `${card.devices.length} Sensors` }
                 </span>
               </div>
             </div>
@@ -196,7 +198,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               </Button>
             )}
           </div>
-          {graphType === 'motion-nomotion' && <MotionNoMotionGraph data={deviceEvents} cardObj={cardObj} popoverWidth={popoverWidth} />}
+          {graphType === 'motion-nomotion' && <MotionNoMotionGraph setHeadingData={setHeadingData} data={deviceEvents} cardObj={cardObj} popoverWidth={popoverWidth} />}
           {graphType === 'histogram' && <HistogramChart data={deviceEvents} />}
           {graphType === 'heatmap' && <HeatmapChart data={deviceEvents} />}
         </div>
