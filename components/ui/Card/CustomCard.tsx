@@ -11,6 +11,7 @@ import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
 import MotionNoMotionGraph from "./MotionNoMotionGraph";
 import HistogramChart from "@/components/Dashboard/Device/Chart/HistogramChart";
 import HeatmapChart from "@/components/Dashboard/Device/Chart/HeatMapChart";
+import classNames from "classnames";
 
 interface CardProps {
   cardObj: DashboardCardType;
@@ -30,6 +31,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
   const [graphType, setGraphType] = useState('motion-nomotion');
   const [deviceEvents, setDeviceEvents] = useState<DeviceEventsType[]>([]);
+  const [height, setHeight] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     setCard(cardObj);
@@ -93,6 +95,12 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     });
   };
 
+  
+  useEffect(() => {
+    console.log('cardRef.current?.offsetHeight->', cardRef.current?.offsetHeight)
+    setHeight(cardRef.current?.offsetHeight)
+  }, [cardRef.current?.offsetHeight])
+
   return (
     <>
       {loading ? (
@@ -102,7 +110,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
       ) : (
         <div
           ref={cardRef}
-          className="flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3 relative z-10"
+          className={`flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3 relative z-10 h-[${height}px]`}
         >
           <div className="flex flex-row justify-between items-center border-b pb-2">
             <div className="flex flex-row items-center gap-2">
@@ -188,7 +196,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
               </Button>
             )}
           </div>
-          {graphType === 'motion-nomotion' && <MotionNoMotionGraph cardObj={cardObj} popoverWidth={popoverWidth} />}
+          {graphType === 'motion-nomotion' && <MotionNoMotionGraph data={deviceEvents} cardObj={cardObj} popoverWidth={popoverWidth} />}
           {graphType === 'histogram' && <HistogramChart data={deviceEvents} />}
           {graphType === 'heatmap' && <HeatmapChart data={deviceEvents} />}
         </div>

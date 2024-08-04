@@ -1,4 +1,5 @@
-import { DashboardCardType } from '@/type';
+import GanttChart from '@/components/Dashboard/Device/Chart/GhanttChart';
+import { DashboardCardType, DeviceEventsType } from '@/type';
 import { getDeviceLabelFromState } from '@/utils/helper_functions';
 import { Popover } from 'antd';
 import Link from 'next/link';
@@ -26,9 +27,10 @@ const countStates = (devices: any) => {
 interface MotionNoMotionGraphProps {
   cardObj: DashboardCardType;
   popoverWidth: number | undefined
+  data: DeviceEventsType[];
 }
 
-const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popoverWidth }) => {
+const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popoverWidth, data }) => {
   const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -105,9 +107,16 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
         </Popover>
       ) : (
         <div className="w-full h-full flex justify-center items-center">
-          <p className="text-3xl font-semibold">
-            {getDeviceLabelFromState(cardObj.devices[0].state)}
-          </p>
+          <div className=' w-full h-full flex flex-col justify-between'>
+            <p className="!mb-0 text-3xl font-semibold flex justify-center items-center mt-2">
+              {getDeviceLabelFromState(cardObj.devices[0].state)}
+            </p>
+            <div className=' flex-1'>
+              <GanttChart data={data} />
+            </div>
+
+          </div>
+
         </div>
       )}
     </div>

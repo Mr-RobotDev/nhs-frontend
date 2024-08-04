@@ -422,19 +422,17 @@ const DeviceGraph = ({ id }: DeviceGraphProps) => {
                 defaultValue={range}
               />
             </div>
-            <div className=" w-full">
+            <div className=" w-full h-[450px]">
               {graphloading ? (
                 <div className="flex justify-center items-center h-full">
                   <Spin size="large" />
                 </div>
               ) : deviceEvents.length === 0 ? (
                 <div className="flex justify-center items-center h-full">
-                  <p>No data available for the selected date range</p>
+                  <p className=" text-2xl font-semibold">No data available for the selected date range</p>
                 </div>
               ) : (
-                <>
-                  <GanttChart data={deviceEvents} />
-                </>
+                <GanttChart data={deviceEvents} />
               )}
             </div>
           </div>
