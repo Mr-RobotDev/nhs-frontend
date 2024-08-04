@@ -52,14 +52,16 @@ export const emptyRoomObject = {
   code: "",
   name: "",
   function: "",
-  netUseableArea: 0,
+  netUseableArea: '',
   department: "",
   division: "",
   cluster: "",
   clusterDescription: "",
   operationHours: "",
-  hoursPerDay: 0,
+  hoursPerDay: '',
   organization: "",
   site: "",
   building: "",
+  maxDeskOccupation: '',
+  numWorkstations: ''
 }
