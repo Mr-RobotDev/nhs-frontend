@@ -132,7 +132,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                 ) : (
                   <div className="flex border rounded-md">
                     <PrimaryInput
-                      placeholder="Dashboard name"
+                      placeholder="Card Name"
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
                       className="!border-t-0 !border-l-0 !border-b-0 !border-r !rounded-none !border-gray-300"
