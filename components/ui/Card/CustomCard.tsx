@@ -11,6 +11,8 @@ import OptionsMenu from "@/components/Dashboard/dashboardViews/OptionMenu";
 import MotionNoMotionGraph from "./MotionNoMotionGraph";
 import HistogramChart from "@/components/Dashboard/Device/Chart/HistogramChart";
 import HeatmapChart from "@/components/Dashboard/Device/Chart/HeatMapChart";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { getDeviceLabelFromState } from "@/utils/helper_functions";
 
 interface CardProps {
   cardObj: DashboardCardType;
@@ -96,7 +98,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
     });
   };
 
-  
+
   useEffect(() => {
     setHeight(cardRef.current?.offsetHeight)
   }, [cardRef.current?.offsetHeight])
@@ -176,7 +178,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                   </div>
                 )}
                 <span className={`text-xs text-slate-400 ${headingData ? 'font-semibold' : 'font-medium '}`}>
-                  {headingData ? headingData : `${card.devices.length} Sensors` }
+                  {headingData ? headingData : `${card.devices.length} Sensors`}
                 </span>
               </div>
             </div>
@@ -186,19 +188,32 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
                 onTouchStart={(e) => e.stopPropagation()}
                 className="w-10 h-10 border flex items-center justify-center cancelSelectorName"
               >
-                <OptionsMenu 
-                  cardId={card.id} 
-                  setIsRenaming={setIsRenaming} 
-                  setGraphType={setGraphType} 
+                <OptionsMenu
+                  cardId={card.id}
+                  setIsRenaming={setIsRenaming}
+                  setGraphType={setGraphType}
                   graphType={graphType}
                   noOfSensors={card.devices.length}
                 />
               </Button>
             )}
           </div>
-          {graphType === 'motion-nomotion' && <MotionNoMotionGraph setHeadingData={setHeadingData} data={deviceEvents} cardObj={cardObj} popoverWidth={popoverWidth} />}
-          {graphType === 'histogram' && <HistogramChart data={deviceEvents} />}
-          {graphType === 'heatmap' && <HeatmapChart data={deviceEvents} />}
+
+          <div className="w-full h-full flex justify-center items-center">
+            <div className=' w-full h-full flex flex-row justify-between'>
+              <div className=' flex-1'>
+                {graphType === 'motion-nomotion' && <MotionNoMotionGraph setHeadingData={setHeadingData} data={deviceEvents} cardObj={cardObj} popoverWidth={popoverWidth} />}
+                {graphType === 'histogram' && <HistogramChart data={deviceEvents} />}
+                {graphType === 'heatmap' && <HeatmapChart data={deviceEvents} />}
+              </div>
+              {cardObj.devices.length === 1 && <div className='flex justify-center items-center flex-col'>
+                <p className="!mb-0 text-xl md:text-2xl text-center font-semibold">
+                  {getDeviceLabelFromState(cardObj.devices[0].state)}
+                </p>
+                <span className=' text-slate-500 text-xs'>{formatDistanceToNow(parseISO(cardObj.devices[0].updatedAt), { addSuffix: true })}</span>
+              </div>}
+            </div>
+          </div>
         </div>
       )}
     </>

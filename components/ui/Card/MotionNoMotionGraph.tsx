@@ -76,7 +76,7 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
 
 
   return (
-    <div className="flex-grow">
+    <div className="flex-grow w-full h-full">
       {cardObj.devices.length > 1 ? (
         <Popover
           content={content}
@@ -108,18 +108,8 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
           </div>
         </Popover>
       ) : (
-        <div className="w-full h-full flex justify-center items-center">
-          <div className=' w-full h-full flex flex-row justify-between'>
-            <div className=' flex-1'>
-              <GanttChart data={data} setHeadingData={setHeadingData} />
-            </div>
-            <div className='  flex justify-center items-center flex-col'>
-            <p className="!mb-0 text-xl md:text-2xl text-center font-semibold">
-              {getDeviceLabelFromState(cardObj.devices[0].state)}
-            </p>
-            <span className=' text-slate-500 text-xs'>{formatDistanceToNow(parseISO(cardObj.devices[0].updatedAt), { addSuffix: true })}</span>
-            </div>
-          </div>
+        <div className=' w-full h-full'>
+          <GanttChart data={data} setHeadingData={setHeadingData} />
         </div>
       )}
     </div>

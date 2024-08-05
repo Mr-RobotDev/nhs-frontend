@@ -73,7 +73,7 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
                   <span className="flex flex-col justify-center">
                     <GiHistogram size={18} />
                   </span>
-                  <span className="text-[14px] font-medium">Change to histogram</span>
+                  <span className="text-[14px] font-medium py-1">Change to histogram</span>
                 </div>
               }
               {
