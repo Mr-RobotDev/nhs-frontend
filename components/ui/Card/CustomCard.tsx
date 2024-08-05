@@ -98,7 +98,6 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
 
   
   useEffect(() => {
-    console.log('cardRef.current?.offsetHeight->', cardRef.current?.offsetHeight)
     setHeight(cardRef.current?.offsetHeight)
   }, [cardRef.current?.offsetHeight])
 
@@ -111,7 +110,7 @@ const CustomCard: React.FC<CardProps> = ({ cardObj }) => {
       ) : (
         <div
           ref={cardRef}
-          className={`flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3 relative z-10 h-[${height}px]`}
+          className={`flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-3 h-[${height}px]`}
         >
           <div className="flex flex-row justify-between items-center border-b pb-2">
             <div className="flex flex-row items-center gap-2">
