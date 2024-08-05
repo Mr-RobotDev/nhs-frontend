@@ -62,10 +62,6 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
     setChartData(Object.values(groupedData));
   }, [data]);
 
-  useEffect(() => {
-    console.log("Chart Data: ", chartData);
-  }, [chartData]);
-
   const chartOptions: ApexOptions = {
     chart: {
       type: 'heatmap',
@@ -83,10 +79,10 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
         radius: 0,
         colorScale: {
           ranges: [
-            { from: 0, to: 10, color: '#00A100', name: 'low (1-10)' },
-            { from: 11, to: 20, color: '#128FD9', name: 'medium (11-20)' },
-            { from: 21, to: 30, color: '#FFB200', name: 'high (21-30)' },
-            { from: 31, to: 200, color: '#DE3832', name: 'extreme (31-200)' }
+            { from: 0, to: 15, color: '#5CB158', name: 'low (0-15)' },
+            { from: 16, to: 30, color: '#84BD55', name: 'medium (16-30)' },
+            { from: 31, to: 45, color: '#EBB143', name: 'high (31-45)' },
+            { from: 45, to: 60, color: '#DE3832', name: 'extreme (45-60)' }
           ]
         }
       }
@@ -104,6 +100,13 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
       labels: {
         formatter: (val: number) => {
           return `${val}`;
+        }
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: function (val: number) {
+          return `${val} minutes`;
         }
       }
     }

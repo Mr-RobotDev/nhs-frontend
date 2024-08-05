@@ -20,13 +20,15 @@ interface DevicesSelectorProps {
   selectedRowKeys: string[];
   allowSingleDevice?: boolean;
   deviceType?: string;
+  setSelectedDeviceName?: React.Dispatch<React.SetStateAction<string>>
 }
 
 const DevicesSelector = ({
   selectedRowKeys,
   setSelectedRowKeys,
   allowSingleDevice,
-  deviceType
+  deviceType,
+  setSelectedDeviceName
 }: DevicesSelectorProps) => {
   const [devices, setDevices] = useState<DevicesType[]>([]);
   const [loading, setLoading] = useState(false)
@@ -171,6 +173,13 @@ const DevicesSelector = ({
       },
     };
   };
+
+  useEffect(() => {
+    if (setSelectedDeviceName && selectedRowKeys.length !== 0) {
+      const selectedDevice = devices.find(device => device.id === selectedRowKeys[0])
+      setSelectedDeviceName(selectedRowKeys.length === 1 ? (selectedDevice?.name || '') : '')
+    }
+  }, [selectedRowKeys, setSelectedDeviceName, devices])
 
   const handleTableChange = (newPagination: any) => {
     setCurrentPage(newPagination);

@@ -41,11 +41,6 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ data }) => {
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log("Chart Data: ", chartData);
-    console.log("xAxis Categories: ", xAxisCategories);
-  }, [chartData, xAxisCategories]);
-
   const chartOptions: ApexOptions = {
     chart: {
       type: 'bar',
@@ -65,9 +60,10 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ data }) => {
     },
     plotOptions: {
       bar: {
-        columnWidth: '10%' // Adjust this value to make bars thinner or thicker
+        columnWidth: '20%'
       }
-    }
+    },
+    colors: ['#15394C']
   };
 
   return (

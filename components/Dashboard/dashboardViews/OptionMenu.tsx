@@ -8,6 +8,12 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { deleteCard } from "@/app/store/slice/dashboardSlice";
+import { GiHistogram } from "react-icons/gi";
+import { AiOutlineTable } from "react-icons/ai";
+import { LuGanttChart } from "react-icons/lu";
+
+
+
 
 interface OptionMenuProps {
   cardId: string;
@@ -43,7 +49,7 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
     <Popover
       getPopupContainer={(triggerNode) => triggerNode.parentNode as HTMLElement}
       content={
-        <div className="flex flex-col">
+        <div className="flex flex-col w-56">
           <div
             className="flex gap-2 p-1 hover:bg-hover-primary transition-all ease-in-out duration-300 rounded-md cursor-pointer hover:bg-blue-50"
             onClick={() => {
@@ -52,9 +58,9 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
             }}
           >
             <span className="flex flex-col justify-center">
-              <PencilSquareIcon width={15} />
+              <PencilSquareIcon width={18} />
             </span>
-            <span className="!text-xs font-medium">Rename Card</span>
+            <span className=" text-[14px] font-medium">Rename Card</span>
           </div>
           {
             noOfSensors === 1 &&
@@ -65,9 +71,9 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
                   onClick={changeGraphToHistogram}
                 >
                   <span className="flex flex-col justify-center">
-                    <PencilSquareIcon width={15} />
+                    <GiHistogram size={18} />
                   </span>
-                  <span className="!text-xs font-medium">Change to histogram</span>
+                  <span className="text-[14px] font-medium py-1">Change to histogram</span>
                 </div>
               }
               {
@@ -77,9 +83,9 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
                   onClick={changeGraphToMotionNoMotion}
                 >
                   <span className="flex flex-col justify-center">
-                    <PencilSquareIcon width={15} />
+                    <LuGanttChart size={18} />
                   </span>
-                  <span className="!text-xs font-medium">Change to Motion / No Motion</span>
+                  <span className="text-[14px] font-medium">Change to Motion / No Motion</span>
                 </div>
               }
                {
@@ -89,9 +95,9 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
                   onClick={changeGraphToHeatmap}
                 >
                   <span className="flex flex-col justify-center">
-                    <PencilSquareIcon width={15} />
+                  <AiOutlineTable size={18} className=" !text-black" />
                   </span>
-                  <span className="!text-xs font-medium">Change to Heatmap</span>
+                  <span className="text-[14px] font-medium">Change to Heatmap</span>
                 </div>
               }
             </>
@@ -109,14 +115,14 @@ const OptionsMenu = ({ cardId, setIsRenaming, setGraphType, graphType, noOfSenso
             }}
           >
             <span className="flex flex-col justify-center">
-              <XMarkIcon width={15} />
+              <XMarkIcon width={18} />
             </span>
-            <span className="!text-xs font-medium">Remove Card</span>
+            <span className="text-[14px] font-medium">Remove Card</span>
           </div>
         </div>
       }
       trigger="click"
-      placement="left"
+      placement="leftTop"
       open={visible}
       onOpenChange={(visible) => setVisible(visible)}
     >

@@ -1,8 +1,10 @@
-import { DashboardCardType } from '@/type';
+import GanttChart from '@/components/Dashboard/Device/Chart/GhanttChart';
+import { DashboardCardType, DeviceEventsType } from '@/type';
 import { getDeviceLabelFromState } from '@/utils/helper_functions';
 import { Popover } from 'antd';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
+import { formatDistanceToNow, parseISO } from 'date-fns';
 
 const countStates = (devices: any) => {
   return devices.reduce(
@@ -26,9 +28,11 @@ const countStates = (devices: any) => {
 interface MotionNoMotionGraphProps {
   cardObj: DashboardCardType;
   popoverWidth: number | undefined
+  data: DeviceEventsType[];
+  setHeadingData: React.Dispatch<React.SetStateAction<string>>
 }
 
-const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popoverWidth }) => {
+const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popoverWidth, data, setHeadingData }) => {
   const { motionDetected, noMotionDetected } = countStates(cardObj.devices);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -72,7 +76,7 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
 
 
   return (
-    <div className="flex-grow">
+    <div className="flex-grow w-full h-full">
       {cardObj.devices.length > 1 ? (
         <Popover
           content={content}
@@ -104,10 +108,8 @@ const MotionNoMotionGraph: React.FC<MotionNoMotionGraphProps> = ({ cardObj, popo
           </div>
         </Popover>
       ) : (
-        <div className="w-full h-full flex justify-center items-center">
-          <p className="text-3xl font-semibold">
-            {getDeviceLabelFromState(cardObj.devices[0].state)}
-          </p>
+        <div className=' w-full h-full'>
+          <GanttChart data={data} setHeadingData={setHeadingData} />
         </div>
       )}
     </div>
