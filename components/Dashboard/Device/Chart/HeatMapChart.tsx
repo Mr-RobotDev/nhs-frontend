@@ -67,7 +67,8 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
       type: 'heatmap',
       toolbar: {
         show: false
-      }
+      },
+      fontFamily: 'Roboto, sans-serif'
     },
     dataLabels: {
       enabled: false

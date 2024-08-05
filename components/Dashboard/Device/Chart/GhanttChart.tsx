@@ -102,6 +102,7 @@ const GanttChart: React.FC<GanttChartProps> = ({ data, setHeadingData }) => {
       toolbar: {
         show: false
       },
+      fontFamily: 'Roboto, sans-serif',
       events: {
         dataPointMouseEnter: function (event: any, chartContext: any, config: any) {
           const data = config.w.config.series[config.seriesIndex].data[config.dataPointIndex];

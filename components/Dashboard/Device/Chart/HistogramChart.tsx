@@ -46,7 +46,8 @@ const HistogramChart: React.FC<HistogramChartProps> = ({ data }) => {
       type: 'bar',
       toolbar: {
         show: false
-      }
+      },
+      fontFamily: 'Roboto, sans-serif'
     },
     series: [{
       name: 'Minutes of Motion Detected',
